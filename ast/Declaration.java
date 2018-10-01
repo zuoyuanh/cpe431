@@ -12,4 +12,19 @@ public class Declaration
       this.type = type;
       this.name = name;
    }
+
+   public int getLineNum()
+   {
+      return lineNum;
+   }
+
+   public Type getType()
+   {
+      return type;
+   }
+
+   public String getName()
+   {
+      return name;
+   }
 }

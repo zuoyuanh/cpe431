@@ -17,6 +17,20 @@ public class Program
       this.funcs = funcs;
    }
 
+   public List<TypeDeclaration> getTypes()
+   {
+      return types;
+   }
+
+   public List<Declaration> getDecls()
+   {
+      return decls;
+   }
+
+   public List<Function> getFuncs()
+   {
+      return funcs;
+
    public Type visit (TypeVisitor visitor){
       return visitor.visit(this);
    }

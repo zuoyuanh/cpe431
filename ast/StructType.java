@@ -11,4 +11,14 @@ public class StructType
       this.lineNum = lineNum;
       this.name = name;
    }
+
+   public getLineNum()
+   {
+      return lineNum;
+   }
+   
+   public getName()
+   {
+      return name;
+   }
 }
