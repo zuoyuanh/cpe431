@@ -12,12 +12,12 @@ public class StructType
       this.name = name;
    }
 
-   public getLineNum()
+   public int getLineNum()
    {
       return lineNum;
    }
    
-   public getName()
+   public String getName()
    {
       return name;
    }
