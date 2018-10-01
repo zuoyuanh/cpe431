@@ -3,6 +3,8 @@ import ast.Function;
 import ast.TypeDeclaration;
 import ast.Declaration;
 import ast.Program;
+import ast.Type;
+import ast.StructType;
 import exceptions.DuplicatedIdentifierDeclarationException;
 
 public class SymbolTableBuilder
@@ -20,21 +22,22 @@ public class SymbolTableBuilder
       return funcsTable;
    }
 
-   public static Table<Declaration> buildDeclarationsTable(
+   public static Table<Type> buildDeclarationsTable(
       List<Declaration> decls, 
-      Table<Declaration> prev,
-      Table<TypeDeclaration> types)
+      Table<Type> prev,
+      Table<Table<Type>> types)
    {
-      Table<Declaration> declsTable = new Table<Declaration>(prev, "identifiers");
+      Table<Type> declsTable = new Table<Type>(prev, "identifiers");
       for (Declaration d : decls) {
-         if (d.type instanceof StructType) {
-            StructType t = (StructType)d.type;
-            if (types.contains(t)) {
-               
+         if (d.getType() instanceof StructType) {
+            StructType t = (StructType)d.getType();
+            if (!types.containsKey(t.getName())) {
+               System.out.println("type " + t.getName() + " undeclared");
+               continue;
             }
          }
          try {
-            declsTable.insert(d.getName(), d);
+            declsTable.insert(d.getName(), d.getType());
          } catch (DuplicatedIdentifierDeclarationException e) {
             System.out.println(e.getErrorMessage());
          }
@@ -42,14 +45,15 @@ public class SymbolTableBuilder
       return declsTable;
    }
 
-   public static Table<TypeDeclaration> buildTypeDeclarationTable(
+   public static Table<Table<Type>> buildTypeDeclarationTable(
       List<TypeDeclaration> types
    )
    {
-      Table<TypeDeclaration> typesTable = new Table<TypeDeclaration>(null, "type");
+      Table<Table<Type>> typesTable = new Table<Table<Type>>(null, "type");
       for (TypeDeclaration t : types) {
          try {
-            typesTable.insert(t.getName(), t);
+            typesTable.insert(t.getName(), null);
+            typesTable.overwrite(t.getName(), buildDeclarationsTable(t.getFields(), null, typesTable));
          } catch (DuplicatedIdentifierDeclarationException e) {
             System.out.println(e.getErrorMessage());
          }
@@ -59,8 +63,8 @@ public class SymbolTableBuilder
 
    public static SymbolTable buildSymbolTable(Program p) {
       Table<Function> funcsTable = buildFunctionsTable(p.getFuncs());
-      Table<Declaration> declsTable = buildDeclarationsTable(p.getDecls(), null);
-      Table<TypeDeclaration> typesTable = buildTypeDeclarationTable(p.getTypes());
+      Table<Table<Type>> typesTable = buildTypeDeclarationTable(p.getTypes());
+      Table<Type> declsTable = buildDeclarationsTable(p.getDecls(), null, typesTable);
       System.out.println("building symbolic table...");
       return new SymbolTable(funcsTable, declsTable, typesTable);
    }

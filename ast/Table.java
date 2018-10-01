@@ -22,6 +22,11 @@ public class Table<T>
       map.put(name, value);
    }
 
+   public void overwrite(String name, T value)
+   {
+      map.put(name, value);
+   }
+
    public T get(String name) throws IdentifierNotFoundException
    {
       if (map.containsKey(name)) {
@@ -33,13 +38,13 @@ public class Table<T>
       return prev.get(name);
    }
 
-   public boolean containsKey() {
+   public boolean containsKey(String name) {
       if (map.containsKey(name)) {
          return true;
       }
       if (prev == null) {
          return false;
       }
-      return prev.get(name);
+      return prev.containsKey(name);
    }
 }
