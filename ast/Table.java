@@ -1,3 +1,5 @@
+package ast;
+
 import java.util.HashMap;
 import exceptions.IdentifierNotFoundException;
 import exceptions.DuplicatedIdentifierDeclarationException;

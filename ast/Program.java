@@ -17,21 +17,9 @@ public class Program
       this.funcs = funcs;
    }
 
-   public List<TypeDeclaration> getTypes()
-   {
-      return types;
-   }
-
-   public List<Declaration> getDecls()
-   {
-      return decls;
-   }
-
-   public List<Function> getFuncs()
-   {
-      return funcs;
-
    public Type visit (TypeVisitor visitor){
+      Table<Table<Type>> typesTable = SymbolTableBuilder.buildTypeDeclarationTable(types);
+      Table<Type> declsTable = SymbolTableBuilder.buildDeclarationsTable(decls, null, typesTable);
       return visitor.visit(this);
    }
 }
