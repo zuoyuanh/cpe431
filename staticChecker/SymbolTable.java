@@ -1,4 +1,4 @@
-package ast;
+package staticChecker;
 
 import java.util.HashMap;
 import exceptions.IdentifierNotFoundException;

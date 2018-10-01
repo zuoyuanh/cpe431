@@ -1,4 +1,4 @@
-package ast;
+package staticChecker;
 
 import java.util.List;
 import ast.Function;
@@ -11,12 +11,12 @@ import exceptions.DuplicatedIdentifierDeclarationException;
 
 public class SymbolTableBuilder
 {
-   public static Table<Function> buildFunctionsTable(List<Function> funcs)
+   public static Table<FunctionType> buildFunctionsTable(List<Function> funcs)
    {
-      Table<Function> funcsTable = new Table<Function>(null, "functions");
+      Table<FunctionType> funcsTable = new Table<FunctionType>(null, "functions");
       for (Function f : funcs) {
          try {
-            funcsTable.insert(f.getName(), f);
+            funcsTable.insert(f.getName(), new FunctionType(f.getLineNum(), f.getName(), f.getParams(), f.getRetType()));
          } catch (DuplicatedIdentifierDeclarationException e) {
             System.out.println(e.getErrorMessage());
          }
