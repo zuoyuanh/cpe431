@@ -1,3 +1,5 @@
+package ast;
+
 import java.util.List;
 import ast.Function;
 import ast.TypeDeclaration;
@@ -59,13 +61,5 @@ public class SymbolTableBuilder
          }
       }
       return typesTable;
-   }
-
-   public static SymbolTable buildSymbolTable(Program p) {
-      Table<Function> funcsTable = buildFunctionsTable(p.getFuncs());
-      Table<Table<Type>> typesTable = buildTypeDeclarationTable(p.getTypes());
-      Table<Type> declsTable = buildDeclarationsTable(p.getDecls(), null, typesTable);
-      System.out.println("building symbolic table...");
-      return new SymbolTable(funcsTable, declsTable, typesTable);
    }
 }
