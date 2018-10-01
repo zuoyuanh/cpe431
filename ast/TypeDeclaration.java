@@ -14,4 +14,19 @@ public class TypeDeclaration
       this.name = name;
       this.fields = fields;
    }
+
+   public int getLineNum()
+   {
+      return lineNum;
+   }
+
+   public String getName()
+   {
+      return name;
+   }
+
+   public List<Declaration> getFields()
+   {
+      return fields;
+   }
 }

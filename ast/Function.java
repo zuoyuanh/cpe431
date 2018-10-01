@@ -21,4 +21,34 @@ public class Function
       this.locals = locals;
       this.body = body;
    }
+
+   public int getLineNum()
+   {
+      return lineNum;
+   }
+
+   public String getName()
+   {
+      return name;
+   }
+
+   public Type getRetType()
+   {
+      return retType;
+   }
+
+   public List<Declaration> getParams()
+   {
+      return params;
+   }
+
+   public List<Declaration> getLocals()
+   {
+      return locals;
+   }
+
+   public Statement getBody()
+   {
+      return body;
+   }
 }

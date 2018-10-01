@@ -34,6 +34,7 @@ public class MiniCompiler
          MiniToAstProgramVisitor programVisitor =
             new MiniToAstProgramVisitor();
          ast.Program program = programVisitor.visit(tree);
+         SymbolTable table = SymbolTableBuilder.buildSymbolTable(program);
       }
    }
 

@@ -15,4 +15,19 @@ public class Program
       this.decls = decls;
       this.funcs = funcs;
    }
+
+   public List<TypeDeclaration> getTypes()
+   {
+      return types;
+   }
+
+   public List<Declaration> getDecls()
+   {
+      return decls;
+   }
+
+   public List<Function> getFuncs()
+   {
+      return funcs;
+   }
 }
