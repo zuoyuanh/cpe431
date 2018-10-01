@@ -23,6 +23,16 @@ public class SymbolTableBuilder
       }
       return funcsTable;
    }
+   public static Table<FunctionType> insertFunctionsTable(Function func, Table<FunctionType> funcsTable)
+   {
+      try {
+         funcsTable.insert(f.getName(), new FunctionType(f.getLineNum(), f.getName(), f.getParams(), f.getRetType()));
+      } catch (DuplicatedIdentifierDeclarationException e) {
+         System.out.println(e.getErrorMessage());
+      }
+      return funcsTable;
+   }
+
 
    public static Table<Type> buildDeclarationsTable(
       List<Declaration> decls, 
