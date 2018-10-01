@@ -1,6 +1,7 @@
 package ast;
 
 import java.util.List;
+import staticChecker.*;
 
 public class Program
 {
@@ -29,5 +30,8 @@ public class Program
    public List<Function> getFuncs()
    {
       return funcs;
+
+   public Type visit (TypeVisitor visitor){
+      return visitor.visit(this);
    }
 }

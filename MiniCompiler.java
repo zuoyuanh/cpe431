@@ -3,7 +3,7 @@ import org.antlr.v4.runtime.tree.*;
 
 import java.io.*;
 import javax.json.JsonValue;
-
+import staticChecker.*; 
 public class MiniCompiler
 {
    public static void main(String[] args)
@@ -34,7 +34,8 @@ public class MiniCompiler
          MiniToAstProgramVisitor programVisitor =
             new MiniToAstProgramVisitor();
          ast.Program program = programVisitor.visit(tree);
-         SymbolTable table = SymbolTableBuilder.buildSymbolTable(program);
+         TypeVisitor typeVisitor = new TypeVisitor();
+         typeVisitor.visit(program);
       }
    }
 
