@@ -8,10 +8,7 @@ public interface AstVisitor<T>{
    public T visit (Declaration decl);
    public T visit (Function func);
 
-   public T visit (BoolType boolType);
-   public T visit (IntType intType);
-   public T visit (StructType structType);
-   public T visit (VoidType voidType);
+   public T visit (Type type);
 
    public T visit (Statement statement);
    public T visit (AssignmentStatement assignmentStatement);
@@ -25,6 +22,7 @@ public interface AstVisitor<T>{
    public T visit (ReturnStatement returnStatement);
    public T visit (WhileStatement whileStatement);
 
+   public T visit (Expression expression);
    public T visit (BinaryExpression binaryExpression);
    public T visit (DotExpression dotExpression);
    public T visit (FalseExpression falseExpression);
@@ -37,6 +35,7 @@ public interface AstVisitor<T>{
    public T visit (TrueExpression trueExpression);
    public T visit (UnaryExpression unaryExpression);
 
+   public T visit (Lvalue lvalue);
    public T visit (LvalueDot lvalueDot);
    public T visit (LvalueId lvalueId);
    //public T visit ();

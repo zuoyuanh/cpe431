@@ -19,4 +19,14 @@ public class FunctionType
       this.retType = retType;
    }
 
+   public List<Declaration> getParams(){
+      return this.params;
+   }
+   public Type getRetType(){
+      return this.retType;
+   }
+   public String getName(){
+      return this.name;
+   }
+
 }

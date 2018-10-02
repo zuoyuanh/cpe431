@@ -1,13 +1,13 @@
 package staticChecker;
-
+import java.util.List;
 import ast.*;
-import exceptions.DuplicatedIdentifierDeclarationException;
+import exceptions.*;
 
 public class TypeVisitor implements AstVisitor<Type>{
    
-   Table<Table<Type>> typesTable = new Table<Table<Type>>(null, "type");
-   Table<Type> declsTable = new Table<Type>(null, "identifiers");
-   Table<FunctionType> funcsTable = new Table<FunctionType>(null, "functions");
+   static Table<Table<Type>> typesTable = new Table<Table<Type>>(null, "type");
+   static Table<Type> declsTable = new Table<Type>(null, "identifiers");
+   static Table<FunctionType> funcsTable = new Table<FunctionType>(null, "functions");
 
 
    public Type visit (Program program){
@@ -32,7 +32,7 @@ public class TypeVisitor implements AstVisitor<Type>{
       return new VoidType(); 
    }
    public Type visit (TypeDeclaration typeDecl){
-      insertTypeDeclarationTable(typeDecl,  typesTable)
+      insertTypeDeclarationTable(typeDecl,  typesTable);
       System.out.println("visiting typeDecl");
       return new VoidType(); 
    }
@@ -43,28 +43,75 @@ public class TypeVisitor implements AstVisitor<Type>{
    }
    public Type visit (Function func){
       insertFunctionsTable(func, funcsTable);
+      newLocalTable();
+      List<Declaration> params = func.getParams();
+      List<Declaration> locals = func.getLocals();
+      insertDecls( params, declsTable);
+      insertDecls( locals, declsTable);
       Statement body = func.getBody();
       Type retType = this.visit(body);
       System.out.println("visiting typeDecl");
+      deleteLocalTable();
       return new VoidType(); 
       //compare ret type
    }
+   public Type visit(Expression e){
+         if (e instanceof TrueExpression) {
+            return this.visit((TrueExpression)e);
+         } else if (e instanceof FalseExpression) {
+            return this.visit((FalseExpression)e);
+         } else if (e instanceof IntegerExpression) {
+            return this.visit((IntegerExpression)e);
+         } else if (e instanceof ReadExpression) {
+            return this.visit((ReadExpression)e);
+         } else if (e instanceof IdentifierExpression) {
+            return this.visit((IdentifierExpression)e);
+         } else if (e instanceof DotExpression) {
+            return this.visit((DotExpression)e);
+         } else if (e instanceof UnaryExpression) {
+            return this.visit((UnaryExpression)e);
+         } else if (e instanceof NewExpression) {
+            return this.visit((NewExpression)e);
+         }
+         return null;
+   }
 
-   public Type visit (BoolType boolType){
-      System.out.println("visiting bool type");
-      return boolType;
+   public Type visit(Statement s)
+      {
+      if (s instanceof BlockStatement) {
+         return this.visit((BlockStatement)s);
+      } else if (s instanceof ConditionalStatement) {
+         return this.visit((ConditionalStatement)s);
+      } else if (s instanceof PrintLnStatement){
+         return this.visit((PrintLnStatement)s); 
+      } else if (s instanceof PrintStatement){
+         return this.visit((PrintStatement)s);
+      } else if (s instanceof DeleteStatement){
+         return this.visit((DeleteStatement)s);
+      } else if (s instanceof ReturnEmptyStatement){
+         return this.visit((ReturnEmptyStatement)s);
+      } else if (s instanceof AssignmentStatement) {
+         return this.visit((AssignmentStatement)s);
+      } else if (s instanceof WhileStatement) {
+         return this.visit((WhileStatement)s);
+      } else if (s instanceof ReturnStatement) {
+         return this.visit((ReturnStatement)s);
+      }
+      return null;
    }
-   public Type visit (IntType intType){
-      System.out.println("visiting int type");
-      return intType;
+   public Type visit(Lvalue lvalue){
+      if (lvalue instanceof LvalueId){
+         return this.visit((LvalueId)lvalue);
+      }
+      if (lvalue instanceof LvalueDot){
+         return this.visit((LvalueDot)lvalue);
+      }
+      return null;
    }
-   public Type visit (StructType structType){
-      System.out.println("visiting struct type");
-      return structType;
-   }
-   public Type visit (VoidType voidType){
-      System.out.println("visiting void type");
-      return voidType;
+
+   public Type visit (Type type){
+      System.out.println("visiting type");
+      return type;
    }
 
    //public Type visit (Statement statement);
@@ -72,10 +119,10 @@ public class TypeVisitor implements AstVisitor<Type>{
       Lvalue target = assignmentStatement.getTarget();
       Expression source = assignmentStatement.getSource();
       Type targetType = this.visit(target);
-      type sourceType = this.visit(source);
+      Type sourceType = this.visit(source);
       checkCompatible(targetType, sourceType);
       System.out.println("visiting assign");
-      return sourceType
+      return sourceType;
    }
 
    public Type visit (BlockStatement blockStatement){
@@ -89,8 +136,8 @@ public class TypeVisitor implements AstVisitor<Type>{
 
    public Type visit (ConditionalStatement conditionalStatement)
    {
-      Type guardType = conditionalStatement.getGuard();
-      checkSameType(guardType.getClass(), boolType.class);
+      Type guardType = this.visit(conditionalStatement.getGuard());
+      checkSameType(guardType.getClass(), BoolType.class);
       this.visit(conditionalStatement.getThenBlock());
       this.visit(conditionalStatement.getElseBlock());
       return new VoidType(); 
@@ -102,7 +149,7 @@ public class TypeVisitor implements AstVisitor<Type>{
       return new VoidType(); 
    }
    public Type visit (InvocationStatement invocationStatement){
-      return this.visit(invocationStatement.getExpression);
+      return this.visit(invocationStatement.getExpression());
    }
    public Type visit (PrintLnStatement printLnStatement){
       Type res = this.visit(printLnStatement.getExpression());
@@ -114,26 +161,158 @@ public class TypeVisitor implements AstVisitor<Type>{
       checkSameType(res.getClass(), IntType.class);
       return new IntType();
    }
-   public Type visit (ReturnEmptyStatement returnEmptyStatement);
-   public Type visit (ReturnStatement returnStatement);
-   public Type visit (WhileStatement whileStatement);
+   public Type visit (ReturnEmptyStatement returnEmptyStatement){
+      return new VoidType(); 
+   }
+   public Type visit (ReturnStatement returnStatement){
+      return this.visit(returnStatement.getExpression());
+   }
+   public Type visit (WhileStatement whileStatement){
+      Type guardType = this.visit(whileStatement.getGuard());
+      checkSameType(guardType.getClass(), BoolType.class);
+      return this.visit(whileStatement.getBody());
+   }
 
-   public Type visit (BinaryExpression binaryExpression);
-   public Type visit (DotExpression dotExpression);
-   public Type visit (FalseExpression falseExpression);
-   public Type visit (IdentifierExpression identifierExpression);
-   public Type visit (IntegerExpression integerExpression);
-   public Type visit (InvocationExpression invocationExpression);
-   public Type visit (NewExpression newExpression);
-   public Type visit (NullExpression nullExpression);
-   public Type visit (ReadExpression readExpression);
-   public Type visit (TrueExpression trueExpression);
-   public Type visit (UnaryExpression unaryExpression);
+   public Type visit (BinaryExpression binaryExpression){
+      Type leftType = this.visit(binaryExpression.getLeft());
+      Type rightType = this.visit(binaryExpression.getRight());
+      checkSameType(leftType.getClass(), rightType.getClass());
+      BinaryExpression.Operator op = binaryExpression.getOperator();
+      switch (op){
+         case TIMES: 
+            checkSameType(leftType.getClass(),IntType.class);
+            return new IntType();       
+         case DIVIDE:
+            checkSameType(leftType.getClass(),IntType.class);
+            return new IntType();       
+         case PLUS:
+            checkSameType(leftType.getClass(),IntType.class);
+            return new IntType();       
+         case MINUS:
+            checkSameType(leftType.getClass(),IntType.class);
+            return new IntType();       
+         case LT:
+            checkSameType(leftType.getClass(),IntType.class);
+            return new BoolType();       
+         case GT:
+            checkSameType(leftType.getClass(),IntType.class);
+            return new BoolType();       
+         case GE:
+            checkSameType(leftType.getClass(),IntType.class);
+            return new BoolType();       
+         case EQ:
+            if (!(leftType instanceof StructType))
+               checkSameType(leftType.getClass(),IntType.class);
+            return new BoolType();       
+         case NE:
+            if (!(leftType instanceof StructType ))
+               checkSameType(leftType.getClass(),IntType.class);
+            return new BoolType();       
+         case AND:
+            checkSameType(leftType.getClass(), BoolType.class);
+            return new BoolType();       
+         case OR:
+            checkSameType(leftType.getClass(),BoolType.class);
+            return new BoolType(); 
+         default:
+            return null;
+      }
+   }
 
-   public T visit (LvalueDot lvalueDot);
-   public T visit (LvalueId lvalueId);
 
+   public Type visit (DotExpression dotExpression){
+      Type s = this.visit(dotExpression.getLeft());
+      checkSameType(s.getClass(), StructType.class);
+      String id = dotExpression.getId();
+      try {
+         Type t = (typesTable.get(((StructType)s).getName()) ).get(id);
+         return t;
+      } catch (IdentifierNotFoundException e ){
+         System.out.println("Identifier not found");
+         return null;
+      }
+   }
+   public Type visit (FalseExpression falseExpression){
+      return new BoolType();
+   }
+   public Type visit (IdentifierExpression identifierExpression){
+      try {
+         Type t = declsTable.get(identifierExpression.getId());
+         return t;
+      } catch (IdentifierNotFoundException e ){
+         System.out.println("Identifier not found");
+         return null;
+      }
+   }
+   public Type visit (IntegerExpression integerExpression){
+      return new IntType();
+   }
+   public Type visit (InvocationExpression invocationExpression){
+      String funcName = invocationExpression.getName();
+      FunctionType funcType = null;
+      try {
+         funcType = funcsTable.get(funcName);
+      } catch (IdentifierNotFoundException e ){
+         System.out.println("Identifier not found");
+         return null;
+      }
+      List<Declaration> params = funcType.getParams();
+      List<Expression> args = invocationExpression.getArguments();
+      matchTypes(params, args);
+      return funcType.getRetType();
+   }
+   public Type visit (NewExpression newExpression){
+      String id = newExpression.getId();
+      checkTypeTable(id, typesTable);
+      return new StructType(-1, id);
+   }
+   public Type visit (NullExpression nullExpression){
+      return new NullType();
+   }
+   public Type visit (ReadExpression readExpression){
+      return new IntType();
+   }
+   public Type visit (TrueExpression trueExpression){
+      return new BoolType();
+   }
+   public Type visit (UnaryExpression unaryExpression){
+      Type operandType = this.visit(unaryExpression.getOperand());
+      UnaryExpression.Operator op = unaryExpression.getOperator();
+      switch (op){
+         case NOT: 
+            checkSameType(operandType.getClass(), BoolType.class);
+            return new BoolType();
+         case MINUS:
+            checkSameType(operandType.getClass(), IntType.class);
+            return new IntType();
+         default: 
+            return null;
+      }
+   }
 
+   public Type visit (LvalueDot lvalueDot){
+      Type s = this.visit(lvalueDot.getLeft());
+      checkSameType(s.getClass(), StructType.class);
+      String id = lvalueDot.getId();
+      try {
+         Type t = (typesTable.get( ((StructType)s) .getName()) ).get(id);
+         return t;
+      } catch (IdentifierNotFoundException e ){
+         System.out.println("Identifier not found");
+         return null;
+      }
+   }
+   public Type visit (LvalueId lvalueId){
+      try {
+         Type t = declsTable.get(lvalueId.getId());
+         return t;
+      } catch (IdentifierNotFoundException e ){
+         System.out.println("Identifier not found");
+         return null;
+      }
+   }
+
+/*
    public static Table<FunctionType> buildFunctionsTable(List<Function> funcs)
    {
       Table<FunctionType> funcsTable = new Table<FunctionType>(null, "functions");
@@ -145,8 +324,8 @@ public class TypeVisitor implements AstVisitor<Type>{
          }
       }
       return funcsTable;
-   }
-   public static void Table<FunctionType> insertFunctionsTable(Function func, Table<FunctionType> funcsTable)
+   }*/
+   public static void  insertFunctionsTable(Function f, Table<FunctionType> funcsTable)
    {
       try {
          funcsTable.insert(f.getName(), new FunctionType(f.getLineNum(), f.getName(), f.getParams(), f.getRetType()));
@@ -180,15 +359,18 @@ public class TypeVisitor implements AstVisitor<Type>{
    }
    public static void  insertDeclarationsTable(Declaration decl, Table<Type> tbl)
    {
-      /*
-         if (d.getType() instanceof StructType) {
-            StructType t = (StructType)d.getType();
+      
+         if (decl.getType() instanceof StructType) {
+            checkTypeTable(decl.getName(), typesTable);
+            /*
+            StructType t = (StructType)decl.getType();
             if (!types.containsKey(t.getName())) {
                System.out.println("type " + t.getName() + " undeclared");
                continue;
             }
+            */
          }
-      */
+      
          try {
             tbl.insert(decl.getName(), decl.getType());
          } catch (DuplicatedIdentifierDeclarationException e) {
@@ -196,7 +378,19 @@ public class TypeVisitor implements AstVisitor<Type>{
          }
       return;
    }
-
+   public void insertDecls(List<Declaration> decls, Table<Type> tbl){
+      for (Declaration decl : decls){
+         insertDeclarationsTable(decl, tbl);
+      }
+      return;
+   }
+   public static void checkTypeTable(String key, Table<Table<Type>> tbl){
+      if (tbl.containsKey(key)){
+         System.out.println("can't Struct name " + key + " undeclared");
+      }
+      return;
+   }
+   /*
    public static Table<Table<Type>> buildTypeDeclarationTable(
       List<TypeDeclaration> types
    )
@@ -211,14 +405,14 @@ public class TypeVisitor implements AstVisitor<Type>{
          }
       }
       return typesTable;
-   }
+   }*/
    public static Table<Table<Type>> insertTypeDeclarationTable(
       TypeDeclaration type, Table<Table<Type>> typesTable
    )
    {
          try {
             typesTable.insert(type.getName(), null);
-            typesTable.overwrite(type.getName(), buildDeclarationsTable(t.getFields(), null, typesTable));
+            typesTable.overwrite(type.getName(), buildDeclarationsTable(type.getFields(), null, typesTable));
          } catch (DuplicatedIdentifierDeclarationException e) {
             System.out.println(e.getErrorMessage());
          }
@@ -228,10 +422,36 @@ public class TypeVisitor implements AstVisitor<Type>{
 
    public void checkCompatible(Type target, Type source){
       if (source instanceof VoidType) return;
-      return checkSameType(target.getClass(), source.getClass());
+      checkSameType(target.getClass(), source.getClass());
+      return;
    }
    public void checkSameType(Class c1, Class c2){
       if (c1.equals(c2)) return;
       System.out.println("incompatible types" + c1+ " and " + c2);
+   }
+
+   public void newLocalTable(){
+      Table<Type> localTable = new Table<Type>(declsTable, "identifiers");
+      declsTable = localTable;
+   }
+   public void deleteLocalTable(){
+      if (declsTable==null) {
+         System.out.println("something is wrong..");
+      }
+      declsTable = declsTable.prev;  
+      return;
+   }
+   public void matchTypes(List<Declaration> params, List<Expression> args){
+      if (params.size() != args.size()){
+         System.out.println("the number of params and args don't match");
+         return;
+      }
+      for (int i = 0; i< params.size(); i++){ 
+         Declaration param  = params.get(i);
+         Expression arg = args.get(i);
+         Type argType = this.visit(arg);
+         checkSameType(param.getType().getClass(), argType.getClass());
+      }
+      return;
    }
 }

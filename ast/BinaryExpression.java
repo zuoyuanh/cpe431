@@ -50,6 +50,17 @@ public class BinaryExpression
       }
    }
 
+   public Expression getLeft(){
+      return this.left;
+   }
+   public Expression getRight(){
+      return this.right;
+   }
+   public Operator getOperator(){
+      return this.operator;
+   }
+
+
    private static final String TIMES_OPERATOR = "*";
    private static final String DIVIDE_OPERATOR = "/";
    private static final String PLUS_OPERATOR = "+";

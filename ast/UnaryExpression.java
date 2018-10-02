@@ -29,7 +29,13 @@ public class UnaryExpression
          throw new IllegalArgumentException();
       }
    }
-
+   
+   public Expression getOperand(){
+      return this.operand;
+   }
+   public Operator getOperator(){
+      return this.operator;
+   }
    private static final String NOT_OPERATOR = "!";
    private static final String MINUS_OPERATOR = "-";
 
