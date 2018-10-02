@@ -55,7 +55,7 @@ public class Table<T>
    {
       return prev;
    }
-}
+
    public String toString()
    {
       return map.toString();

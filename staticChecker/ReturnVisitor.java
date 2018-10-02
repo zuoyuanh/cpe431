@@ -3,12 +3,13 @@ package staticChecker;
 import ast.*;
 import java.util.List;
 import java.util.ArrayList;
+import exceptions.DuplicatedIdentifierDeclarationException;
 
 public class ReturnVisitor implements AstVisitor<Type>
 {
-   private Table<Table<Type>> typesTable = new Table<Table<Type>>(null, "type");
-   private Table<Type> declsTable = new Table<Type>(null, "identifiers");
-   private Table<FunctionType> funcsTable = new Table<FunctionType>(null, "functions");
+   private static Table<Table<Type>> typesTable = new Table<Table<Type>>(null, "type");
+   private static Table<Type> declsTable = new Table<Type>(null, "identifiers");
+   private static Table<FunctionType> funcsTable = new Table<FunctionType>(null, "functions");
 
    public Type visit(Program program)
    {
@@ -24,32 +25,38 @@ public class ReturnVisitor implements AstVisitor<Type>
       for (Function func : funcs){
          this.visit(func);
       }
-      System.out.println("visiting program");
       return new VoidType(); 
    }
 
    public Type visit(TypeDeclaration typeDecl)
    {
-      insertTypeDeclarationTable(typeDecl,  typesTable)
-      System.out.println("visiting typeDecl");
+      insertTypeDeclarationTable(typeDecl, typesTable);
       return new VoidType(); 
    }
 
    public Type visit(Declaration decl)
    {
       insertDeclarationsTable(decl, declsTable);
-      System.out.println("visiting Decl");
       return new VoidType(); 
    }
 
    public Type visit(Function func)
    {
       insertFunctionsTable(func, funcsTable);
+      newLocalTable();
+      List<Declaration> params = func.getParams();
+      List<Declaration> locals = func.getLocals();
+      insertDecls(params, declsTable);
+      insertDecls(locals, declsTable);
       Statement body = func.getBody();
       Type retType = this.visit(body);
-      System.out.println("visiting typeDecl");
+      deleteLocalTable();
+
+      // TODO
+      if (retType instanceof ReturnType) {
+
+      }
       return new VoidType(); 
-      //compare ret type
    }
 
    public Type visit(Type t)
@@ -80,18 +87,38 @@ public class ReturnVisitor implements AstVisitor<Type>
       return new VoidType();
    }
 
-   // TODO
-
    public Type visit(BlockStatement s)
    {
       List <Statement> statements = s.getStatements();
-      List<Type> conditionTypeTracker = new ArrayList<Type>();
-      for (Statement s : statements) {
-         Type returnType = this.visit(s);
+      InconsistantReturnType conditionTypeTracker = new InconsistantReturnType();
+      for (Statement st : statements) {
+         Type returnType = this.visit(st);
          if (returnType instanceof ReturnType) {
+            if (conditionTypeTracker.size() > 0) {
+               boolean typeFound = false;
+               InconsistantReturnType finalTypeTracker = new InconsistantReturnType();
+               List<Type> types = finalTypeTracker.getTypes();
+               for (Type t : types) {
+                  if (t instanceof VoidType) {
+                     continue;
+                  } else  {
+                     finalTypeTracker.add(t);
+                     if (t.getClass() == returnType.getClass()) {
+                        typeFound = true;
+                     }
+                  }
+               }
+               if (!typeFound) {
+                  finalTypeTracker.add(returnType);
+               }
+               return finalTypeTracker;
+            }
             return returnType;
          } else if (returnType instanceof InconsistantReturnType) {
-            if ()
+            List<Type> types = ((InconsistantReturnType)returnType).getTypes();
+            for (Type t : types) {
+               conditionTypeTracker.add(t);
+            }
          }
       }
       return new VoidType(); 
@@ -101,10 +128,13 @@ public class ReturnVisitor implements AstVisitor<Type>
    {
       Type thenType = this.visit(s.getThenBlock());
       Type elseType = this.visit(s.getElseBlock());
-      if (thenType.class.equals(elseType.class)) {
+      if (thenType.getClass() == elseType.getClass()) {
          return thenType;
       }
-      return new InconsistantReturnType(thenType, elseType); 
+      InconsistantReturnType irt = new InconsistantReturnType();
+      irt.add(thenType);
+      irt.add(elseType);
+      return irt;
    }
 
    public Type visit(AssignmentStatement s)
@@ -179,7 +209,7 @@ public class ReturnVisitor implements AstVisitor<Type>
          Table<Type> table = typesTable.get(((StructType)t).getName());
          return table.get(e.getId());
       }
-      return VoidType();
+      return new VoidType();
    }
 
    public Type visit(UnaryExpression e)
@@ -189,7 +219,7 @@ public class ReturnVisitor implements AstVisitor<Type>
 
    public Type visit(NewExpression e)
    {
-      return VoidType();
+      return new VoidType();
    }
 
    public Type visit(BinaryExpression e)
@@ -198,22 +228,144 @@ public class ReturnVisitor implements AstVisitor<Type>
       Type rightType = this.visit(e.getRight());
       BinaryExpression.Operator operator = e.getOperator();
       switch (operator) {
-      case BinaryExpression.Operator.TIMES:
-      case BinaryExpression.Operator.DIVIDE:
-      case BinaryExpression.Operator.PLUS:
-      case BinaryExpression.Operator.MINUS:
+      case TIMES: case DIVIDE: 
+      case PLUS: case MINUS:
          return leftType;
-      case BinaryExpression.Operator.LT:
-      case BinaryExpression.Operator.GT:
-      case BinaryExpression.Operator.LE:
-      case BinaryExpression.Operator.GE:
-      case BinaryExpression.Operator.EQ:
-      case BinaryExpression.Operator.NE:
-      case BinaryExpression.Operator.AND:
-      case BinaryExpression.Operator.OR:
+      case LT: case GT: case LE:
+      case GE: case EQ: case NE:
+      case AND: case OR:
          return new BoolType();
       default:
          return new VoidType();
       }
+   }
+
+   public Type visit(LvalueDot lvalueDot)
+   {
+      /* Type s = this.visit(lvalueDot.getLeft());
+      // checkSameType(s.getClass(), StructType.class);
+      String id = lvalueDot.getId();
+      try {
+         Type t = (typesTable.get( ((StructType)s) .getName()) ).get(id);
+         return t;
+      } catch (IdentifierNotFoundException e ){
+         System.out.println("Identifier not found");
+         return null;
+      } */
+      return new VoidType();
+   }
+
+   public Type visit(LvalueId lvalueId)
+   {
+      /* try {
+         Type t = declsTable.get(lvalueId.getId());
+         return t;
+      } catch (IdentifierNotFoundException e ){
+         System.out.println("Identifier not found");
+         return null;
+      } */
+      return new VoidType();
+   }
+
+   public Type visit(Lvalue lvalue)
+   {
+      /* if (lvalue instanceof LvalueId){
+         return this.visit((LvalueId)lvalue);
+      }
+      if (lvalue instanceof LvalueDot){
+         return this.visit((LvalueDot)lvalue);
+      }
+      return null; */
+      return new VoidType();
+   }
+
+
+   private static Table<Table<Type>> insertTypeDeclarationTable(
+      TypeDeclaration type, Table<Table<Type>> typesTable
+   )
+   {
+      try {
+         typesTable.insert(type.getName(), null);
+         typesTable.overwrite(type.getName(), buildDeclarationsTable(type.getFields(), null, typesTable));
+      } catch (DuplicatedIdentifierDeclarationException e) {
+         System.out.println(e.getErrorMessage());
+      }
+      return typesTable;
+   }
+
+   private static void insertDeclarationsTable(Declaration decl, Table<Type> tbl)
+   {
+      if (decl.getType() instanceof StructType) {
+        checkTypeTable(((StructType)decl.getType()).getName(), typesTable);
+      }
+      try {
+         tbl.insert(decl.getName(), decl.getType());
+      } catch (DuplicatedIdentifierDeclarationException e) {
+         System.out.println(e.getErrorMessage());
+      }
+      return;
+   }
+
+   private static void checkTypeTable(String key, Table<Table<Type>> tbl){
+      if (!tbl.containsKey(key)){
+         System.out.println("struct name " + key + " undeclared");
+      }
+      return;
+   }
+
+   private static Table<Type> buildDeclarationsTable(
+      List<Declaration> decls, 
+      Table<Type> prev,
+      Table<Table<Type>> types)
+   {
+      Table<Type> declsTable = new Table<Type>(prev, "identifiers");
+      for (Declaration d : decls) {
+         if (d.getType() instanceof StructType) {
+            StructType t = (StructType)d.getType();
+            if (!types.containsKey(t.getName())) {
+               System.out.println("type " + t.getName() + " undeclared");
+               continue;
+            }
+         }
+         try {
+            declsTable.insert(d.getName(), d.getType());
+         } catch (DuplicatedIdentifierDeclarationException e) {
+            System.out.println(e.getErrorMessage());
+         }
+      }
+      return declsTable;
+   }
+
+   private static void insertFunctionsTable(Function f, Table<FunctionType> funcsTable)
+   {
+      try {
+         funcsTable.insert(f.getName(), new FunctionType(f.getLineNum(), f.getName(), f.getParams(), f.getRetType()));
+      } catch (DuplicatedIdentifierDeclarationException e) {
+         System.out.println(e.getErrorMessage());
+      }
+      return;
+   }
+
+   private void insertDecls(List<Declaration> decls, Table<Type> tbl)
+   {
+      for (Declaration decl : decls){
+         insertDeclarationsTable(decl, tbl);
+      }
+      return;
+   }
+
+   private void newLocalTable()
+   {
+      Table<Type> localTable = new Table<Type>(declsTable, "identifiers");
+      declsTable = localTable;
+   }
+
+   private void deleteLocalTable()
+   {
+      if (declsTable == null) {
+         System.out.println("something is wrong..");
+      }
+      declsTable = declsTable.prev;  
+      return;
    }
 }

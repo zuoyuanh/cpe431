@@ -11,7 +11,7 @@ public class StructTableType implements Type
    private final Type retType;
    private final List<Declaration> params;
 
-   public FunctionType(int lineNum, String name, List<Declaration> params, Type retType)
+   public StructTableType(int lineNum, String name, List<Declaration> params, Type retType)
    {
       this.lineNum = lineNum;
       this.name = name;

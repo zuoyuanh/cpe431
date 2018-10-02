@@ -1,23 +1,40 @@
+package staticChecker;
+
+import ast.Type;
 import java.util.List;
 import java.util.ArrayList;
 
 public class InconsistantReturnType implements ast.Type 
 {
-   private List<Type> types = new ArrayList<Type>;
+   private List<Type> types;
 
-   public ReturnType(Type firstReturnType, Type secondReturnType)
+   public InconsistantReturnType()
    {
-      this.firstReturnType = firstReturnType;
-      this.secondReturnType = secondReturnType;
+      types = new ArrayList<Type>();
    }
 
-   public Type getFirstReturnType()
+   public InconsistantReturnType(List<Type> types)
    {
-      return firstReturnType;
+      this.types = types;
    }
 
-   public int getSecondReturnType()
+   public List<Type> getTypes()
    {
-      return secondReturnType;
+      return types;
+   }
+
+   public void add(Type t)
+   {
+      types.add(t);
+   }
+
+   public void remove(int index)
+   {
+      types.remove(index);
+   }
+
+   public int size()
+   {
+      return types.size();
    }
 }

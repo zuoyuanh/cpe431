@@ -1,4 +1,8 @@
-public class ReturnType implements ast.Type 
+package staticChecker;
+
+import ast.Type;
+
+public class ReturnType implements Type 
 {
    private int lineNum;
    private Type returnType;
@@ -14,7 +18,7 @@ public class ReturnType implements ast.Type
       return lineNum;
    }
 
-   public int getReturnType()
+   public Type getReturnType()
    {
       return returnType;
    }
