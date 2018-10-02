@@ -24,6 +24,7 @@ public class SymbolTableBuilder
       return funcsTable;
    }
 
+
    public static Table<Type> buildDeclarationsTable(
       List<Declaration> decls, 
       Table<Type> prev,

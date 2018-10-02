@@ -15,4 +15,14 @@ public class ConditionalStatement
       this.thenBlock = thenBlock;
       this.elseBlock = elseBlock;
    }
+
+   public Expression getGuard(){
+      return this.guard;
+   }
+   public Statement getThenBlock(){
+      return this.thenBlock;
+   }
+   public Statement getElseBlock(){
+      return this.elseBlock;
+   }
 }
