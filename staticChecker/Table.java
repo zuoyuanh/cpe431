@@ -40,7 +40,8 @@ public class Table<T>
       return prev.get(name);
    }
 
-   public boolean containsKey(String name) {
+   public boolean containsKey(String name)
+   {
       if (map.containsKey(name)) {
          return true;
       }
@@ -50,6 +51,11 @@ public class Table<T>
       return prev.containsKey(name);
    }
 
+   public Table<T> prev()
+   {
+      return prev;
+   }
+}
    public String toString()
    {
       return map.toString();

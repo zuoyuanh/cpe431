@@ -3,6 +3,7 @@ package staticChecker;
 import ast.*; 
 
 public interface AstVisitor<T>{
+
    public T visit (Program program);
    public T visit (TypeDeclaration typeDecl);
    public T visit (Declaration decl);
@@ -39,4 +40,5 @@ public interface AstVisitor<T>{
    public T visit (LvalueDot lvalueDot);
    public T visit (LvalueId lvalueId);
    //public T visit ();
+  
 }
