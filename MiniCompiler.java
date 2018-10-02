@@ -36,6 +36,11 @@ public class MiniCompiler
          ast.Program program = programVisitor.visit(tree);
          TypeVisitor typeVisitor = new TypeVisitor();
          typeVisitor.visit(program);
+
+         System.out.println();
+         System.out.println("--- Return Check ---");
+         ReturnVisitor returnVisitor = new ReturnVisitor();
+         returnVisitor.visit(program);
       }
    }
 

@@ -3,6 +3,7 @@ package staticChecker;
 import ast.*;
 import java.util.List;
 import java.util.ArrayList;
+import exceptions.IdentifierNotFoundException;
 import exceptions.DuplicatedIdentifierDeclarationException;
 
 public class ReturnVisitor implements AstVisitor<Type>
@@ -51,11 +52,7 @@ public class ReturnVisitor implements AstVisitor<Type>
       Statement body = func.getBody();
       Type retType = this.visit(body);
       deleteLocalTable();
-
-      // TODO
-      if (retType instanceof ReturnType) {
-
-      }
+      checkReturnType(func, retType);
       return new VoidType(); 
    }
 
@@ -72,17 +69,22 @@ public class ReturnVisitor implements AstVisitor<Type>
          return this.visit((BlockStatement)s);
       } else if (s instanceof ConditionalStatement) {
          return this.visit((ConditionalStatement)s);
-      } else if ((s instanceof PrintLnStatement) 
-              || (s instanceof PrintStatement)
-              || (s instanceof DeleteStatement)
-              || (s instanceof ReturnEmptyStatement)) {
-         return new VoidType();
+      } else if (s instanceof PrintLnStatement){
+         return this.visit((PrintLnStatement)s); 
+      } else if (s instanceof PrintStatement){
+         return this.visit((PrintStatement)s);
+      } else if (s instanceof DeleteStatement){
+         return this.visit((DeleteStatement)s);
+      } else if (s instanceof ReturnEmptyStatement){
+         return this.visit((ReturnEmptyStatement)s);
       } else if (s instanceof AssignmentStatement) {
          return this.visit((AssignmentStatement)s);
       } else if (s instanceof WhileStatement) {
          return this.visit((WhileStatement)s);
       } else if (s instanceof ReturnStatement) {
          return this.visit((ReturnStatement)s);
+      } else if (s instanceof InvocationStatement) {
+         return this.visit((InvocationStatement)s);
       }
       return new VoidType();
    }
@@ -116,9 +118,17 @@ public class ReturnVisitor implements AstVisitor<Type>
             return returnType;
          } else if (returnType instanceof InconsistantReturnType) {
             List<Type> types = ((InconsistantReturnType)returnType).getTypes();
-            for (Type t : types) {
-               conditionTypeTracker.add(t);
+            InconsistantReturnType newTracker = new InconsistantReturnType();
+            for (Type t : conditionTypeTracker.getTypes()) {
+               if (t.getClass() == VoidType.class) {
+                  continue;
+               }
+               newTracker.add(t);
             }
+            for (Type t : types) {
+               newTracker.add(t);
+            }
+            conditionTypeTracker = newTracker;
          }
       }
       return new VoidType(); 
@@ -139,10 +149,31 @@ public class ReturnVisitor implements AstVisitor<Type>
 
    public Type visit(AssignmentStatement s)
    {
-      return this.visit(s.getTarget());
+      return new VoidType();
    }
 
    public Type visit(WhileStatement s)
+   {
+      return new VoidType();
+   }
+
+   public Type visit(PrintLnStatement s) {
+      return new VoidType();
+   }
+
+   public Type visit(PrintStatement s) {
+      return new VoidType();
+   }
+
+   public Type visit(DeleteStatement s) {
+      return new VoidType();
+   }
+
+   public Type visit(ReturnEmptyStatement s) {
+      return new ReturnType(s.getLineNum(), new VoidType());
+   }
+
+   public Type visit(InvocationStatement s)
    {
       return new VoidType();
    }
@@ -172,6 +203,12 @@ public class ReturnVisitor implements AstVisitor<Type>
          return this.visit((UnaryExpression)e);
       } else if (e instanceof NewExpression) {
          return this.visit((NewExpression)e);
+      } else if (e instanceof BinaryExpression) {
+         return this.visit((BinaryExpression)e);
+      } else if (e instanceof InvocationExpression) {
+         return this.visit((InvocationExpression)e);
+      } else if (e instanceof NullExpression) {
+         return this.visit((NullExpression)e);
       }
       return new VoidType();
    }
@@ -191,6 +228,11 @@ public class ReturnVisitor implements AstVisitor<Type>
       return new IntType();
    }
 
+   public Type visit(NullExpression e)
+   {
+      return new NullType();
+   }
+
    public Type visit(ReadExpression e)
    {
       return new IntType();
@@ -199,15 +241,22 @@ public class ReturnVisitor implements AstVisitor<Type>
    public Type visit(IdentifierExpression e)
    {
       String id = e.getId();
-      return declsTable.get(id);
+      try {
+         return declsTable.get(id);
+      } catch (Exception exc) {
+      }
+      return new VoidType();
    }
 
    public Type visit(DotExpression e)
    {
       Type t = this.visit(e.getLeft());
       if (t instanceof StructType) {
-         Table<Type> table = typesTable.get(((StructType)t).getName());
-         return table.get(e.getId());
+         try {
+            Table<Type> table = typesTable.get(((StructType)t).getName());
+            return table.get(e.getId());
+         } catch (Exception exc) {
+         }         
       }
       return new VoidType();
    }
@@ -240,42 +289,33 @@ public class ReturnVisitor implements AstVisitor<Type>
       }
    }
 
+   public Type visit(InvocationExpression e)
+   {
+      String name = e.getName();
+      FunctionType f = null;
+      try {
+         f = funcsTable.get(name);
+      } catch (IdentifierNotFoundException exc) {
+         System.out.println("function " + name + "  is not declared");
+         return new VoidType();
+      }
+      return f.getRetType();
+   }
+
+   // TODO
+
    public Type visit(LvalueDot lvalueDot)
    {
-      /* Type s = this.visit(lvalueDot.getLeft());
-      // checkSameType(s.getClass(), StructType.class);
-      String id = lvalueDot.getId();
-      try {
-         Type t = (typesTable.get( ((StructType)s) .getName()) ).get(id);
-         return t;
-      } catch (IdentifierNotFoundException e ){
-         System.out.println("Identifier not found");
-         return null;
-      } */
       return new VoidType();
    }
 
    public Type visit(LvalueId lvalueId)
    {
-      /* try {
-         Type t = declsTable.get(lvalueId.getId());
-         return t;
-      } catch (IdentifierNotFoundException e ){
-         System.out.println("Identifier not found");
-         return null;
-      } */
       return new VoidType();
    }
 
    public Type visit(Lvalue lvalue)
    {
-      /* if (lvalue instanceof LvalueId){
-         return this.visit((LvalueId)lvalue);
-      }
-      if (lvalue instanceof LvalueDot){
-         return this.visit((LvalueDot)lvalue);
-      }
-      return null; */
       return new VoidType();
    }
 
@@ -363,9 +403,36 @@ public class ReturnVisitor implements AstVisitor<Type>
    private void deleteLocalTable()
    {
       if (declsTable == null) {
-         System.out.println("something is wrong..");
+         System.out.println("internal error");
       }
       declsTable = declsTable.prev;  
       return;
+   }
+
+   public void matchReturnType(Class required, Class given){
+      if (required.equals(given)) return;
+      if ((given==NullType.class && required==StructType.class)) return;
+      if (given == VoidType.class) {
+         System.out.println("function require " + required + " return type, but nothing is returned");
+      } else {
+         System.out.println("function require " + required + " return type, but " + given + " is returned");
+      }
+   }
+
+   private void checkReturnType(Function func, Type retType)
+   {
+      if (retType instanceof ReturnType) {
+         matchReturnType(func.getRetType().getClass(), ((ReturnType)retType).getReturnType().getClass());
+      } else if (retType instanceof VoidType) {
+         matchReturnType(func.getRetType().getClass(), VoidType.class);
+      } else if (retType instanceof InconsistantReturnType) {
+         List<Type> types = ((InconsistantReturnType)retType).getTypes();
+         for (Type t : types) {
+            if (t instanceof InconsistantReturnType) {
+               checkReturnType(func, t);
+            }
+            matchReturnType(func.getRetType().getClass(), VoidType.class);
+         }
+      }
    }
 }
