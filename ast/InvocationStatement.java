@@ -12,4 +12,7 @@ public class InvocationStatement
       super(lineNum);
       this.expression = expression;
    }
+   public Expression getExpression(){
+      return this.expression;
+   }
 }

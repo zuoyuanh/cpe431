@@ -12,4 +12,10 @@ public class DotExpression
       this.left = left;
       this.id = id;
    }
+   public Expression getLeft(){
+      return this.left;
+   }
+   public String getId(){
+      return this.id;
+   }
 }

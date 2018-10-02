@@ -6,7 +6,7 @@ import exceptions.DuplicatedIdentifierDeclarationException;
 
 public class Table<T>
 {
-   private final Table<T> prev;
+   public final Table<T> prev;
    private final String typeName;
    private HashMap<String, T> map = new HashMap<String, T>();
 
