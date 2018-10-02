@@ -50,34 +50,40 @@ public class TypeVisitor implements AstVisitor<Type>{
       insertDecls( locals, declsTable);
       Statement body = func.getBody();
       Type retType = this.visit(body);
-      System.out.println("visiting typeDecl");
+      System.out.println("visiting func");
       deleteLocalTable();
       return new VoidType(); 
       //compare ret type
    }
    public Type visit(Expression e){
-         if (e instanceof TrueExpression) {
-            return this.visit((TrueExpression)e);
-         } else if (e instanceof FalseExpression) {
-            return this.visit((FalseExpression)e);
-         } else if (e instanceof IntegerExpression) {
-            return this.visit((IntegerExpression)e);
-         } else if (e instanceof ReadExpression) {
-            return this.visit((ReadExpression)e);
-         } else if (e instanceof IdentifierExpression) {
-            return this.visit((IdentifierExpression)e);
-         } else if (e instanceof DotExpression) {
-            return this.visit((DotExpression)e);
-         } else if (e instanceof UnaryExpression) {
-            return this.visit((UnaryExpression)e);
-         } else if (e instanceof NewExpression) {
-            return this.visit((NewExpression)e);
-         }
-         return null;
+      if (e instanceof TrueExpression) {
+         return this.visit((TrueExpression)e);
+      } else if (e instanceof FalseExpression) {
+         return this.visit((FalseExpression)e);
+      } else if (e instanceof IntegerExpression) {
+         return this.visit((IntegerExpression)e);
+      } else if (e instanceof ReadExpression) {
+         return this.visit((ReadExpression)e);
+      } else if (e instanceof IdentifierExpression) {
+         return this.visit((IdentifierExpression)e);
+      } else if (e instanceof DotExpression) {
+         return this.visit((DotExpression)e);
+      } else if (e instanceof UnaryExpression) {
+         return this.visit((UnaryExpression)e);
+      } else if (e instanceof NewExpression) {
+         return this.visit((NewExpression)e);
+      } else if (e instanceof BinaryExpression) {
+         return this.visit((BinaryExpression)e);
+      } else if (e instanceof InvocationExpression) {
+         return this.visit((InvocationExpression)e);
+      } else if (e instanceof NullExpression) {
+         return this.visit((NullExpression)e);
+      }
+      return null;
    }
 
    public Type visit(Statement s)
-      {
+   {
       if (s instanceof BlockStatement) {
          return this.visit((BlockStatement)s);
       } else if (s instanceof ConditionalStatement) {
@@ -96,6 +102,8 @@ public class TypeVisitor implements AstVisitor<Type>{
          return this.visit((WhileStatement)s);
       } else if (s instanceof ReturnStatement) {
          return this.visit((ReturnStatement)s);
+      } else if (s instanceof InvocationStatement) {
+         return this.visit((InvocationStatement)s);
       }
       return null;
    }
@@ -137,6 +145,9 @@ public class TypeVisitor implements AstVisitor<Type>{
    public Type visit (ConditionalStatement conditionalStatement)
    {
       Type guardType = this.visit(conditionalStatement.getGuard());
+      if (guardType == null) {
+         return null;
+      }
       checkSameType(guardType.getClass(), BoolType.class);
       this.visit(conditionalStatement.getThenBlock());
       this.visit(conditionalStatement.getElseBlock());
@@ -153,7 +164,9 @@ public class TypeVisitor implements AstVisitor<Type>{
    }
    public Type visit (PrintLnStatement printLnStatement){
       Type res = this.visit(printLnStatement.getExpression());
-      checkSameType(res.getClass(), IntType.class);
+      if (res != null) {
+         checkSameType(res.getClass(), IntType.class);
+      }
       return new IntType();
    }
    public Type visit (PrintStatement printStatement){
@@ -165,6 +178,7 @@ public class TypeVisitor implements AstVisitor<Type>{
       return new VoidType(); 
    }
    public Type visit (ReturnStatement returnStatement){
+      System.out.println("visiting return");
       return this.visit(returnStatement.getExpression());
    }
    public Type visit (WhileStatement whileStatement){
@@ -176,6 +190,9 @@ public class TypeVisitor implements AstVisitor<Type>{
    public Type visit (BinaryExpression binaryExpression){
       Type leftType = this.visit(binaryExpression.getLeft());
       Type rightType = this.visit(binaryExpression.getRight());
+      if (leftType == null || rightType == null) {
+         return null;
+      }
       checkSameType(leftType.getClass(), rightType.getClass());
       BinaryExpression.Operator op = binaryExpression.getOperator();
       switch (op){
@@ -193,7 +210,10 @@ public class TypeVisitor implements AstVisitor<Type>{
             return new IntType();       
          case LT:
             checkSameType(leftType.getClass(),IntType.class);
-            return new BoolType();       
+            return new BoolType();  
+         case LE:
+            checkSameType(leftType.getClass(),IntType.class);
+            return new BoolType();      
          case GT:
             checkSameType(leftType.getClass(),IntType.class);
             return new BoolType();       
@@ -222,15 +242,19 @@ public class TypeVisitor implements AstVisitor<Type>{
 
    public Type visit (DotExpression dotExpression){
       Type s = this.visit(dotExpression.getLeft());
-      checkSameType(s.getClass(), StructType.class);
-      String id = dotExpression.getId();
-      try {
-         Type t = (typesTable.get(((StructType)s).getName()) ).get(id);
-         return t;
-      } catch (IdentifierNotFoundException e ){
-         System.out.println("Identifier not found");
-         return null;
+      if (s instanceof StructType) {
+         checkSameType(s.getClass(), StructType.class);
+         String id = dotExpression.getId();
+         try {
+            Type t = (typesTable.get(((StructType)s).getName()) ).get(id);
+            return t;
+         } catch (IdentifierNotFoundException e ){
+            System.out.println("identifier '" + id + "' not found");
+         }
+      } else {
+         System.out.println("dot operation not allowed on non-struct type instance");
       }
+      return null;
    }
    public Type visit (FalseExpression falseExpression){
       return new BoolType();
@@ -359,23 +383,15 @@ public class TypeVisitor implements AstVisitor<Type>{
    }
    public static void  insertDeclarationsTable(Declaration decl, Table<Type> tbl)
    {
-      
-         if (decl.getType() instanceof StructType) {
-            checkTypeTable(decl.getName(), typesTable);
-            /*
-            StructType t = (StructType)decl.getType();
-            if (!types.containsKey(t.getName())) {
-               System.out.println("type " + t.getName() + " undeclared");
-               continue;
-            }
-            */
-         }
-      
-         try {
-            tbl.insert(decl.getName(), decl.getType());
-         } catch (DuplicatedIdentifierDeclarationException e) {
-            System.out.println(e.getErrorMessage());
-         }
+      if (decl.getType() instanceof StructType) {
+        checkTypeTable(((StructType)decl.getType()).getName(), typesTable);
+      }
+
+      try {
+         tbl.insert(decl.getName(), decl.getType());
+      } catch (DuplicatedIdentifierDeclarationException e) {
+         System.out.println(e.getErrorMessage());
+      }
       return;
    }
    public void insertDecls(List<Declaration> decls, Table<Type> tbl){
@@ -385,8 +401,8 @@ public class TypeVisitor implements AstVisitor<Type>{
       return;
    }
    public static void checkTypeTable(String key, Table<Table<Type>> tbl){
-      if (tbl.containsKey(key)){
-         System.out.println("can't Struct name " + key + " undeclared");
+      if (!tbl.containsKey(key)){
+         System.out.println("struct name " + key + " undeclared");
       }
       return;
    }
@@ -427,6 +443,7 @@ public class TypeVisitor implements AstVisitor<Type>{
    }
    public void checkSameType(Class c1, Class c2){
       if (c1.equals(c2)) return;
+      if ((c1==NullType.class && c2==StructType.class) || (c2==NullType.class && c1==StructType.class)) return;
       System.out.println("incompatible types" + c1+ " and " + c2);
    }
 

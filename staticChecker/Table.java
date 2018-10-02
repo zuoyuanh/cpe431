@@ -49,4 +49,9 @@ public class Table<T>
       }
       return prev.containsKey(name);
    }
+
+   public String toString()
+   {
+      return map.toString();
+   }
 }
