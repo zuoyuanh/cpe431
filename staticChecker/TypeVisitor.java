@@ -29,6 +29,10 @@ public class TypeVisitor implements AstVisitor<Type>{
       funcsTable = SymbolTableBuilder.buildFunctionsTable(program.getFuncs());
       */
       System.out.println("visiting program");
+
+      if (!funcsTable.containsKey("main")) {
+         System.out.println("missing main function");
+      }
       return new VoidType(); 
    }
    public Type visit (TypeDeclaration typeDecl){
