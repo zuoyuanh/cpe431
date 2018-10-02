@@ -306,19 +306,37 @@ public class ReturnVisitor implements AstVisitor<Type>
 
    public Type visit(LvalueDot lvalueDot)
    {
+      Type t = this.visit(lvalueDot.getLeft());
+      String id = lvalueDot.getId();
+      if (t instanceof StructType) {
+         try {
+            Table<Type> table = typesTable.get(((StructType)t).getName());
+            return table.get(id);
+         } catch (Exception exc) {
+         }         
+      }
       return new VoidType();
    }
-
    public Type visit(LvalueId lvalueId)
    {
-      return new VoidType();
+      try {
+         Type t = declsTable.get(lvalueId.getId());
+         return t;
+      } catch (IdentifierNotFoundException e ){
+         System.out.println("Identifier not found");
+         return null;
+      }
    }
 
-   public Type visit(Lvalue lvalue)
-   {
+   public Type visit(Lvalue lvalue){
+      if (lvalue instanceof LvalueId){
+         return this.visit((LvalueId)lvalue);
+      }
+      if (lvalue instanceof LvalueDot){
+         return this.visit((LvalueDot)lvalue);
+      }
       return new VoidType();
    }
-
 
    private static Table<Table<Type>> insertTypeDeclarationTable(
       TypeDeclaration type, Table<Table<Type>> typesTable

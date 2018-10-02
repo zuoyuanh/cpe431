@@ -28,7 +28,7 @@ public class TypeVisitor implements AstVisitor<Type>{
       declsTable = SymbolTableBuilder.buildDeclarationsTable(program.getDecls(), null, typesTable);
       funcsTable = SymbolTableBuilder.buildFunctionsTable(program.getFuncs());
       */
-      System.out.println("visiting program");
+      //System.out.println("visiting program");
 
       if (!funcsTable.containsKey("main")) {
          System.out.println("missing main function");
@@ -37,12 +37,12 @@ public class TypeVisitor implements AstVisitor<Type>{
    }
    public Type visit (TypeDeclaration typeDecl){
       insertTypeDeclarationTable(typeDecl,  typesTable);
-      System.out.println("visiting typeDecl");
+      //System.out.println("visiting typeDecl");
       return new VoidType(); 
    }
    public Type visit (Declaration decl){
       insertDeclarationsTable(decl, declsTable);
-      System.out.println("visiting Decl");
+      //System.out.println("visiting Decl");
       return new VoidType(); 
    }
    public Type visit (Function func){
@@ -54,7 +54,7 @@ public class TypeVisitor implements AstVisitor<Type>{
       insertDecls( locals, declsTable);
       Statement body = func.getBody();
       Type retType = this.visit(body);
-      System.out.println("visiting func");
+      //System.out.println("visiting func");
       deleteLocalTable();
       return new VoidType(); 
       //compare ret type
@@ -122,7 +122,7 @@ public class TypeVisitor implements AstVisitor<Type>{
    }
 
    public Type visit (Type type){
-      System.out.println("visiting type");
+      //System.out.println("visiting type");
       return type;
    }
 
@@ -133,7 +133,7 @@ public class TypeVisitor implements AstVisitor<Type>{
       Type targetType = this.visit(target);
       Type sourceType = this.visit(source);
       checkCompatible(targetType, sourceType);
-      System.out.println("visiting assign");
+      //System.out.println("visiting assign");
       return sourceType;
    }
 
@@ -142,7 +142,7 @@ public class TypeVisitor implements AstVisitor<Type>{
       for (Statement s : statements){
          this.visit(s);
       }
-      System.out.println("visiting block");
+      //System.out.println("visiting block");
       return new VoidType(); 
    }
 
@@ -182,7 +182,7 @@ public class TypeVisitor implements AstVisitor<Type>{
       return new VoidType(); 
    }
    public Type visit (ReturnStatement returnStatement){
-      System.out.println("visiting return");
+      //System.out.println("visiting return");
       return this.visit(returnStatement.getExpression());
    }
    public Type visit (WhileStatement whileStatement){
