@@ -410,6 +410,7 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          String opnd = getOperand(expType, funcRetValueTypeRep, block);
          block.add("store " + funcRetValueTypeRep + " " + opnd + ", " 
                 + funcRetValueTypeRep + "* %_retval_\n");
+         block.add("br label %" + funcExitBlockId + "\n");
       }
       block.addSuccessor(funcExitBlock);
       return new LLVMVoidType();

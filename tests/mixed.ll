@@ -197,7 +197,7 @@ LU17:
 	%u98 = load i32* %_P_n
 	%u99 = add i32 %u98, 1
 	store i32 %u99, i32* %_retval_
-	br label %LU19
+	br label %LU15
 LU18: 
 	br label %LU19
 LU19: 
@@ -209,7 +209,7 @@ LU20:
 	%u103 = sub i32 %u102, 1
 	%u104 = call i32@ackermann (i32 %u103, i32 1)
 	store i32 %u104, i32* %_retval_
-	br label %LU22
+	br label %LU15
 LU21: 
 	%u105 = load i32* %_P_m
 	%u106 = sub i32 %u105, 1
@@ -219,7 +219,7 @@ LU21:
 	%u110 = call i32@ackermann (i32 %u107, i32 %u109)
 	%u111 = call i32@ackermann (i32 %u106, i32 %u110)
 	store i32 %u111, i32* %_retval_
-	br label %LU22
+	br label %LU15
 LU22: 
 	br label %LU15
 LU15: 
