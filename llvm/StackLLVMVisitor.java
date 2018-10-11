@@ -28,6 +28,7 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          this.visit(typeDecl);
       }
       printStringToFile("\n");
+
       List<Declaration> decls = program.getDecls();
       for (Declaration decl : decls){
          LLVMType t = this.visit(decl);
@@ -44,10 +45,20 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             // TODO: finish global
          }
       }
+
       List<Function> funcs = program.getFuncs();
       for (Function func : funcs){
          this.visit(func);
       }
+
+      printStringToFile("declare i8* @malloc(i32)\n");
+      printStringToFile("declare void @free(i8*)\n");
+      printStringToFile("declare i32 @printf(i8*, ...)\n");
+      printStringToFile("declare i32 @scanf(i8*, ...)\n");
+      printStringToFile("@.println = private unnamed_addr constant [5 x i8] c\"%ld\0A\00\", align 1\n");
+      printStringToFile("@.print = private unnamed_addr constant [5 x i8] c\"%ld \00\", align 1\n");
+      printStringToFile("@.read = private unnamed_addr constant [4 x i8] c\"%ld\00\", align 1\n");
+      printStringToFile("@.read_scratch = common global i32 0, align 8\n");
       return new LLVMVoidType(); 
    }
 
@@ -119,10 +130,13 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       for (Declaration param : params) {
          LLVMType t = this.visit(param);
          if (t instanceof LLVMDeclType) {
+            String originalName = ((LLVMDeclType)t).getName();
             String tTypeRep = ((LLVMDeclType)t).getTypeRep();
-            String tNameRep = "_P_" + ((LLVMDeclType)t).getName();
+            String tNameRep = "_P_" + originalName;
             localDecls.add("%" + tNameRep + " = alloca " + tTypeRep + "\n");
             paramsRep += tTypeRep + " %" + ((LLVMDeclType)t).getName() + ", ";
+            localDecls.add("store " + tTypeRep + " %" + originalName + ", " 
+                         + tTypeRep + "* %" + tNameRep + "\n");
             try {
                declsTable.insert("%" + tNameRep, param.getType());
             } catch (Exception e) {
@@ -160,6 +174,9 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          List<String> llvmCode = block.getLLVMCode();
          for (String code : llvmCode) {
             printStringToFile("\t" + code);
+         }
+         if (!block.isClosed() && !block.getBlockId().equals(funcExitBlockId)) {
+            printStringToFile("\tbr label %" + funcExitBlockId + "\n");
          }
       }
 
@@ -238,10 +255,7 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          String guardRegId = ((LLVMRegisterType)guardType).getId();
          String guardTypeRep = ((LLVMRegisterType)guardType).getTypeRep();
          if (!guardTypeRep.equals("i1")) {
-            String prevGuardRegId = guardRegId;
-            guardRegId = "u" + Integer.toString(registerCounter++);
-            block.add("%" + guardRegId + " = bitcast " + guardTypeRep 
-                     + " %" + prevGuardRegId + " to i1\n");
+            guardRegId = typeConverter(guardTypeRep, "i1", guardRegId, block);
          }
 
          Statement thenBlock = conditionalStatement.getThenBlock();
@@ -322,6 +336,40 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
    public LLVMType visit(WhileStatement whileStatement, LLVMBlockType block)
    {
+      LLVMType guardType = this.visit(whileStatement.getGuard(), block);
+      if (guardType instanceof LLVMRegisterType) {
+         String guardRegId = ((LLVMRegisterType)guardType).getId();
+         String guardTypeRep = ((LLVMRegisterType)guardType).getTypeRep();
+         if (!guardTypeRep.equals("i1")) {
+            guardRegId = typeConverter(guardTypeRep, "i1", guardRegId, block);
+         }
+
+         Statement bodyBlock = whileStatement.getBody();
+
+         String bodyLLVMBlockId = "LU" + Integer.toString(blockCounter++);
+         String jointLLVMBlockId = "LU" + Integer.toString(blockCounter++);
+
+         LLVMBlockType bodyLLVMBlock = new LLVMBlockType(bodyLLVMBlockId);
+         LLVMBlockType jointLLVMBlock = new LLVMBlockType(jointLLVMBlockId);
+
+         blockList.add(bodyLLVMBlock);
+         blockList.add(jointLLVMBlock);
+         block.add("br i1 %" + guardRegId + ", label %" + bodyLLVMBlockId 
+                 + ", label %" + jointLLVMBlockId + "\n");
+
+         if (bodyBlock != null) {
+            this.visit(bodyBlock, bodyLLVMBlock);
+         }
+         if (!bodyLLVMBlock.isClosed()) {
+            guardType = this.visit(whileStatement.getGuard(), bodyLLVMBlock);
+            guardRegId = ((LLVMRegisterType)guardType).getId();
+            guardTypeRep = ((LLVMRegisterType)guardType).getTypeRep();
+            bodyLLVMBlock.add("br i1 %" + guardRegId + ", label %" + bodyLLVMBlockId 
+                            + ", label %" + jointLLVMBlockId + "\n");
+         }
+         
+         return jointLLVMBlock;
+      }
       return new LLVMVoidType();
    }
 
@@ -623,6 +671,7 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
    public LLVMType visit(UnaryExpression unaryExpression, LLVMBlockType block)
    {
+      // TODO
       return new LLVMVoidType();
    }
 
