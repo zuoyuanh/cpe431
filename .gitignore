@@ -2,3 +2,6 @@
 *.tokens
 *.generated
 *.swp
+*.ll
+*.s
+a.out
