@@ -302,8 +302,6 @@ public class ReturnVisitor implements AstVisitor<Type>
       return f.getRetType();
    }
 
-   // TODO
-
    public Type visit(LvalueDot lvalueDot)
    {
       Type t = this.visit(lvalueDot.getLeft());

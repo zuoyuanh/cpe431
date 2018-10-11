@@ -3,7 +3,8 @@ import org.antlr.v4.runtime.tree.*;
 
 import java.io.*;
 import javax.json.JsonValue;
-import staticChecker.*; 
+import staticChecker.*;
+import llvm.StackLLVMVisitor;
 public class MiniCompiler
 {
    public static void main(String[] args)
@@ -53,6 +54,10 @@ public class MiniCompiler
          ReturnVisitor returnVisitor = new ReturnVisitor();
          returnVisitor.visit(program);
          */
+
+         System.out.println("--- Generating LLVM Code ---");
+         StackLLVMVisitor llvmVisitor = new StackLLVMVisitor();
+         llvmVisitor.visit(program);
       }
    }
 
