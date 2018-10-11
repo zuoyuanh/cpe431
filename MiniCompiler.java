@@ -38,6 +38,10 @@ public class MiniCompiler
          ast.Program program = programVisitor.visit(tree);
          //TypeVisitor typeVisitor = new TypeVisitor();
          //typeVisitor.visit(program);
+         
+         System.out.println("--- Generating LLVM Code ---");
+         StackLLVMVisitor llvmVisitor = new StackLLVMVisitor();
+         llvmVisitor.visit(program);
 
          System.out.println("--- Generate CFG ---");
          CFGGenerator cfg = new CFGGenerator();
@@ -55,9 +59,6 @@ public class MiniCompiler
          returnVisitor.visit(program);
          */
 
-         System.out.println("--- Generating LLVM Code ---");
-         StackLLVMVisitor llvmVisitor = new StackLLVMVisitor();
-         llvmVisitor.visit(program);
       }
    }
 
