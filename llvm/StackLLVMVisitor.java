@@ -716,8 +716,23 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
    public LLVMType visit(UnaryExpression unaryExpression, LLVMBlockType block)
    {
-      // TODO
-      return new LLVMVoidType();
+      UnaryExpression.Operator operator = unaryExpression.getOperator();
+      Expression exp = unaryExpression.getOperand();
+      Expression newExp = null;
+
+      switch (operator)
+      {
+      case NOT:
+         newExp = BinaryExpression.create(-1, "-",
+            new IntegerExpression(-1, "1"), exp);
+         return this.visit(newExp, block);
+      case MINUS:
+         newExp = BinaryExpression.create(-1, "-",
+            new IntegerExpression(-1, "0"), exp);
+         return this.visit(newExp, block);
+      default:
+         return new LLVMVoidType();
+      }
    }
 
    // L values for Assignments
