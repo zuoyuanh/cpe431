@@ -48,12 +48,13 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             } else if (typeRep.equals("i1")) {
                printStringToFile("0, align 1");
             } else {
-               try {
+               /* try {
                   String structName = typeRep.substring(0, typeRep.length()-1);
                   int size = typesSizeTable.get(structName);
                   printStringToFile("null, align " + Integer.toString(size * 8));
                } catch (Exception esc) {
-               }
+               } */
+               printStringToFile("null, align 8");
             }
             printStringToFile("\n");
          }
@@ -316,6 +317,10 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
    public LLVMType visit(DeleteStatement deleteStatement, LLVMBlockType block)
    {
+      Expression exp = deleteStatement.getExpression();
+      LLVMType expType = this.visit(exp, block);
+      String opnd = getOperand(expType, "i8*", block);
+      block.add("call void @free(i8* %" + opnd + ")\n");
       return new LLVMVoidType();
    }
 
@@ -342,6 +347,15 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
    public LLVMType visit(PrintStatement printStatement, LLVMBlockType block)
    {
+      Expression exp = printStatement.getExpression();
+      LLVMType expType = this.visit(exp, block);
+      if (expType instanceof LLVMRegisterType) {
+         block.add("call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), "
+                 + ((LLVMRegisterType)expType).getTypeRep() + " %" + ((LLVMRegisterType)expType).getId() + ")\n");
+      } else if (expType instanceof LLVMPrimitiveType) {
+         block.add("call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), "
+                 + ((LLVMPrimitiveType)expType).getTypeRep() + " " + ((LLVMPrimitiveType)expType).getValueRep() + ")\n");
+      }
       return new LLVMVoidType();
    }
 
