@@ -40,7 +40,8 @@ public class MiniCompiler
          //typeVisitor.visit(program);
          
          System.out.println("--- Generating LLVM Code ---");
-         StackLLVMVisitor llvmVisitor = new StackLLVMVisitor();
+         String llvmOutputFileName = _inputFile.substring(0, _inputFile.lastIndexOf('.')) + ".ll";
+         StackLLVMVisitor llvmVisitor = new StackLLVMVisitor(new File(llvmOutputFileName));
          llvmVisitor.visit(program);
 
          System.out.println("--- Generate CFG ---");

@@ -2,6 +2,9 @@ package llvm;
 
 import ast.*;
 import staticChecker.*;
+import java.io.File;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.List;
 import java.util.ArrayList;
 import exceptions.IdentifierNotFoundException;
@@ -9,6 +12,9 @@ import exceptions.DuplicatedIdentifierDeclarationException;
 
 public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 {
+   private File output;
+   private BufferedWriter bufferedWriter;
+
    private int blockCounter = 0;
    private int registerCounter = 0;
 
@@ -20,6 +26,16 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    private String funcExitBlockId = null;
    private String funcRetValueTypeRep = null;
    private List<LLVMBlockType> blockList = null;
+
+   public StackLLVMVisitor(File output)
+   {
+      this.output = output;
+      try {
+         this.bufferedWriter = new BufferedWriter(new FileWriter(output));
+      } catch (Exception e) {
+         System.out.println("cannot write to file");
+      }
+   }
 
    public LLVMType visit(Program program)
    {
@@ -70,10 +86,14 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       printStringToFile("declare void @free(i8*)\n");
       printStringToFile("declare i32 @printf(i8*, ...)\n");
       printStringToFile("declare i32 @scanf(i8*, ...)\n");
-      printStringToFile("@.println = private unnamed_addr constant [5 x i8] c\"%ld\0A\00\", align 1\n");
-      printStringToFile("@.print = private unnamed_addr constant [5 x i8] c\"%ld \00\", align 1\n");
-      printStringToFile("@.read = private unnamed_addr constant [4 x i8] c\"%ld\00\", align 1\n");
+      printStringToFile("@.println = private unnamed_addr constant [5 x i8] c\"%ld\\0A\\00\", align 1\n");
+      printStringToFile("@.print = private unnamed_addr constant [5 x i8] c\"%ld \\00\", align 1\n");
+      printStringToFile("@.read = private unnamed_addr constant [4 x i8] c\"%ld\\00\", align 1\n");
       printStringToFile("@.read_scratch = common global i32 0, align 8\n");
+      try {
+         bufferedWriter.close();
+      } catch (Exception e) {
+      }
       return new LLVMVoidType(); 
    }
 
@@ -251,7 +271,7 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
          String sourceId = getOperand(sourceType, targetTypeRep, block);
          block.add("store " + targetTypeRep + " " + sourceId + ", " 
-                 + targetTypeRep + "* " + targetId + "\n");
+                 + targetTypeRep + "* " + (targetId.charAt(0)=='%'?"":"%") + targetId + "\n");
       }
       return new LLVMVoidType();
    }
@@ -320,7 +340,7 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       Expression exp = deleteStatement.getExpression();
       LLVMType expType = this.visit(exp, block);
       String opnd = getOperand(expType, "i8*", block);
-      block.add("call void @free(i8* %" + opnd + ")\n");
+      block.add("call void @free(i8* " + opnd + ")\n");
       return new LLVMVoidType();
    }
 
@@ -520,7 +540,7 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          String tTypeRep = ((LLVMRegisterType)t).getTypeRep();
          String regId = ((LLVMRegisterType)t).getId();
          if (!tTypeRep.equals(expectedType)) {
-            return "%" + typeConverter(tTypeRep, expectedType, "@"+regId, block);
+            return "%" + typeConverter(tTypeRep, expectedType, "%"+regId, block);
          }
          return "%" + regId;
       } else if (t instanceof LLVMPrimitiveType) {
@@ -861,6 +881,15 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    private void printStringToFile(String s)
    {
       System.out.print(s);
+      try {
+         bufferedWriter.write(s);
+      } catch (Exception e) {
+         e.printStackTrace();
+         try {
+            bufferedWriter.close();
+         } catch (Exception exc) {
+         }
+      }
    }
 
 }
