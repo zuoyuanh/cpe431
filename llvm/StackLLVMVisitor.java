@@ -243,6 +243,11 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       if (targetType instanceof LLVMRegisterType) {
          String targetTypeRep = ((LLVMRegisterType)targetType).getTypeRep();
          String targetId = ((LLVMRegisterType)targetType).getId();
+         if (sourceType instanceof LLVMReadExpressionType) {
+            block.add(((LLVMReadExpressionType)sourceType).getReadInstructionString(
+               targetTypeRep, targetId));
+            return new LLVMVoidType();
+         }
          String sourceId = getOperand(sourceType, targetTypeRep, block);
          block.add("store " + targetTypeRep + " " + sourceId + ", " 
                  + targetTypeRep + "* " + targetId + "\n");
@@ -692,7 +697,7 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
    public LLVMType visit(ReadExpression readExpression, LLVMBlockType block)
    {
-      return new LLVMVoidType();
+      return new LLVMReadExpressionType();
    }
 
    public LLVMType visit(UnaryExpression unaryExpression, LLVMBlockType block)
