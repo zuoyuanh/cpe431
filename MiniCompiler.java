@@ -3,7 +3,8 @@ import org.antlr.v4.runtime.tree.*;
 
 import java.io.*;
 import javax.json.JsonValue;
-import staticChecker.*; 
+import staticChecker.*;
+import llvm.StackLLVMVisitor;
 public class MiniCompiler
 {
    public static void main(String[] args)
@@ -41,6 +42,10 @@ public class MiniCompiler
          System.out.println("--- Return Check ---");
          ReturnVisitor returnVisitor = new ReturnVisitor();
          returnVisitor.visit(program);
+
+         System.out.println("--------------------");
+         StackLLVMVisitor llvmVisitor = new StackLLVMVisitor();
+         llvmVisitor.visit(program);
       }
    }
 
