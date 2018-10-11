@@ -13,6 +13,7 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    private int registerCounter = 0;
 
    private Table<Table<LLVMStructFieldEntry>> typesTable = new Table<Table<LLVMStructFieldEntry>>(null, "type");
+   private Table<Integer> typesSizeTable = new Table<Integer>(null, "any");
    private Table<Type> declsTable = new Table<Type>(null, "identifiers");
    private Table<FunctionType> funcsTable = new Table<FunctionType>(null, "functions");
 
@@ -34,17 +35,30 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          LLVMType t = this.visit(decl);
          if (t instanceof LLVMDeclType) {
             LLVMDeclType declType = (LLVMDeclType)t;
-            String declName = "@global" + declType.getName();
+            String declName = "@" + declType.getName();
             try {
                declsTable.insert(declName, decl.getType());
             } catch (Exception e) {
             }
-            printStringToFile(declName + " = common global %");
-            printStringToFile(declType.getTypeRep() + " ");
+            String typeRep = declType.getTypeRep();
+            printStringToFile(declName + " = common global ");
+            printStringToFile(typeRep + " ");
+            if (typeRep.equals("i32")) {
+               printStringToFile("0, align 4");
+            } else if (typeRep.equals("i1")) {
+               printStringToFile("0, align 1");
+            } else {
+               try {
+                  String structName = typeRep.substring(0, typeRep.length()-1);
+                  int size = typesSizeTable.get(structName);
+                  printStringToFile("null, align " + Integer.toString(size * 8));
+               } catch (Exception esc) {
+               }
+            }
             printStringToFile("\n");
-            // TODO: finish global
          }
       }
+      printStringToFile("\n");
 
       List<Function> funcs = program.getFuncs();
       for (Function func : funcs){
@@ -71,6 +85,7 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
       try {
          typesTable.insert(typeName, null);
+         typesSizeTable.insert(typeName, fields.size());
          typesTable.overwrite(typeName, buildDeclarationsTable(typeDecl.getFields(), null));
       } catch (DuplicatedIdentifierDeclarationException e) {
          System.out.println(e.getErrorMessage());
@@ -308,6 +323,15 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
    public LLVMType visit(PrintLnStatement printLnStatement, LLVMBlockType block)
    {
+      Expression exp = printLnStatement.getExpression();
+      LLVMType expType = this.visit(exp, block);
+      if (expType instanceof LLVMRegisterType) {
+         block.add("call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), "
+                 + ((LLVMRegisterType)expType).getTypeRep() + " %" + ((LLVMRegisterType)expType).getId() + ")\n");
+      } else if (expType instanceof LLVMPrimitiveType) {
+         block.add("call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), "
+                 + ((LLVMPrimitiveType)expType).getTypeRep() + " " + ((LLVMPrimitiveType)expType).getValueRep() + ")\n");
+      }
       return new LLVMVoidType();
    }
 
@@ -415,13 +439,13 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       case MINUS:
          return "sub";
       case LT:
-         return "icmp lt";
+         return "icmp slt";
       case GT:
-         return "icmp gt";
+         return "icmp sgt";
       case LE:
-         return "icmp le";
+         return "icmp sle";
       case GE:
-         return "icmp ge";
+         return "icmp sge";
       case EQ:
          return "icmp eq";
       case NE:
@@ -659,8 +683,10 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       String structRep = "%struct." + id;
       String returnRegId = "u" + Integer.toString(registerCounter++);
 
-      // TODO: fix this statement
-      block.add("%" + returnRegId + " = call i8* @malloc(i32 ...)\n");
+      try {
+         block.add("%" + returnRegId + " = call i8* @malloc(i32 " + (8 * typesSizeTable.get(structRep)) + ")\n");
+      } catch (Exception exc) {
+      }
       return new LLVMRegisterType("i8*", returnRegId);
    }
 
