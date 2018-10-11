@@ -17,8 +17,9 @@ fun bar(int i) int      # control flow case
       }
       else
       {
-         return 0;
+         #return 0;
       }
+      return 0;
    }
 }
 

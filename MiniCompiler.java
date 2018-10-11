@@ -23,10 +23,11 @@ public class MiniCompiler
             and the next phase of the compiler can read the JSON to build
             a language-specific AST representation.
          */
+         
          MiniToJsonVisitor jsonVisitor = new MiniToJsonVisitor();
          JsonValue json = jsonVisitor.visit(tree);
          System.out.println(json);
-
+         
          /*
             This visitor will build an object representation of the AST
             in Java using the provided classes.
@@ -34,13 +35,24 @@ public class MiniCompiler
          MiniToAstProgramVisitor programVisitor =
             new MiniToAstProgramVisitor();
          ast.Program program = programVisitor.visit(tree);
-         TypeVisitor typeVisitor = new TypeVisitor();
-         typeVisitor.visit(program);
+         //TypeVisitor typeVisitor = new TypeVisitor();
+         //typeVisitor.visit(program);
+
+         System.out.println("--- Generate CFG ---");
+         CFGGenerator cfg = new CFGGenerator();
+         cfg.visit(program, null, null);
+         for (Block b : cfg.blockList){
+            System.out.println("block: "+ b.toString());
+            for (Block s : b.getSuccessors())
+               System.out.println("successor: "+ s.toString());
+         }
 
          System.out.println();
+         /*
          System.out.println("--- Return Check ---");
          ReturnVisitor returnVisitor = new ReturnVisitor();
          returnVisitor.visit(program);
+         */
       }
    }
 
