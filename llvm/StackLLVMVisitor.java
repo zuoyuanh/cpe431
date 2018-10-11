@@ -23,15 +23,20 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    private Table<Type> declsTable = new Table<Type>(null, "identifiers");
    private Table<FunctionType> funcsTable = new Table<FunctionType>(null, "functions");
 
+   private LLVMBlockType funcExitBlock = null;
    private String funcExitBlockId = null;
    private String funcRetValueTypeRep = null;
    private List<LLVMBlockType> blockList = null;
+
+   private List<LLVMBlockType> globalBlockList;
 
    public StackLLVMVisitor(File output)
    {
       this.output = output;
       try {
-         this.bufferedWriter = new BufferedWriter(new FileWriter(output));
+         if (output != null) {
+            this.bufferedWriter = new BufferedWriter(new FileWriter(output));
+         }
       } catch (Exception e) {
          System.out.println("cannot write to file");
       }
@@ -39,6 +44,8 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
    public LLVMType visit(Program program)
    {
+      globalBlockList = new ArrayList<LLVMBlockType>();
+      LLVMBlockType programBlock = new LLVMBlockType("PROG", LLVMBlockType.Label.PROGRAM);
       printStringToFile("target triple=\"i686\"\n");
       List<TypeDeclaration> types = program.getTypes();
       for (TypeDeclaration typeDecl : types){
@@ -79,7 +86,10 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
       List<Function> funcs = program.getFuncs();
       for (Function func : funcs){
-         this.visit(func);
+         LLVMType funcType = this.visit(func);
+         if (funcType instanceof LLVMBlockType) {
+            programBlock.addSuccessor((LLVMBlockType)funcType);
+         }
       }
 
       printStringToFile("declare i8* @malloc(i32)\n");
@@ -142,7 +152,8 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
       blockList = new ArrayList<LLVMBlockType>();
       funcExitBlockId = "LU" + Integer.toString(blockCounter++);
-      LLVMBlockType retBlock = new LLVMBlockType(funcExitBlockId);
+      LLVMBlockType retBlock = new LLVMBlockType(funcExitBlockId, LLVMBlockType.Label.EXIT);
+      funcExitBlock = retBlock;
       funcRetValueTypeRep = returnTypeLLVMRep;
       if (returnTypeLLVMRep.equals("void")) {
          retBlock.add("ret void\n");
@@ -200,12 +211,13 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       }
 
       String startBlockId = "LU" + Integer.toString(blockCounter++);
-      LLVMBlockType startBlock = new LLVMBlockType(startBlockId, localDecls, false);
+      LLVMBlockType startBlock = new LLVMBlockType(startBlockId, localDecls, false, LLVMBlockType.Label.ENTRY);
       blockList.add(startBlock);
       this.visit(body, startBlock);
       blockList.add(retBlock);
 
       for (LLVMBlockType block : blockList) {
+         globalBlockList.add(block);
          printStringToFile(block.getBlockId() + ": \n");
          List<String> llvmCode = block.getLLVMCode();
          for (String code : llvmCode) {
@@ -219,7 +231,7 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       printStringToFile("}\n\n");
       deleteLocalTable();
 
-      return new LLVMVoidType();
+      return startBlock;
    }
 
    public LLVMType visit(Type type)
@@ -306,9 +318,12 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          String elseLLVMBlockId = "LU" + Integer.toString(blockCounter++);
          String jointLLVMBlockId = "LU" + Integer.toString(blockCounter++);
 
-         LLVMBlockType thenLLVMBlock = new LLVMBlockType(thenLLVMBlockId);
-         LLVMBlockType elseLLVMBlock = new LLVMBlockType(elseLLVMBlockId);
-         LLVMBlockType jointLLVMBlock = new LLVMBlockType(jointLLVMBlockId);
+         LLVMBlockType thenLLVMBlock = new LLVMBlockType(thenLLVMBlockId, LLVMBlockType.Label.THEN);
+         LLVMBlockType elseLLVMBlock = new LLVMBlockType(elseLLVMBlockId, LLVMBlockType.Label.ELSE);
+         LLVMBlockType jointLLVMBlock = new LLVMBlockType(jointLLVMBlockId, LLVMBlockType.Label.JOIN);
+
+         block.addSuccessor(thenLLVMBlock);
+         block.addSuccessor(elseLLVMBlock);
 
          blockList.add(thenLLVMBlock);
          blockList.add(elseLLVMBlock);
@@ -321,6 +336,7 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
          if (!thenLLVMBlock.isClosed()) {
             thenLLVMBlock.add("br label %" + jointLLVMBlockId + "\n");
+            thenLLVMBlock.addSuccessor(jointLLVMBlock);
          }
 
          if (elseBlock != null) {
@@ -328,6 +344,7 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
          if (!elseLLVMBlock.isClosed()) {
             elseLLVMBlock.add("br label %" + jointLLVMBlockId + "\n");
+            elseLLVMBlock.addSuccessor(elseLLVMBlock);
          }
          
          return jointLLVMBlock;
@@ -394,6 +411,7 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          block.add("store " + funcRetValueTypeRep + " " + opnd + ", " 
                 + funcRetValueTypeRep + "* %_retval_\n");
       }
+      block.addSuccessor(funcExitBlock);
       return new LLVMVoidType();
    }
 
@@ -412,8 +430,11 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          String bodyLLVMBlockId = "LU" + Integer.toString(blockCounter++);
          String jointLLVMBlockId = "LU" + Integer.toString(blockCounter++);
 
-         LLVMBlockType bodyLLVMBlock = new LLVMBlockType(bodyLLVMBlockId);
-         LLVMBlockType jointLLVMBlock = new LLVMBlockType(jointLLVMBlockId);
+         LLVMBlockType bodyLLVMBlock = new LLVMBlockType(bodyLLVMBlockId, LLVMBlockType.Label.WHILE_LOOP);
+         LLVMBlockType jointLLVMBlock = new LLVMBlockType(jointLLVMBlockId, LLVMBlockType.Label.WHILE_EXIT);
+
+         block.addSuccessor(bodyLLVMBlock);
+         block.addSuccessor(jointLLVMBlock);
 
          blockList.add(bodyLLVMBlock);
          blockList.add(jointLLVMBlock);
@@ -429,6 +450,8 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             guardTypeRep = ((LLVMRegisterType)guardType).getTypeRep();
             bodyLLVMBlock.add("br i1 %" + guardRegId + ", label %" + bodyLLVMBlockId 
                             + ", label %" + jointLLVMBlockId + "\n");
+            bodyLLVMBlock.addSuccessor(bodyLLVMBlock);
+            bodyLLVMBlock.addSuccessor(jointLLVMBlock);
          }
          
          return jointLLVMBlock;
@@ -819,6 +842,11 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       return new LLVMVoidType();
    }
 
+   public List<LLVMBlockType> getGlobalBlockList()
+   {
+      return globalBlockList;
+   }
+
    // Helper functions
 
    private String getTypeLLVMRepresentation(Type t)
@@ -880,16 +908,17 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
    private void printStringToFile(String s)
    {
-      System.out.print(s);
-      try {
-         bufferedWriter.write(s);
-      } catch (Exception e) {
-         e.printStackTrace();
+      if (output != null) {
+         System.out.print(s);
          try {
-            bufferedWriter.close();
-         } catch (Exception exc) {
+            bufferedWriter.write(s);
+         } catch (Exception e) {
+            e.printStackTrace();
+            try {
+               bufferedWriter.close();
+            } catch (Exception exc) {
+            }
          }
       }
    }
-
 }

@@ -176,14 +176,15 @@ public class CFGGenerator {
       }
       Statement elseBlock = conditionalStatement.getElseBlock();
       Block afterElse = null;
-      if (elseBlock!=null && (((AbstractStatement)elseBlock).getLineNum() != -1)){//create a else block if not empty
+      boolean boo = (elseBlock!=null && (((AbstractStatement)elseBlock).getLineNum() != -1));
+      if (boo){//create a else block if not empty
          Block elseNode = new Block(Block.Label.ELSE);
          blockList.add(elseNode);
          cur.addSuccessor(elseNode);
          afterElse = this.visit(elseBlock, elseNode, exit);
       }
       
-      if (afterThen != null || afterElse != null){
+      if (afterThen != null || afterElse != null || !boo){
          Block joinNode = new Block(Block.Label.JOIN);
          blockList.add(joinNode);
          if (afterThen !=null) afterThen.addSuccessor(joinNode);

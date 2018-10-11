@@ -7,6 +7,8 @@ import staticChecker.*;
 import llvm.StackLLVMVisitor;
 public class MiniCompiler
 {
+   private static boolean printStackLLVMProgram = false;
+
    public static void main(String[] args)
    {
       parseParameters(args);
@@ -39,19 +41,30 @@ public class MiniCompiler
          //TypeVisitor typeVisitor = new TypeVisitor();
          //typeVisitor.visit(program);
          
-         System.out.println("--- Generating LLVM Code ---");
          String llvmOutputFileName = _inputFile.substring(0, _inputFile.lastIndexOf('.')) + ".ll";
-         StackLLVMVisitor llvmVisitor = new StackLLVMVisitor(new File(llvmOutputFileName));
+         File f = null;
+         if (printStackLLVMProgram) {
+            f = new File(llvmOutputFileName);
+            System.out.println("--- Generating LLVM Code ---");
+         }
+         StackLLVMVisitor llvmVisitor = new StackLLVMVisitor(f);
          llvmVisitor.visit(program);
+         System.out.println("\n--- Showing CFG ---");
+         for (llvm.LLVMBlockType b : llvmVisitor.getGlobalBlockList()){
+            System.out.println("block: "+ b.toString());
+            for (llvm.LLVMBlockType s : b.getSuccessors())
+               System.out.println("successor: "+ s.toString());
+         }
 
-         System.out.println("--- Generate CFG ---");
+
+         /* System.out.println("--- Generate CFG ---");
          CFGGenerator cfg = new CFGGenerator();
          cfg.visit(program, null, null);
          for (Block b : cfg.blockList){
             System.out.println("block: "+ b.toString());
             for (Block s : b.getSuccessors())
                System.out.println("successor: "+ s.toString());
-         }
+         } */
 
          System.out.println();
          /*
@@ -71,8 +84,12 @@ public class MiniCompiler
       {
          if (args[i].charAt(0) == '-')
          {
-            System.err.println("unexpected option: " + args[i]);
-            System.exit(1);
+            if (args[i].equals("-stack")) {
+               printStackLLVMProgram = true;
+            } else {
+               System.err.println("unexpected option: " + args[i]);
+               System.exit(1);
+            }
          }
          else if (_inputFile != null)
          {
