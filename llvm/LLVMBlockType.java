@@ -64,6 +64,11 @@ public class LLVMBlockType implements LLVMType
       return closed;
    }
 
+   public void close()
+   {
+      closed = true;
+   }
+
    public void add(String code)
    {
       if (code.substring(0, 2).equals("br") || code.substring(0, 3).equals("ret")) {

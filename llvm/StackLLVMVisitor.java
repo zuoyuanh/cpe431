@@ -298,19 +298,13 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             currentBlock = (LLVMBlockType)stmtType;
          }
       }
-      return new LLVMVoidType();
+      return currentBlock;
    }
 
    public LLVMType visit(ConditionalStatement conditionalStatement, LLVMBlockType block)
    {
       LLVMType guardType = this.visit(conditionalStatement.getGuard(), block);
-      if (guardType instanceof LLVMRegisterType) {
-         String guardRegId = ((LLVMRegisterType)guardType).getId();
-         String guardTypeRep = ((LLVMRegisterType)guardType).getTypeRep();
-         if (!guardTypeRep.equals("i1")) {
-            guardRegId = typeConverter(guardTypeRep, "i1", guardRegId, block);
-         }
-
+      if (guardType instanceof LLVMRegisterType || guardType instanceof LLVMPrimitiveType) {
          Statement thenBlock = conditionalStatement.getThenBlock();
          Statement elseBlock = conditionalStatement.getElseBlock();
 
@@ -328,8 +322,23 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          blockList.add(thenLLVMBlock);
          blockList.add(elseLLVMBlock);
          blockList.add(jointLLVMBlock);
-         block.add("br i1 %" + guardRegId + ", label %" + thenLLVMBlockId 
-                 + ", label %" + elseLLVMBlockId + "\n");
+
+         if (guardType instanceof LLVMRegisterType) {
+            String guardRegId = ((LLVMRegisterType)guardType).getId();
+            String guardTypeRep = ((LLVMRegisterType)guardType).getTypeRep();
+            if (!guardTypeRep.equals("i1")) {
+               guardRegId = typeConverter(guardTypeRep, "i1", guardRegId, block);
+            }
+
+            block.add("br i1 %" + guardRegId + ", label %" + thenLLVMBlockId 
+                    + ", label %" + elseLLVMBlockId + "\n");
+         } else {
+            if (((LLVMPrimitiveType)guardType).getValueRep().equals("0")) {
+               block.add("br label %" + elseLLVMBlockId + ("\n"));
+            } else {
+               block.add("br label %" + thenLLVMBlockId + ("\n"));
+            }
+         }
 
          if (thenBlock != null) {
             this.visit(thenBlock, thenLLVMBlock);
@@ -430,9 +439,11 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
          String bodyLLVMBlockId = "LU" + Integer.toString(blockCounter++);
          String jointLLVMBlockId = "LU" + Integer.toString(blockCounter++);
+         String originalBodyLLVMBlockId = bodyLLVMBlockId;
 
          LLVMBlockType bodyLLVMBlock = new LLVMBlockType(bodyLLVMBlockId, LLVMBlockType.Label.WHILE_LOOP);
          LLVMBlockType jointLLVMBlock = new LLVMBlockType(jointLLVMBlockId, LLVMBlockType.Label.WHILE_EXIT);
+         LLVMBlockType originalBodyLLVMBlock = bodyLLVMBlock;
 
          block.addSuccessor(bodyLLVMBlock);
          block.addSuccessor(jointLLVMBlock);
@@ -443,17 +454,19 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                  + ", label %" + jointLLVMBlockId + "\n");
 
          if (bodyBlock != null) {
-            this.visit(bodyBlock, bodyLLVMBlock);
+            LLVMType bodyBlockType = this.visit(bodyBlock, bodyLLVMBlock);
+            if (bodyBlockType instanceof LLVMBlockType) {
+               bodyLLVMBlock = (LLVMBlockType)bodyBlockType;
+               bodyLLVMBlockId = ((LLVMBlockType)bodyLLVMBlock).getBlockId();
+            }
          }
-         if (!bodyLLVMBlock.isClosed()) {
-            guardType = this.visit(whileStatement.getGuard(), bodyLLVMBlock);
-            guardRegId = ((LLVMRegisterType)guardType).getId();
-            guardTypeRep = ((LLVMRegisterType)guardType).getTypeRep();
-            bodyLLVMBlock.add("br i1 %" + guardRegId + ", label %" + bodyLLVMBlockId 
-                            + ", label %" + jointLLVMBlockId + "\n");
-            bodyLLVMBlock.addSuccessor(bodyLLVMBlock);
-            bodyLLVMBlock.addSuccessor(jointLLVMBlock);
-         }
+         guardType = this.visit(whileStatement.getGuard(), bodyLLVMBlock);
+         guardRegId = ((LLVMRegisterType)guardType).getId();
+         guardTypeRep = ((LLVMRegisterType)guardType).getTypeRep();
+         bodyLLVMBlock.add("br i1 %" + guardRegId + ", label %" + originalBodyLLVMBlockId 
+                          + ", label %" + jointLLVMBlockId + "\n");
+         bodyLLVMBlock.addSuccessor(originalBodyLLVMBlock);
+         bodyLLVMBlock.addSuccessor(jointLLVMBlock);
          
          return jointLLVMBlock;
       }
