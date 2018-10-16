@@ -480,9 +480,9 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                              + ", label %" + jointLLVMBlockId + "\n");
          } else if (guardType instanceof LLVMPrimitiveType) {
             if (((LLVMPrimitiveType)guardType).getValueRep().equals("0")) {
-               bodyLLVMBlock.add("br label %" + jointLLVMBlockId + ("\n"));
+               block.add("br label %" + jointLLVMBlockId + ("\n"));
             } else {
-               bodyLLVMBlock.add("br label %" + originalBodyLLVMBlockId + ("\n"));
+               block.add("br label %" + originalBodyLLVMBlockId + ("\n"));
             }
          }
 
