@@ -406,7 +406,7 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    {
       Expression exp = returnStatement.getExpression();
       LLVMType expType = this.visit(exp, block);
-      if (expType instanceof LLVMRegisterType) {
+      if (expType instanceof LLVMRegisterType || expType instanceof LLVMPrimitiveType) {
          String opnd = getOperand(expType, funcRetValueTypeRep, block);
          block.add("store " + funcRetValueTypeRep + " " + opnd + ", " 
                 + funcRetValueTypeRep + "* %_retval_\n");
@@ -737,7 +737,7 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          callArgsRep += ")";
          if (!returnTypeRep.equals("void")) {
             String returnRegId = "u" + Integer.toString(registerCounter++);
-            block.add("%" + returnRegId + " = call " + returnTypeRep + "@" + name + " " + callArgsRep + "\n");
+            block.add("%" + returnRegId + " = call " + returnTypeRep + " @" + name + " " + callArgsRep + "\n");
             return new LLVMRegisterType(returnTypeRep, returnRegId);
          }
          block.add("call " + returnTypeRep + " @" + name + callArgsRep + "\n");
