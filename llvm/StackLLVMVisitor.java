@@ -543,17 +543,17 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       if (originalType.equals("i32") && expectedType.equals("i1")) {
          String tmpRegId = "u" + Integer.toString(registerCounter++);
          block.add(getRegAndValRep(tmpRegId) + " = trunc " + originalType 
-                  + " " + opnd + " to " + expectedType + "\n");
+                  + " " + getRegAndValRep(opnd) + " to " + expectedType + "\n");
          return tmpRegId;
       } else if (originalType.equals("i1") && expectedType.equals("i32")) {
          String tmpRegId = "u" + Integer.toString(registerCounter++);
          block.add(getRegAndValRep(tmpRegId) + " = zext " + originalType 
-                  + " " + opnd + " to " + expectedType + "\n");
+                  + " " + getRegAndValRep(opnd) + " to " + expectedType + "\n");
          return tmpRegId;
       } else {
          String tmpRegId = "u" + Integer.toString(registerCounter++);
          block.add(getRegAndValRep(tmpRegId) + " = bitcast " + originalType 
-                  + " " + opnd + " to " + expectedType + "\n");
+                  + " " + getRegAndValRep(opnd) + " to " + expectedType + "\n");
          return tmpRegId;
       }
    }
