@@ -341,7 +341,11 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
 
          if (thenBlock != null) {
-            this.visit(thenBlock, thenLLVMBlock);
+            LLVMType thenBlockType = this.visit(thenBlock, thenLLVMBlock);
+            if (thenBlockType instanceof LLVMBlockType) {
+               thenLLVMBlock = (LLVMBlockType)thenBlockType;
+               thenLLVMBlockId = ((LLVMBlockType)thenBlockType).getBlockId();
+            }
          }
          if (!thenLLVMBlock.isClosed()) {
             thenLLVMBlock.add("br label %" + jointLLVMBlockId + "\n");
@@ -349,7 +353,11 @@ public class StackLLVMVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
 
          if (elseBlock != null) {
-            this.visit(elseBlock, elseLLVMBlock);
+            LLVMType elseBlockType = this.visit(elseBlock, elseLLVMBlock);
+            if (elseBlockType instanceof LLVMBlockType) {
+               elseLLVMBlock = (LLVMBlockType)elseBlockType;
+               elseLLVMBlockId = ((LLVMBlockType)elseBlockType).getBlockId();
+            }
          }
          if (!elseLLVMBlock.isClosed()) {
             elseLLVMBlock.add("br label %" + jointLLVMBlockId + "\n");
