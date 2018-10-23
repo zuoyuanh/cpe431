@@ -2,6 +2,7 @@ package llvm;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class LLVMBlockType implements LLVMType
 {
@@ -10,11 +11,18 @@ public class LLVMBlockType implements LLVMType
    private List<String> llvmCode;
    private List<LLVMBlockType> successors;
    private boolean closed;
+   private List<LLVMBlockType> predecessors;
+   private HashMap<String, LLVMType> varTable;
+   private HashMap<String, ArrayList<LLVMType>> phiTable;
+   private boolean sealed;
 
    public LLVMBlockType(String blockId, Label l)
    {
       this.blockId = blockId;
       this.successors = new ArrayList<LLVMBlockType>();
+      this.predecessors = new ArrayList<LLVMBlockType>();
+      this.varTable = new HashMap<>();
+      this.phiTable = new HashMap<>();
       this.llvmCode = new ArrayList<String>();
       this.closed = false;
       this.label = l;
@@ -24,6 +32,9 @@ public class LLVMBlockType implements LLVMType
    {
       this.blockId = blockId;
       this.successors = new ArrayList<LLVMBlockType>();
+      this.predecessors = new ArrayList<LLVMBlockType>();
+      this.varTable = new HashMap<>();
+      this.phiTable = new HashMap<>();
       this.llvmCode = llvmCode;
       this.closed = closed;
       this.label = l;
@@ -43,7 +54,19 @@ public class LLVMBlockType implements LLVMType
    {
       this.successors = list;
    }
+   public void addPredecessor(LLVMBlockType block)
+   {
+      this.predecessors.add(block);
+   }
+   public void setPredecessors(List<LLVMBlockType> list)
+   {
+      this.predecessors = list;
+   }
 
+   public List<LLVMBlockType> getPredecessors()
+   {
+      return predecessors;
+   }
    public String getBlockId()
    {
       return blockId;
@@ -67,6 +90,10 @@ public class LLVMBlockType implements LLVMType
    public void close()
    {
       closed = true;
+   }
+
+   public HashMap<String, LLVMType> getVarTable(){
+      return this.varTable;
    }
 
    public void add(String code)

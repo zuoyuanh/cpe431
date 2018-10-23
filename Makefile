@@ -15,7 +15,7 @@ GENERATED=MiniBaseVisitor.java MiniLexer.java MiniLexer.tokens Mini.tokens MiniV
 all : MiniCompiler.class
 
 MiniCompiler.class : antlr.generated ${FILES}
-	$(JAVAC) -cp ${CLASSPATH}:$(CLASSPATH_MOD) *.java ast/*.java exceptions/*.java staticChecker/*.java llvm/*.java
+	$(JAVAC) -cp ${CLASSPATH}:$(CLASSPATH_MOD)  *.java ast/*.java exceptions/*.java staticChecker/*.java llvm/*.java
 
 antlr.generated : Mini.g4
 	$(JAVA) -cp ${CLASSPATH}:$(CLASSPATH_MOD) org.antlr.v4.Tool -visitor Mini.g4
