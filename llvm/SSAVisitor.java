@@ -941,10 +941,17 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
    //SSA methods
    
-   private void writeVariable (String variable, LLVMBlockType block, LLVMType value){
+   private void writeVariable(String variable, LLVMBlockType block, LLVMType value)
+   {
+      HashMap<String, LLVMType> m = block.getVarTable();
+      if (m.containsKey(variable)){
+         m.replace(variable, value);
+      }
+      else { m.put(variable, value); }
    }
 
-   private void writePhiVariable (String variable, LLVMBlockType block, LLVMPhiType value){
+   private void writePhiVariable(String variable, LLVMBlockType block, LLVMPhiType value)
+   {
       HashMap<String, LLVMPhiType> m = block.getPhiTable();
       if (m.containsKey(variable)){
          m.replace(variable, value);
@@ -953,8 +960,15 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    }
 
    private LLVMType readVariable (String variable, LLVMBlockType block){
-      return new LLVMVoidType();
+      HashMap<String, LLVMType> m = block.getVarTable();
+      if (m.containsKey(variable)){
+         return m.get(variable);
+      }
+      else{
+         return readVariableFromPredecessors(variable, block);
+      }
    }
+
    private LLVMType readVariableFromPredecessors (String variable, LLVMBlockType block){
       LLVMType val;
       if (!block.isSealed()){
@@ -977,14 +991,16 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       return val;
    }
 
-   private void addPhiOperands(String variable, LLVMPhiType phi){
+   private void addPhiOperands(String variable, LLVMPhiType phi)
+   {
       ArrayList<LLVMBlockType> preds = phi.getBlock().getPredecessors();
       for (LLVMBlockType pred : preds){
          phi.addPhiOperand(readVariable(variable, pred));
       }
    }
 
-   private void sealBlock(LLVMBlockType block){
+   private void sealBlock(LLVMBlockType block)
+   {
       HashMap<String, LLVMPhiType> tbl = block.getPhiTable();
       Set<Map.Entry<String, LLVMPhiType>> entries = tbl.entrySet();
       for (Map.Entry<String, LLVMPhiType> e : entries){
@@ -995,12 +1011,4 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       block.seal();
    }
 
-   private void sealBlock(LLVMType b) {
-      /* if (b instanceof LLVMBlockType) {
-         LLVMBlockType block = (LLVMBlockType)b;
-         if (!b.getSealed()) {
-            
-         }
-      } */
-   }
 }
