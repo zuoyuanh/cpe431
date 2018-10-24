@@ -950,7 +950,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       else { m.put(variable, value); }
    }
 
-   private void writePhiVariable(String variable, LLVMBlockType block, LLVMPhiType value)
+   private void writePhiVariable(String variable, LLVMBlockType block, LLVMPhiType value) //write to phiTable
    {
       HashMap<String, LLVMPhiType> m = block.getPhiTable();
       if (m.containsKey(variable)){
@@ -974,8 +974,11 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    {
       LLVMType val;
       if (!block.isSealed()){
-         val = new LLVMPhiType(block);
-         writePhiVariable(variable, block, (LLVMPhiType)val);
+         LLVMPhiType phi = new LLVMPhiType(block);
+         LLVMRegisterType reg = createNewRegister();
+         phi.setRegister(reg);
+         writePhiVariable(variable, block, phi);
+         val = reg;
       }
       else if (block.getPredecessors().size() == 0){
          val =  new LLVMVoidType(); //undefined
@@ -984,12 +987,15 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          val =  readVariable (variable, block.getPredecessors().get(0));
       }
       else{
-         val = new LLVMPhiType(block);
-         writePhiVariable(variable, block, (LLVMPhiType)val);
-         writeVariable(variable,block,val);
-         addPhiOperands(variable, (LLVMPhiType)val);       
+         LLVMPhiType phi = new LLVMPhiType(block);
+         LLVMRegisterType reg = createNewRegister();
+         phi.setRegister(reg);
+         writePhiVariable(variable, block, phi);
+         writeVariable(variable,block,reg);
+         addPhiOperands(variable, phi); 
+         val = reg;
       }
-      writeVariable(variable, block, val);
+      writeVariable(variable, block, val); //update current map
       return val;
    }
 
@@ -1011,6 +1017,10 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          addPhiOperands(variable, phi);
       }
       block.seal();
+   }
+   private LLVMRegisterType createNewRegister(){
+      String regId = "u" + Integer.toString(registerCounter++);
+      return new LLVMRegisterType("i32", regId);
    }
 
 }
