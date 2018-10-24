@@ -8,6 +8,8 @@ import java.io.FileWriter;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.Map;
 import exceptions.IdentifierNotFoundException;
 import exceptions.DuplicatedIdentifierDeclarationException;
 
@@ -1003,6 +1005,14 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       else { m.put(variable, value); }
    }
 
+   private void writePhiVariable (String variable, LLVMBlockType block, LLVMPhiType value){
+      HashMap<String, LLVMPhiType> m = block.getPhiTable();
+      if (m.containsKey(variable)){
+         m.replace(variable, value);
+      }
+      else { m.put(variable, value); } 
+   }
+
    private LLVMType readVariable (String variable, LLVMBlockType block){
 
       HashMap<String, LLVMType> m = block.getVarTable();
@@ -1014,6 +1024,42 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       }
    }
    private LLVMType readVariableFromPredecessors (String variable, LLVMBlockType block){
-      return new LLVMVoidType();
+      LLVMType val;
+      if (!block.isSealed()){
+         val = new LLVMPhiType(block);
+         writePhiVariable(variable, block, (LLVMPhiType)val);
+      }
+      else if (block.getPredecessors().size() == 0){
+         val =  new LLVMVoidType(); //undefined
+      }
+      else if (block.getPredecessors().size() == 1){
+         val =  readVariable (variable, block.getPredecessors().get(0));
+      }
+      else{
+         val = new LLVMPhiType(block);
+         writePhiVariable(variable, block, (LLVMPhiType)val);
+         writeVariable(variable,block,val);
+         addPhiOperands(variable, (LLVMPhiType)val);       
+      }
+      writeVariable(variable, block, val);
+      return val;
+   }
+
+   private void addPhiOperands(String variable, LLVMPhiType phi){
+      ArrayList<LLVMBlockType> preds = phi.getBlock().getPredecessors();
+      for (LLVMBlockType pred : preds){
+         phi.addPhiOperand(readVariable(variable, pred));
+      }
+   }
+
+   private void sealBlock(LLVMBlockType block){
+      HashMap<String, LLVMPhiType> tbl = block.getPhiTable();
+      Set<Map.Entry<String, LLVMPhiType>> entries = tbl.entrySet();
+      for (Map.Entry<String, LLVMPhiType> e : entries){
+         String variable = e.getKey();
+         LLVMPhiType phi = e.getValue();
+         addPhiOperands(variable, phi);
+      }
+      block.seal();
    }
 }

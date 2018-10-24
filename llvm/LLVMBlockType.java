@@ -9,11 +9,11 @@ public class LLVMBlockType implements LLVMType
    private String blockId;
    private Label label;
    private List<String> llvmCode;
-   private List<LLVMBlockType> successors;
+   private ArrayList<LLVMBlockType> successors;
    private boolean closed;
-   private List<LLVMBlockType> predecessors;
+   private ArrayList<LLVMBlockType> predecessors;
    private HashMap<String, LLVMType> varTable;
-   private HashMap<String, ArrayList<LLVMType>> phiTable;
+   private HashMap<String, LLVMPhiType> phiTable;
    private boolean sealed;
 
    public LLVMBlockType(String blockId, Label l)
@@ -25,6 +25,7 @@ public class LLVMBlockType implements LLVMType
       this.phiTable = new HashMap<>();
       this.llvmCode = new ArrayList<String>();
       this.closed = false;
+      this.sealed = false;
       this.label = l;
    }
 
@@ -37,6 +38,7 @@ public class LLVMBlockType implements LLVMType
       this.phiTable = new HashMap<>();
       this.llvmCode = llvmCode;
       this.closed = closed;
+      this.sealed = false;
       this.label = l;
    }
 
@@ -50,7 +52,7 @@ public class LLVMBlockType implements LLVMType
       this.successors.add(block);
    }
 
-   public void setSuccessors(List<LLVMBlockType> list)
+   public void setSuccessors(ArrayList<LLVMBlockType> list)
    {
       this.successors = list;
    }
@@ -58,12 +60,12 @@ public class LLVMBlockType implements LLVMType
    {
       this.predecessors.add(block);
    }
-   public void setPredecessors(List<LLVMBlockType> list)
+   public void setPredecessors(ArrayList<LLVMBlockType> list)
    {
       this.predecessors = list;
    }
 
-   public List<LLVMBlockType> getPredecessors()
+   public ArrayList<LLVMBlockType> getPredecessors()
    {
       return predecessors;
    }
@@ -72,7 +74,7 @@ public class LLVMBlockType implements LLVMType
       return blockId;
    }
 
-   public List<LLVMBlockType> getSuccessors()
+   public ArrayList<LLVMBlockType> getSuccessors()
    {
       return successors;
    }
@@ -91,9 +93,20 @@ public class LLVMBlockType implements LLVMType
    {
       closed = true;
    }
+   public boolean isSealed()
+   {
+      return sealed;
+   }
+   public void seal()
+   {
+      sealed = true;
+   }
 
    public HashMap<String, LLVMType> getVarTable(){
       return this.varTable;
+   }
+   public HashMap<String, LLVMPhiType> getPhiTable(){
+      return this.phiTable;
    }
 
    public void add(String code)
