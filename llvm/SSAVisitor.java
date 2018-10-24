@@ -959,7 +959,8 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       else { m.put(variable, value); } 
    }
 
-   private LLVMType readVariable (String variable, LLVMBlockType block){
+   private LLVMType readVariable(String variable, LLVMBlockType block)
+   {
       HashMap<String, LLVMType> m = block.getVarTable();
       if (m.containsKey(variable)){
          return m.get(variable);
@@ -969,7 +970,8 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       }
    }
 
-   private LLVMType readVariableFromPredecessors (String variable, LLVMBlockType block){
+   private LLVMType readVariableFromPredecessors (String variable, LLVMBlockType block)
+   {
       LLVMType val;
       if (!block.isSealed()){
          val = new LLVMPhiType(block);
