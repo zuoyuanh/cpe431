@@ -23,7 +23,6 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
    private Table<Table<LLVMStructFieldEntry>> typesTable = new Table<Table<LLVMStructFieldEntry>>(null, "type");
    private Table<Integer> typesSizeTable = new Table<Integer>(null, "any");
-   private Table<Type> declsTable = new Table<Type>(null, "identifiers");
    private Table<FunctionType> funcsTable = new Table<FunctionType>(null, "functions");
 
    private LLVMBlockType funcExitBlock = null;
@@ -61,12 +60,13 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          LLVMType t = this.visit(decl);
          if (t instanceof LLVMDeclType) {
             LLVMDeclType declType = (LLVMDeclType)t;
-            String declName = "@" + declType.getName();
-            try {
+            String varName = declType.getName();
+            String typeRep = declType.getTypeRep();
+            String declName = "@" + varName;
+            /* try {
                declsTable.insert(declName, decl.getType());
             } catch (Exception e) {
-            }
-            String typeRep = declType.getTypeRep();
+            } */
             printStringToFile(declName + " = common global ");
             printStringToFile(typeRep + " ");
             if (typeRep.equals("i32")) {
@@ -82,6 +82,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                } */
                printStringToFile("null, align 8");
             }
+            writeVariable(varName, programBlock, new LLVMRegisterType(typeRep, "%" + varName));
             printStringToFile("\n");
          }
       }
@@ -167,7 +168,6 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       }
 
       insertFunctionsTable(func, funcsTable);
-      newLocalTable();
 
       String paramsRep = "(";
       ArrayList<String> localDecls = new ArrayList<String>();
@@ -176,21 +176,16 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          localDecls.add("%_retval_ = alloca " + returnTypeLLVMRep + "\n");
       }
 
+      String startBlockId = "LU" + Integer.toString(blockCounter++);
+      LLVMBlockType startBlock = new LLVMBlockType(startBlockId, LLVMBlockType.Label.ENTRY);
+
       // Declare params
       for (Declaration param : params) {
          LLVMType t = this.visit(param);
          if (t instanceof LLVMDeclType) {
             String originalName = ((LLVMDeclType)t).getName();
             String tTypeRep = ((LLVMDeclType)t).getTypeRep();
-            String tNameRep = "_P_" + originalName;
-            localDecls.add(getRegAndValRep(tNameRep) + " = alloca " + tTypeRep + "\n");
-            paramsRep += tTypeRep + " " + getRegAndValRep(((LLVMDeclType)t).getName()) + ", ";
-            localDecls.add("store " + tTypeRep + " " + getRegAndValRep(originalName) + ", " 
-                         + tTypeRep + "* " + getRegAndValRep(tNameRep) + "\n");
-            try {
-               declsTable.insert(getRegAndValRep(tNameRep), param.getType());
-            } catch (Exception e) {
-            }
+            writeVariable(originalName, startBlock, new LLVMRegisterType(tTypeRep, "%" + originalName));
          }
       }
       if (paramsRep.length() > 2 && paramsRep.charAt(paramsRep.length()-2) == ',') {
@@ -205,16 +200,10 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          if (t instanceof LLVMDeclType) {
             String tTypeRep = ((LLVMDeclType)t).getTypeRep();
             String tNameRep = ((LLVMDeclType)t).getName();
-            localDecls.add(getRegAndValRep(tNameRep) + " = alloca " + tTypeRep + "\n");
-            try {
-               declsTable.insert(getRegAndValRep(tNameRep), local.getType());
-            } catch (Exception e) {
-            }
+            writeVariable(tNameRep, startBlock, new LLVMRegisterType(tTypeRep, "%" + tNameRep));
          }
       }
 
-      String startBlockId = "LU" + Integer.toString(blockCounter++);
-      LLVMBlockType startBlock = new LLVMBlockType(startBlockId, localDecls, false, LLVMBlockType.Label.ENTRY);
       blockList.add(startBlock);
       this.visit(body, startBlock);
       blockList.add(retBlock);
@@ -232,7 +221,6 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       }
 
       printStringToFile("}\n\n");
-      deleteLocalTable();
 
       return startBlock;
    }
@@ -276,6 +264,17 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       Expression source = assignmentStatement.getSource();
       LLVMType targetType = this.visit(target, block);
       LLVMType sourceType = this.visit(source, block);
+      if (target instanceof LvalueId) {
+         String id = ((LvalueId)target).getId();
+         if (sourceType instanceof LLVMReadExpressionType) {
+            String newRegId = "u" + Integer.toString(registerCounter++);
+            block.add(((LLVMReadExpressionType)sourceType).getSSAReadInstructionString(newRegId));
+            writeVariable(id, block, new LLVMRegisterType("i32", newRegId));
+         } else {
+            writeVariable(id, block, sourceType);
+         }
+         return new LLVMVoidType();
+      }
       if (targetType instanceof LLVMRegisterType) {
          String targetTypeRep = ((LLVMRegisterType)targetType).getTypeRep();
          String targetId = ((LLVMRegisterType)targetType).getId();
@@ -705,29 +704,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    {
       String id = identifierExpression.getId();
       String registerName = "u" + Integer.toString(registerCounter++);
-      try {
-         String typeRep = getTypeLLVMRepresentation(declsTable.get("%" + id));
-         String llvmCode = "%" + registerName + " = load " + typeRep + "* %" + id + "\n";
-         block.add(llvmCode);
-         return new LLVMRegisterType(typeRep, registerName);
-      } catch (Exception e) {
-         try {
-            String typeRep = getTypeLLVMRepresentation(declsTable.get("%_P_" + id));
-            String llvmCode = "%" + registerName + " = load " + typeRep + "* %_P_" + id + "\n";
-            block.add(llvmCode);
-            return new LLVMRegisterType(typeRep, registerName);
-         } catch (Exception ex) {
-            try {
-               String typeRep = getTypeLLVMRepresentation(declsTable.get("@" + id));
-               String llvmCode = "%" + registerName + " = load " + typeRep + "* @" + id + "\n";
-               block.add(llvmCode);
-               return new LLVMRegisterType(typeRep, registerName);
-            } catch (Exception exc) {
-               printStringToFile(id + ": IDENTIFIER NOT FOUND 2\n");
-            }
-         }
-      }
-      return new LLVMVoidType();
+      return readVariable(id, block);
    }
 
    public LLVMType visit(IntegerExpression integerExpression)
@@ -885,23 +862,6 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
    public LLVMType visit(LvalueId lvalueId, LLVMBlockType block)
    {
-      String id = lvalueId.getId();
-      try {
-         String typeRep = getTypeLLVMRepresentation(declsTable.get("%" + id));
-         return new LLVMRegisterType(typeRep, "%" + id);
-      } catch (Exception e) {
-         try {
-            String typeRep = getTypeLLVMRepresentation(declsTable.get("%_P_" + id));
-            return new LLVMRegisterType(typeRep, "%_P_" + id);
-         } catch (Exception ex) {
-            try {
-               String typeRep = getTypeLLVMRepresentation(declsTable.get("@" + id));
-               return new LLVMRegisterType(typeRep, "@" + id);
-            } catch (Exception exc) {
-               printStringToFile(id + ": IDENTIFIER NOT FOUND 2\n");
-            }
-         }
-      }
       return new LLVMVoidType();
    }
 
@@ -954,21 +914,6 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       return;
    }
 
-   private void newLocalTable()
-   {
-      Table<Type> localTable = new Table<Type>(declsTable, "identifiers");
-      declsTable = localTable;
-   }
-
-   private void deleteLocalTable()
-   {
-      if (declsTable == null) {
-         System.out.println("internal error");
-      }
-      declsTable = declsTable.prev;  
-      return;
-   }
-
    private String getRegAndValRep(String name)
    {
       if (name.charAt(0) != '@' && name.charAt(0) != '%') {
@@ -996,13 +941,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
    //SSA methods
    
-
    private void writeVariable (String variable, LLVMBlockType block, LLVMType value){
-      HashMap<String, LLVMType> m = block.getVarTable();
-      if (m.containsKey(variable)){
-         m.replace(variable, value);
-      }
-      else { m.put(variable, value); }
    }
 
    private void writePhiVariable (String variable, LLVMBlockType block, LLVMPhiType value){
@@ -1014,14 +953,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    }
 
    private LLVMType readVariable (String variable, LLVMBlockType block){
-
-      HashMap<String, LLVMType> m = block.getVarTable();
-      if (m.containsKey(variable)){
-         return m.get(variable);
-      }
-      else{
-         return readVariableFromPredecessors(variable, block);
-      }
+      return new LLVMVoidType();
    }
    private LLVMType readVariableFromPredecessors (String variable, LLVMBlockType block){
       LLVMType val;
@@ -1061,5 +993,14 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          addPhiOperands(variable, phi);
       }
       block.seal();
+   }
+
+   private void sealBlock(LLVMType b) {
+      /* if (b instanceof LLVMBlockType) {
+         LLVMBlockType block = (LLVMBlockType)b;
+         if (!b.getSealed()) {
+            
+         }
+      } */
    }
 }
