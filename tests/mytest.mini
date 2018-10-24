@@ -1,0 +1,21 @@
+fun main() int
+{
+   int i;
+   int a;
+   int b;
+
+   i = read;
+
+   if (i > 0)
+   {
+      a = i + 1;
+   }
+   else
+   {
+      a = 0;
+   }
+
+   b = a;
+
+   return 0;
+}

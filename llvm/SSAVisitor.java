@@ -222,7 +222,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                if (t instanceof LLVMRegisterType) {
                   phiOpnds += "[%" + ((LLVMRegisterType)t).getId() + ", %" + blockId + "], ";
                } else if (t instanceof LLVMPrimitiveType) {
-                  phiOpnds += "[%" + ((LLVMRegisterType)t).getId() + ", %" + blockId + "], ";
+                  phiOpnds += "[" + ((LLVMPrimitiveType)t).getValueRep() + ", %" + blockId + "], ";
                }
             }
             if (phiOpnds.length() > 2 && phiOpnds.charAt(phiOpnds.length()-2) == ',') {
