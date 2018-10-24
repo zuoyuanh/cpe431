@@ -5,9 +5,11 @@ import java.io.*;
 import javax.json.JsonValue;
 import staticChecker.*;
 import llvm.StackLLVMVisitor;
+import llvm.SSAVisitor;
 public class MiniCompiler
 {
    private static boolean printStackLLVMProgram = false;
+   private static boolean printLLVMProgram = false;
 
    public static void main(String[] args)
    {
@@ -43,9 +45,19 @@ public class MiniCompiler
          
          String llvmOutputFileName = _inputFile.substring(0, _inputFile.lastIndexOf('.')) + ".ll";
          File f = null;
-         if (printStackLLVMProgram) {
+
+         if (printLLVMProgram) {
             f = new File(llvmOutputFileName);
             System.out.println("--- Generating LLVM Code ---");
+         }
+
+         SSAVisitor ssaLLVMVisitor = new SSAVisitor(f);
+         ssaLLVMVisitor.visit(program);
+
+         f = null;
+         if (printStackLLVMProgram) {
+            f = new File(llvmOutputFileName);
+            System.out.println("--- Generating Stack LLVM Code ---");
          }
          StackLLVMVisitor llvmVisitor = new StackLLVMVisitor(f);
          llvmVisitor.visit(program);
@@ -84,7 +96,9 @@ public class MiniCompiler
       {
          if (args[i].charAt(0) == '-')
          {
-            if (args[i].equals("-stack")) {
+            if (args[i].equals("-llvm")) {
+               printLLVMProgram = true;
+            } else if (args[i].equals("-stack")) {
                printStackLLVMProgram = true;
             } else {
                System.err.println("unexpected option: " + args[i]);

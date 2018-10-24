@@ -29,6 +29,19 @@ public class LLVMBlockType implements LLVMType
       this.label = l;
    }
 
+   public LLVMBlockType(String blockId, boolean sealed, Label l)
+   {
+      this.blockId = blockId;
+      this.successors = new ArrayList<LLVMBlockType>();
+      this.predecessors = new ArrayList<LLVMBlockType>();
+      this.varTable = new HashMap<>();
+      this.phiTable = new HashMap<>();
+      this.llvmCode = new ArrayList<String>();
+      this.closed = false;
+      this.sealed = sealed;
+      this.label = l;
+   }
+
    public LLVMBlockType(String blockId, List<String> llvmCode, boolean closed, Label l)
    {
       this.blockId = blockId;
@@ -102,10 +115,12 @@ public class LLVMBlockType implements LLVMType
       sealed = true;
    }
 
-   public HashMap<String, LLVMType> getVarTable(){
+   public HashMap<String, LLVMType> getVarTable()
+   {
       return this.varTable;
    }
-   public HashMap<String, LLVMPhiType> getPhiTable(){
+   public HashMap<String, LLVMPhiType> getPhiTable()
+   {
       return this.phiTable;
    }
 

@@ -47,7 +47,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    public LLVMType visit(Program program)
    {
       globalBlockList = new ArrayList<LLVMBlockType>();
-      LLVMBlockType programBlock = new LLVMBlockType("PROG", LLVMBlockType.Label.PROGRAM);
+      LLVMBlockType programBlock = new LLVMBlockType("PROG", true, LLVMBlockType.Label.PROGRAM);
       printStringToFile("target triple=\"i686\"\n");
       List<TypeDeclaration> types = program.getTypes();
       for (TypeDeclaration typeDecl : types){
@@ -177,7 +177,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       }
 
       String startBlockId = "LU" + Integer.toString(blockCounter++);
-      LLVMBlockType startBlock = new LLVMBlockType(startBlockId, LLVMBlockType.Label.ENTRY);
+      LLVMBlockType startBlock = new LLVMBlockType(startBlockId, true, LLVMBlockType.Label.ENTRY);
 
       // Declare params
       for (Declaration param : params) {
@@ -212,6 +212,24 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          globalBlockList.add(block);
          printStringToFile(block.getBlockId() + ": \n");
          List<String> llvmCode = block.getLLVMCode();
+         HashMap<String, LLVMPhiType> phiTable = block.getPhiTable();
+         for (String id : phiTable.keySet()) {
+            LLVMPhiType phi = phiTable.get(id);
+            LLVMRegisterType phiRegister = phi.getRegister();
+            String phiOpnds = "";
+            for (LLVMType t : phi.getPhiOperands()) {
+               String blockId = phi.getBlock().getBlockId();
+               if (t instanceof LLVMRegisterType) {
+                  phiOpnds += "[%" + ((LLVMRegisterType)t).getId() + ", %" + blockId + "], ";
+               } else if (t instanceof LLVMPrimitiveType) {
+                  phiOpnds += "[%" + ((LLVMRegisterType)t).getId() + ", %" + blockId + "], ";
+               }
+            }
+            if (phiOpnds.length() > 2 && phiOpnds.charAt(phiOpnds.length()-2) == ',') {
+               phiOpnds = phiOpnds.substring(0, phiOpnds.length()-2);
+            }
+            printStringToFile("\t%" + phiRegister.getId() + " = phi " + phiRegister.getTypeRep() + " " + phiOpnds + "(" + id + ")" + "\n");
+         }
          for (String code : llvmCode) {
             printStringToFile("\t" + code);
          }
@@ -314,9 +332,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          String elseLLVMBlockId = "LU" + Integer.toString(blockCounter++);
          String jointLLVMBlockId = "LU" + Integer.toString(blockCounter++);
 
-         LLVMBlockType thenLLVMBlock = new LLVMBlockType(thenLLVMBlockId, LLVMBlockType.Label.THEN);
-         LLVMBlockType elseLLVMBlock = new LLVMBlockType(elseLLVMBlockId, LLVMBlockType.Label.ELSE);
-         LLVMBlockType jointLLVMBlock = new LLVMBlockType(jointLLVMBlockId, LLVMBlockType.Label.JOIN);
+         LLVMBlockType thenLLVMBlock = new LLVMBlockType(thenLLVMBlockId, true, LLVMBlockType.Label.THEN);
+         LLVMBlockType elseLLVMBlock = new LLVMBlockType(elseLLVMBlockId, true, LLVMBlockType.Label.ELSE);
+         LLVMBlockType jointLLVMBlock = new LLVMBlockType(jointLLVMBlockId, true, LLVMBlockType.Label.JOIN);
 
          block.addSuccessor(thenLLVMBlock);
          block.addSuccessor(elseLLVMBlock);
@@ -452,7 +470,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          String originalBodyLLVMBlockId = bodyLLVMBlockId;
 
          LLVMBlockType bodyLLVMBlock = new LLVMBlockType(bodyLLVMBlockId, LLVMBlockType.Label.WHILE_LOOP);
-         LLVMBlockType jointLLVMBlock = new LLVMBlockType(jointLLVMBlockId, LLVMBlockType.Label.WHILE_EXIT);
+         LLVMBlockType jointLLVMBlock = new LLVMBlockType(jointLLVMBlockId, true, LLVMBlockType.Label.WHILE_EXIT);
          LLVMBlockType originalBodyLLVMBlock = bodyLLVMBlock;
 
          block.addSuccessor(bodyLLVMBlock);
@@ -688,13 +706,11 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             String tempReg = "u" + Integer.toString(registerCounter++);
             /* block.add("%" + tempReg + " = getelementptr " + typeRep + " %" + regName 
                     + ", i1 0, " + fieldTypeRep + " " + fieldPositionRep + "\n"); */
-            block.add(getRegAndValRep(tempReg) + " = getelementptr " + typeRep + " %" + regName 
-                    + ", i1 0, i32 " + fieldPositionRep + "\n");
             String resultReg = "u" + Integer.toString(registerCounter++);
             block.add(getRegAndValRep(resultReg) + " = load " + fieldTypeRep + "* %" + tempReg + "\n");
             return new LLVMRegisterType(fieldTypeRep, resultReg);
          } catch (Exception e) {
-            printStringToFile(id + ": IDENTIFIER NOT FOUND 1\n");
+            printStringToFile(id + ": IDENTIFIER NOT FOUND 2\n");
          }
       }
       return new LLVMVoidType();
@@ -789,7 +805,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          block.add("%" + returnRegId + " = call i8* @malloc(i32 " + (8 * typesSizeTable.get(structRep)) + ")\n");
       } catch (Exception exc) {
       }
-      return new LLVMRegisterType("i8*", returnRegId);
+      return new LLVMRegisterType(structRep + "*", typeConverter("i8*", structRep + "*", returnRegId, block));
    }
 
    public LLVMType visit(ReadExpression readExpression, LLVMBlockType block)
@@ -944,28 +960,29 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    private void writeVariable(String variable, LLVMBlockType block, LLVMType value)
    {
       HashMap<String, LLVMType> m = block.getVarTable();
-      if (m.containsKey(variable)){
+      if (m.containsKey(variable)) {
          m.replace(variable, value);
+      } else { 
+         m.put(variable, value); 
       }
-      else { m.put(variable, value); }
    }
 
    private void writePhiVariable(String variable, LLVMBlockType block, LLVMPhiType value) //write to phiTable
    {
       HashMap<String, LLVMPhiType> m = block.getPhiTable();
-      if (m.containsKey(variable)){
+      if (m.containsKey(variable)) {
          m.replace(variable, value);
-      }
-      else { m.put(variable, value); } 
+      } else { 
+         m.put(variable, value); 
+      } 
    }
 
    private LLVMType readVariable(String variable, LLVMBlockType block)
    {
       HashMap<String, LLVMType> m = block.getVarTable();
-      if (m.containsKey(variable)){
+      if (m.containsKey(variable)) {
          return m.get(variable);
-      }
-      else{
+      } else {
          return readVariableFromPredecessors(variable, block);
       }
    }
@@ -973,20 +990,17 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    private LLVMType readVariableFromPredecessors (String variable, LLVMBlockType block)
    {
       LLVMType val;
-      if (!block.isSealed()){
+      if (!block.isSealed()) {
          LLVMPhiType phi = new LLVMPhiType(block);
          LLVMRegisterType reg = createNewRegister();
          phi.setRegister(reg);
          writePhiVariable(variable, block, phi);
          val = reg;
-      }
-      else if (block.getPredecessors().size() == 0){
+      } else if (block.getPredecessors().size() == 0) {
          val =  new LLVMVoidType(); //undefined
-      }
-      else if (block.getPredecessors().size() == 1){
-         val =  readVariable (variable, block.getPredecessors().get(0));
-      }
-      else{
+      } else if (block.getPredecessors().size() == 1) {
+         val =  readVariable(variable, block.getPredecessors().get(0));
+      } else {
          LLVMPhiType phi = new LLVMPhiType(block);
          LLVMRegisterType reg = createNewRegister();
          phi.setRegister(reg);
@@ -1002,7 +1016,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    private void addPhiOperands(String variable, LLVMPhiType phi)
    {
       ArrayList<LLVMBlockType> preds = phi.getBlock().getPredecessors();
-      for (LLVMBlockType pred : preds){
+      for (LLVMBlockType pred : preds) {
          phi.addPhiOperand(readVariable(variable, pred));
       }
    }
@@ -1011,7 +1025,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    {
       HashMap<String, LLVMPhiType> tbl = block.getPhiTable();
       Set<Map.Entry<String, LLVMPhiType>> entries = tbl.entrySet();
-      for (Map.Entry<String, LLVMPhiType> e : entries){
+      for (Map.Entry<String, LLVMPhiType> e : entries) {
          String variable = e.getKey();
          LLVMPhiType phi = e.getValue();
          addPhiOperands(variable, phi);
