@@ -1017,7 +1017,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    {
       ArrayList<LLVMBlockType> preds = phi.getBlock().getPredecessors();
       for (LLVMBlockType pred : preds) {
-         phi.addPhiOperand(readVariable(variable, pred));
+         phi.addPhiOperand(new LLVMPhiEntryType(readVariable(variable, pred), pred));
       }
    }
 

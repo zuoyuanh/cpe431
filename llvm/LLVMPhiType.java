@@ -1,17 +1,17 @@
 package llvm;
 import java.util.ArrayList;
 public class LLVMPhiType implements LLVMType {
-   private ArrayList<LLVMType> phiOperands;
+   private ArrayList<LLVMPhiEntryType> phiOperands;
    private LLVMBlockType block;
    private LLVMRegisterType register;
    public LLVMPhiType(LLVMBlockType b){
       block = b;
-      phiOperands =  new ArrayList<LLVMType>();
+      phiOperands =  new ArrayList<LLVMPhiEntryType>();
    }
-   public ArrayList<LLVMType> getPhiOperands(){
+   public ArrayList<LLVMPhiEntryType> getPhiOperands(){
       return this.phiOperands;
    }
-   public void addPhiOperand(LLVMType op){
+   public void addPhiOperand(LLVMPhiEntryType op){
       phiOperands.add(op);
    }
    public LLVMBlockType getBlock(){
