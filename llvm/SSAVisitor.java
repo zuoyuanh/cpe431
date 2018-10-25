@@ -159,22 +159,10 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       LLVMBlockType retBlock = new LLVMBlockType(funcExitBlockId, LLVMBlockType.Label.EXIT);
       funcExitBlock = retBlock;
       funcRetValueTypeRep = returnTypeLLVMRep;
-      if (returnTypeLLVMRep.equals("void")) {
-         retBlock.add("ret void\n");
-      } else {
-         String retRegId = "u" + Integer.toString(registerCounter++);
-         retBlock.add(getRegAndValRep(retRegId) + " = load " + returnTypeLLVMRep + "* %_retval_\n");
-         retBlock.add("ret " + returnTypeLLVMRep + " %" + retRegId + "\n");
-      }
 
       insertFunctionsTable(func, funcsTable);
 
       String paramsRep = "(";
-      ArrayList<String> localDecls = new ArrayList<String>();
-
-      if (!returnTypeLLVMRep.equals("void")) {
-         localDecls.add("%_retval_ = alloca " + returnTypeLLVMRep + "\n");
-      }
 
       String startBlockId = "LU" + Integer.toString(blockCounter++);
       LLVMBlockType startBlock = new LLVMBlockType(startBlockId, true, LLVMBlockType.Label.ENTRY);
@@ -235,6 +223,17 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
          if (!block.isClosed() && !block.getBlockId().equals(funcExitBlockId)) {
             printStringToFile("\tbr label %" + funcExitBlockId + "\n");
+         }
+      }
+
+      if (returnTypeLLVMRep.equals("void")) {
+         retBlock.add("ret void\n");
+      } else {
+         LLVMType retValType = readVariable("_retval_", retBlock);
+         if (retValType instanceof LLVMRegisterType) {
+            retBlock.add("ret " + returnTypeLLVMRep + " %" + ((LLVMRegisterType)retValType).getId() + "\n");
+         } else if (retValType instanceof LLVMPrimitiveType) {
+            retBlock.add("ret " + returnTypeLLVMRep + " %" + ((LLVMPrimitiveType)retValType).getValueRep() + "\n");
          }
       }
 
@@ -449,9 +448,8 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       Expression exp = returnStatement.getExpression();
       LLVMType expType = this.visit(exp, block);
       if (expType instanceof LLVMRegisterType || expType instanceof LLVMPrimitiveType) {
-         String opnd = getOperand(expType, funcRetValueTypeRep, block);
-         block.add("store " + funcRetValueTypeRep + " " + opnd + ", " 
-                + funcRetValueTypeRep + "* %_retval_\n");
+         LLVMType opnd = getOperandType(expType, funcRetValueTypeRep, block);
+         writeVariable("_retval_", block, opnd);
          block.add("br label %" + funcExitBlockId + "\n");
       }
       block.addSuccessor(funcExitBlock);
@@ -648,6 +646,26 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          return valueRep;
       }
       return "unknown";
+   }
+
+   private LLVMType getOperandType(LLVMType t, String expectedType, LLVMBlockType block)
+   {
+      if (t instanceof LLVMRegisterType) {
+         String tTypeRep = ((LLVMRegisterType)t).getTypeRep();
+         String regId = ((LLVMRegisterType)t).getId();
+         if (!expectedType.equals("any") && !tTypeRep.equals(expectedType)) {
+            return new LLVMRegisterType(expectedType, typeConverter(tTypeRep, expectedType, "%"+regId, block));
+         }
+         return new LLVMRegisterType(expectedType, regId);
+      } else if (t instanceof LLVMPrimitiveType) {
+         String tTypeRep = ((LLVMPrimitiveType)t).getTypeRep();
+         String valueRep = ((LLVMPrimitiveType)t).getValueRep();
+         if (!tTypeRep.equals(expectedType) && !tTypeRep.equals("null") && !expectedType.equals("any")) {
+            return new LLVMPrimitiveType(tTypeRep, typeConverter(tTypeRep, expectedType, valueRep, block));
+         }
+         return new LLVMPrimitiveType(tTypeRep, valueRep);
+      }
+      return new LLVMVoidType();
    }
 
    private String binaryOperationResultType(BinaryExpression.Operator operator)
