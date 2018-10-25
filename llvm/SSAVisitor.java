@@ -196,6 +196,19 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       this.visit(body, startBlock);
       blockList.add(retBlock);
 
+      if (returnTypeLLVMRep.equals("void")) {
+         retBlock.add("ret void\n");
+      } else {
+         LLVMType retValType = readVariable("_retval_", retBlock);
+         if (retValType instanceof LLVMRegisterType) {
+            retBlock.add("ret " + returnTypeLLVMRep + " %" + ((LLVMRegisterType)retValType).getId() + "\n");
+         } else if (retValType instanceof LLVMPrimitiveType) {
+            retBlock.add("ret " + returnTypeLLVMRep + " %" + ((LLVMPrimitiveType)retValType).getValueRep() + "\n");
+         }
+      }
+
+      sealBlock(funcExitBlock);  //seal the exit block
+
       for (LLVMBlockType block : blockList) {
          globalBlockList.add(block);
          printStringToFile(block.getBlockId() + ": \n");
@@ -217,7 +230,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             if (phiOpnds.length() > 2 && phiOpnds.charAt(phiOpnds.length()-2) == ',') {
                phiOpnds = phiOpnds.substring(0, phiOpnds.length()-2);
             }
-            printStringToFile("\t%" + phiRegister.getId() + " = phi " + phiRegister.getTypeRep() + " " + phiOpnds + "(" + id + ")" + "\n");
+            printStringToFile("\t%" + phiRegister.getId() + " = phi " + phiRegister.getTypeRep() + " " + phiOpnds + "\n");
          }
          for (String code : llvmCode) {
             printStringToFile("\t" + code);
@@ -227,17 +240,6 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
       }
 
-      if (returnTypeLLVMRep.equals("void")) {
-         retBlock.add("ret void\n");
-      } else {
-         LLVMType retValType = readVariable("_retval_", retBlock);
-         if (retValType instanceof LLVMRegisterType) {
-            retBlock.add("ret " + returnTypeLLVMRep + " %" + ((LLVMRegisterType)retValType).getId() + "\n");
-         } else if (retValType instanceof LLVMPrimitiveType) {
-            retBlock.add("ret " + returnTypeLLVMRep + " %" + ((LLVMPrimitiveType)retValType).getValueRep() + "\n");
-         }
-      }
-      sealBlock(funcExitBlock);  //seal the exit block
       printStringToFile("}\n\n");
 
       return startBlock;
