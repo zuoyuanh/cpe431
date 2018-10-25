@@ -205,8 +205,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             LLVMPhiType phi = phiTable.get(id);
             LLVMRegisterType phiRegister = phi.getRegister();
             String phiOpnds = "";
-            for (LLVMType t : phi.getPhiOperands()) {
-               String blockId = phi.getBlock().getBlockId();
+            for (LLVMPhiEntryType ty : phi.getPhiOperands()) {
+               String blockId = ty.getBlock().getBlockId();
+               LLVMType t = ty.getOperand();
                if (t instanceof LLVMRegisterType) {
                   phiOpnds += "[%" + ((LLVMRegisterType)t).getId() + ", %" + blockId + "], ";
                } else if (t instanceof LLVMPrimitiveType) {

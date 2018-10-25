@@ -20,18 +20,14 @@ LU4:
 	call void @tailrecursive(i32 %u5)
 	br label %LU0
 LU0: 
-	ret void
 }
 
 define i32 @add()
 {
 LU6: 
-	%u9 = add i32 %x, %y
-	store i32 %u9, i32* %_retval_
+	%u8 = add i32 %x, %y
 	br label %LU5
 LU5: 
-	%u6 = load i32* %_retval_
-	ret i32 %u6
 }
 
 define void @domath()
@@ -84,15 +80,14 @@ LU9:
 	%u63 = icmp sgt i32 %u61, 0
 	br i1 %u63, label %LU9, label %LU10
 LU10: 
-	%u65 = phi i32 [%u11, %LU10], [%u44, %LU10](math1)
-	%u68 = phi i32 [%u17, %LU10], [%u46, %LU10](math2)
+	%u65 = phi i32 [%u11, %LU8], [%u44, %LU9](math1)
+	%u68 = phi i32 [%u17, %LU8], [%u46, %LU9](math2)
 	%u66 = bitcast i32 %u65 to i8*
 	call void @free(i8* %u66)
 	%u69 = bitcast i32 %u68 to i8*
 	call void @free(i8* %u69)
 	br label %LU7
 LU7: 
-	ret void
 }
 
 define void @objinstantiation()
@@ -112,68 +107,59 @@ LU13:
 LU14: 
 	br label %LU11
 LU11: 
-	ret void
 }
 
 define i32 @ackermann()
 {
 LU16: 
-	%u83 = icmp eq i32 %m, 0
-	br i1 %u83, label %LU17, label %LU18
+	%u82 = icmp eq i32 %m, 0
+	br i1 %u82, label %LU17, label %LU18
 LU17: 
-	%u85 = add i32 %n, 1
-	store i32 %u85, i32* %_retval_
+	%u84 = add i32 %n, 1
 	br label %LU15
 LU18: 
 	br label %LU19
 LU19: 
-	%u87 = icmp eq i32 %n, 0
-	br i1 %u87, label %LU20, label %LU21
+	%u86 = icmp eq i32 %n, 0
+	br i1 %u86, label %LU20, label %LU21
 LU20: 
-	%u89 = sub i32 %m, 1
-	%u90 = call i32 @ackermann (i32 %u89, i32 1)
-	store i32 %u90, i32* %_retval_
+	%u88 = sub i32 %m, 1
+	%u89 = call i32 @ackermann (i32 %u88, i32 1)
 	br label %LU15
 LU21: 
-	%u92 = sub i32 %m, 1
-	%u95 = sub i32 %n, 1
-	%u96 = call i32 @ackermann (i32 %%m, i32 %u95)
-	%u97 = call i32 @ackermann (i32 %u92, i32 %u96)
-	store i32 %u97, i32* %_retval_
+	%u91 = sub i32 %m, 1
+	%u94 = sub i32 %n, 1
+	%u95 = call i32 @ackermann (i32 %%m, i32 %u94)
+	%u96 = call i32 @ackermann (i32 %u91, i32 %u95)
 	br label %LU15
 LU22: 
 	br label %LU15
 LU15: 
-	%u81 = load i32* %_retval_
-	ret i32 %u81
 }
 
 define i32 @main()
 {
 LU24: 
 	call i32 (i8*, ...)* @scanf(i8* getelementptr inbounds ([4 x i8]* @.read, i32 0, i32 0), i32* @.read_scratch)
-u99 = load i32* @.read_scratch
+	u98 = load i32* @.read_scratch
 	call i32 (i8*, ...)* @scanf(i8* getelementptr inbounds ([4 x i8]* @.read, i32 0, i32 0), i32* @.read_scratch)
-u100 = load i32* @.read_scratch
+	u99 = load i32* @.read_scratch
 	call i32 (i8*, ...)* @scanf(i8* getelementptr inbounds ([4 x i8]* @.read, i32 0, i32 0), i32* @.read_scratch)
-u101 = load i32* @.read_scratch
+	u100 = load i32* @.read_scratch
 	call i32 (i8*, ...)* @scanf(i8* getelementptr inbounds ([4 x i8]* @.read, i32 0, i32 0), i32* @.read_scratch)
-u102 = load i32* @.read_scratch
+	u101 = load i32* @.read_scratch
 	call i32 (i8*, ...)* @scanf(i8* getelementptr inbounds ([4 x i8]* @.read, i32 0, i32 0), i32* @.read_scratch)
-u103 = load i32* @.read_scratch
-	call void @tailrecursive(i32 %u99)
+	u102 = load i32* @.read_scratch
+	call void @tailrecursive(i32 %u98)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u98)
+	call void @domath(i32 %u99)
 	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u99)
-	call void @domath(i32 %u100)
+	call void @objinstantiation(i32 %u100)
 	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u100)
-	call void @objinstantiation(i32 %u101)
-	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u101)
-	%u112 = call i32 @ackermann (i32 %u102, i32 %u103)
-	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u112)
-	store i32 0, i32* %_retval_
+	%u111 = call i32 @ackermann (i32 %u101, i32 %u102)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u111)
 	br label %LU23
 LU23: 
-	%u98 = load i32* %_retval_
-	ret i32 %u98
 }
 
 declare i8* @malloc(i32)
