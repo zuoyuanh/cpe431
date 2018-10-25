@@ -1010,8 +1010,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    {
       LLVMType val;
       if (!block.isSealed()) {
+         String t = getValTypeFromPredecessors(block, variable);
          LLVMPhiType phi = new LLVMPhiType(block);
-         LLVMRegisterType reg = createNewRegister();
+         LLVMRegisterType reg = createNewRegister(t);
          phi.setRegister(reg);
          writePhiVariable(variable, block, phi);
          val = reg;
@@ -1021,7 +1022,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          val =  readVariable(variable, block.getPredecessors().get(0));
       } else {
          LLVMPhiType phi = new LLVMPhiType(block);
-         LLVMRegisterType reg = createNewRegister();
+         LLVMRegisterType reg = createNewRegister("i32");
          phi.setRegister(reg);
          writePhiVariable(variable, block, phi);
          writeVariable(variable,block,reg);
@@ -1039,6 +1040,30 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          phi.addPhiOperand(new LLVMPhiEntryType(readVariable(variable, pred), pred));
       }
    }
+   private String getValTypeFromPredecessor(LLVMBlockType block, String variable){
+      HashMap<String, LLVMType> m = block.getVarTable();
+      if (m.containsKey(variable)) {
+         LLVMType t = m.get(variable);
+         if (t instanceof LLVMRegisterType) return ((LLVMRegisterType)t).getTypeRep();
+         else if (t instanceof LLVMPrimitiveType ) return ((LLVMPrimitiveType)t).getTypeRep();
+         else return "i32";
+      } 
+      else {
+         if (block.getPredecessors().size() == 0) return null;
+         for (LLVMBlockType pred : block.getPredecessors()){
+            return getValTypeFromPredecessor(block, variable);
+         }
+         return null;
+      }
+   }
+   private String getValTypeFromPredecessors(LLVMBlockType block, String variable){
+      for (LLVMBlockType pred : block.getPredecessors()){
+         String s =  getValTypeFromPredecessor(pred, variable);
+         if (s==null) continue;
+         else return s;
+      }
+      return null;
+   }
 
    private void sealBlock(LLVMBlockType block)
    {
@@ -1051,9 +1076,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       }
       block.seal();
    }
-   private LLVMRegisterType createNewRegister(){
+   private LLVMRegisterType createNewRegister(String type){
       String regId = "u" + Integer.toString(registerCounter++);
-      return new LLVMRegisterType("i32", regId);
+      return new LLVMRegisterType(type, regId);
    }
 
 }
