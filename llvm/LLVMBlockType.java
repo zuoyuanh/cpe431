@@ -15,6 +15,7 @@ public class LLVMBlockType implements LLVMType
    private HashMap<String, LLVMType> varTable;
    private HashMap<String, LLVMPhiType> phiTable;
    private boolean sealed;
+   private boolean returned;
 
    public LLVMBlockType(String blockId, Label l)
    {
@@ -26,6 +27,7 @@ public class LLVMBlockType implements LLVMType
       this.llvmCode = new ArrayList<String>();
       this.closed = false;
       this.sealed = false;
+      this.returned = false;
       this.label = l;
    }
 
@@ -39,6 +41,7 @@ public class LLVMBlockType implements LLVMType
       this.llvmCode = new ArrayList<String>();
       this.closed = false;
       this.sealed = sealed;
+      this.returned = false;
       this.label = l;
    }
 
@@ -52,12 +55,13 @@ public class LLVMBlockType implements LLVMType
       this.llvmCode = llvmCode;
       this.closed = closed;
       this.sealed = false;
+      this.returned = false;
       this.label = l;
    }
 
    public static enum Label
    {
-      THEN, ELSE, WHILE_LOOP, RETURN, ENTRY, EXIT, JOIN, WHILE_EXIT,PROGRAM
+      THEN, ELSE, WHILE_LOOP, RETURN, ENTRY, EXIT, JOIN, WHILE_EXIT, PROGRAM
    }
 
    public void addSuccessor(LLVMBlockType block)
@@ -172,5 +176,15 @@ public class LLVMBlockType implements LLVMType
          default: 
             return null;
       }
+   }
+
+   public boolean getReturned()
+   {
+      return returned;
+   }
+
+   public void setReturned(boolean returned)
+   {
+      this.returned = returned;
    }
 }

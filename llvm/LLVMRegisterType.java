@@ -20,4 +20,9 @@ public class LLVMRegisterType implements  LLVMType
    {
       return typeRep;
    }
+
+   public void setTypeRep(String typeRep)
+   {
+      this.typeRep = typeRep;
+   }
 }

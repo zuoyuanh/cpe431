@@ -6,26 +6,29 @@
 tailrecursive:                          # @tailrecursive
 	.cfi_startproc
 # BB#0:                                 # %LU1
-	subl	$12, %esp
-.Ltmp1:
-	.cfi_def_cfa_offset 16
-	movl	16(%esp), %eax
-	movl	%eax, 8(%esp)
-	testl	%eax, %eax
+	pushl	%esi
+.Ltmp2:
+	.cfi_def_cfa_offset 8
+	pushl	%eax
+.Ltmp3:
+	.cfi_def_cfa_offset 12
+.Ltmp4:
+	.cfi_offset %esi, -8
+	movl	12(%esp), %esi
+	testl	%esi, %esi
 	jle	.LBB0_2
 # BB#1:                                 # %LU4
 	movl	$24, (%esp)
 	calll	malloc
-	movl	%eax, 4(%esp)
-	movl	8(%esp), %eax
-	decl	%eax
-	movl	%eax, (%esp)
+	decl	%esi
+	movl	%esi, (%esp)
 	calll	tailrecursive
 .LBB0_2:                                # %LU0
-	addl	$12, %esp
+	addl	$4, %esp
+	popl	%esi
 	ret
-.Ltmp2:
-	.size	tailrecursive, .Ltmp2-tailrecursive
+.Ltmp5:
+	.size	tailrecursive, .Ltmp5-tailrecursive
 	.cfi_endproc
 
 	.globl	add
@@ -33,21 +36,12 @@ tailrecursive:                          # @tailrecursive
 	.type	add,@function
 add:                                    # @add
 	.cfi_startproc
-# BB#0:                                 # %LU6
-	subl	$12, %esp
-.Ltmp4:
-	.cfi_def_cfa_offset 16
-	movl	20(%esp), %eax
-	movl	16(%esp), %ecx
-	movl	%ecx, 4(%esp)
-	movl	%eax, (%esp)
-	addl	4(%esp), %eax
-	movl	%eax, 8(%esp)
-	movl	8(%esp), %eax
-	addl	$12, %esp
+# BB#0:                                 # %LU5
+	movl	4(%esp), %eax
+	addl	8(%esp), %eax
 	ret
-.Ltmp5:
-	.size	add, .Ltmp5-add
+.Ltmp6:
+	.size	add, .Ltmp6-add
 	.cfi_endproc
 
 	.globl	domath
@@ -56,91 +50,72 @@ add:                                    # @add
 domath:                                 # @domath
 	.cfi_startproc
 # BB#0:                                 # %LU8
-	pushl	%esi
-.Ltmp8:
+	pushl	%ebx
+.Ltmp11:
 	.cfi_def_cfa_offset 8
-	subl	$24, %esp
-.Ltmp9:
-	.cfi_def_cfa_offset 32
-.Ltmp10:
-	.cfi_offset %esi, -8
-	movl	32(%esp), %eax
-	movl	%eax, 20(%esp)
+	pushl	%edi
+.Ltmp12:
+	.cfi_def_cfa_offset 12
+	pushl	%esi
+.Ltmp13:
+	.cfi_def_cfa_offset 16
+	subl	$8, %esp
+.Ltmp14:
+	.cfi_def_cfa_offset 24
+.Ltmp15:
+	.cfi_offset %esi, -16
+.Ltmp16:
+	.cfi_offset %edi, -12
+.Ltmp17:
+	.cfi_offset %ebx, -8
+	movl	24(%esp), %ebx
 	movl	$24, (%esp)
 	calll	malloc
 	movl	%eax, %esi
-	movl	%esi, 16(%esp)
 	movl	$8, (%esp)
 	calll	malloc
 	movl	%eax, 8(%esi)
 	movl	$24, (%esp)
 	calll	malloc
-	movl	%eax, %esi
-	movl	%esi, 12(%esp)
+	movl	%eax, %edi
 	movl	$8, (%esp)
 	calll	malloc
-	movl	%eax, 8(%esi)
-	movl	16(%esp), %eax
-	movl	20(%esp), %ecx
-	movl	%ecx, (%eax)
-	movl	12(%esp), %eax
-	movl	$3, (%eax)
-	movl	16(%esp), %eax
-	movl	(%eax), %ecx
-	movl	8(%eax), %eax
-	movl	%ecx, (%eax)
-	movl	12(%esp), %eax
-	movl	(%eax), %ecx
-	movl	8(%eax), %eax
-	movl	%ecx, (%eax)
-	cmpl	$0, 20(%esp)
-	jle	.LBB2_2
+	movl	%eax, 8(%edi)
+	movl	%ebx, (%esi)
+	movl	$3, (%edi)
+	movl	(%esi), %eax
+	movl	8(%esi), %ecx
+	movl	%eax, (%ecx)
+	movl	(%edi), %eax
+	movl	8(%edi), %ecx
+	movl	%eax, (%ecx)
+	jmp	.LBB2_2
 	.align	16, 0x90
 .LBB2_1:                                # %LU9
-                                        # =>This Inner Loop Header: Depth=1
-	movl	16(%esp), %eax
-	movl	(%eax), %eax
-	movl	12(%esp), %ecx
-	imull	(%ecx), %eax
-	movl	%eax, 8(%esp)
-	movl	16(%esp), %ecx
-	movl	8(%ecx), %ecx
-	imull	(%ecx), %eax
-	movl	12(%esp), %ecx
-	cltd
-	idivl	(%ecx)
-	movl	%eax, 8(%esp)
-	movl	12(%esp), %eax
-	movl	8(%eax), %eax
-	movl	(%eax), %eax
-	movl	16(%esp), %ecx
+                                        #   in Loop: Header=BB2_2 Depth=1
+	movl	(%esi), %eax
+	movl	8(%edi), %ecx
 	movl	(%ecx), %ecx
-	movl	%ecx, 4(%esp)
-	movl	%eax, (%esp)
+	movl	%eax, 4(%esp)
+	movl	%ecx, (%esp)
 	calll	add
-	movl	%eax, 8(%esp)
-	movl	12(%esp), %eax
-	movl	(%eax), %eax
-	movl	16(%esp), %ecx
-	subl	(%ecx), %eax
-	movl	%eax, 8(%esp)
-	movl	20(%esp), %eax
-	decl	%eax
-	movl	%eax, 20(%esp)
-	testl	%eax, %eax
+	decl	%ebx
+.LBB2_2:                                # %LU9
+                                        # =>This Inner Loop Header: Depth=1
+	testl	%ebx, %ebx
 	jg	.LBB2_1
-.LBB2_2:                                # %LU7
-	movl	16(%esp), %eax
-	movl	%eax, (%esp)
+# BB#3:                                 # %LU7
+	movl	%esi, (%esp)
 	calll	free
-	movl	12(%esp), %eax
-	movl	%eax, (%esp)
+	movl	%edi, (%esp)
 	calll	free
-	addl	$24, %esp
+	addl	$8, %esp
 	popl	%esi
+	popl	%edi
+	popl	%ebx
 	ret
-.Ltmp11:
-	.size	domath, .Ltmp11-domath
+.Ltmp18:
+	.size	domath, .Ltmp18-domath
 	.cfi_endproc
 
 	.globl	objinstantiation
@@ -149,31 +124,34 @@ domath:                                 # @domath
 objinstantiation:                       # @objinstantiation
 	.cfi_startproc
 # BB#0:                                 # %LU12
-	subl	$12, %esp
-.Ltmp13:
-	.cfi_def_cfa_offset 16
-	movl	16(%esp), %eax
+	pushl	%esi
+.Ltmp21:
+	.cfi_def_cfa_offset 8
+	pushl	%eax
+.Ltmp22:
+	.cfi_def_cfa_offset 12
+.Ltmp23:
+	.cfi_offset %esi, -8
+	movl	12(%esp), %esi
 	jmp	.LBB3_2
 	.align	16, 0x90
 .LBB3_1:                                # %LU13
                                         #   in Loop: Header=BB3_2 Depth=1
 	movl	$24, (%esp)
 	calll	malloc
-	movl	%eax, 4(%esp)
 	movl	%eax, (%esp)
 	calll	free
-	movl	8(%esp), %eax
-	decl	%eax
+	decl	%esi
 .LBB3_2:                                # %LU13
                                         # =>This Inner Loop Header: Depth=1
-	movl	%eax, 8(%esp)
-	testl	%eax, %eax
+	testl	%esi, %esi
 	jg	.LBB3_1
 # BB#3:                                 # %LU11
-	addl	$12, %esp
+	addl	$4, %esp
+	popl	%esi
 	ret
-.Ltmp14:
-	.size	objinstantiation, .Ltmp14-objinstantiation
+.Ltmp24:
+	.size	objinstantiation, .Ltmp24-objinstantiation
 	.cfi_endproc
 
 	.globl	ackermann
@@ -183,29 +161,21 @@ ackermann:                              # @ackermann
 	.cfi_startproc
 # BB#0:                                 # %LU16
 	pushl	%esi
-.Ltmp17:
+.Ltmp27:
 	.cfi_def_cfa_offset 8
-	subl	$20, %esp
-.Ltmp18:
-	.cfi_def_cfa_offset 28
-.Ltmp19:
+	subl	$8, %esp
+.Ltmp28:
+	.cfi_def_cfa_offset 16
+.Ltmp29:
 	.cfi_offset %esi, -8
-	movl	32(%esp), %eax
-	movl	28(%esp), %ecx
-	movl	%ecx, 12(%esp)
-	movl	%eax, 8(%esp)
-	cmpl	$0, 12(%esp)
-	jne	.LBB4_2
-# BB#1:                                 # %LU17
-	movl	8(%esp), %eax
-	incl	%eax
-	movl	%eax, 16(%esp)
-.LBB4_2:                                # %LU19
-	cmpl	$0, 8(%esp)
+	movl	20(%esp), %eax
+	movl	16(%esp), %esi
+	testl	%esi, %esi
+	je	.LBB4_1
+# BB#2:                                 # %LU19
+	testl	%eax, %eax
 	je	.LBB4_3
 # BB#4:                                 # %LU21
-	movl	12(%esp), %esi
-	movl	8(%esp), %eax
 	decl	%eax
 	movl	%eax, 4(%esp)
 	movl	%esi, (%esp)
@@ -214,20 +184,21 @@ ackermann:                              # @ackermann
 	movl	%eax, 4(%esp)
 	movl	%esi, (%esp)
 	jmp	.LBB4_5
+.LBB4_1:                                # %LU17
+	incl	%eax
+	jmp	.LBB4_6
 .LBB4_3:                                # %LU20
-	movl	12(%esp), %eax
-	decl	%eax
-	movl	%eax, (%esp)
+	decl	%esi
+	movl	%esi, (%esp)
 	movl	$1, 4(%esp)
 .LBB4_5:                                # %LU15
 	calll	ackermann
-	movl	%eax, 16(%esp)
-	movl	16(%esp), %eax
-	addl	$20, %esp
+.LBB4_6:                                # %LU15
+	addl	$8, %esp
 	popl	%esi
 	ret
-.Ltmp20:
-	.size	ackermann, .Ltmp20-ackermann
+.Ltmp30:
+	.size	ackermann, .Ltmp30-ackermann
 	.cfi_endproc
 
 	.globl	main
@@ -235,64 +206,82 @@ ackermann:                              # @ackermann
 	.type	main,@function
 main:                                   # @main
 	.cfi_startproc
-# BB#0:                                 # %LU24
-	subl	$32, %esp
-.Ltmp22:
-	.cfi_def_cfa_offset 36
-	leal	24(%esp), %eax
-	movl	%eax, 4(%esp)
+# BB#0:                                 # %LU23
+	pushl	%ebp
+.Ltmp36:
+	.cfi_def_cfa_offset 8
+	pushl	%ebx
+.Ltmp37:
+	.cfi_def_cfa_offset 12
+	pushl	%edi
+.Ltmp38:
+	.cfi_def_cfa_offset 16
+	pushl	%esi
+.Ltmp39:
+	.cfi_def_cfa_offset 20
+	subl	$12, %esp
+.Ltmp40:
+	.cfi_def_cfa_offset 32
+.Ltmp41:
+	.cfi_offset %esi, -20
+.Ltmp42:
+	.cfi_offset %edi, -16
+.Ltmp43:
+	.cfi_offset %ebx, -12
+.Ltmp44:
+	.cfi_offset %ebp, -8
+	movl	$.read_scratch, 4(%esp)
 	movl	$.L.read, (%esp)
 	calll	scanf
-	leal	20(%esp), %eax
-	movl	%eax, 4(%esp)
+	movl	.read_scratch, %esi
+	movl	$.read_scratch, 4(%esp)
 	movl	$.L.read, (%esp)
 	calll	scanf
-	leal	16(%esp), %eax
-	movl	%eax, 4(%esp)
+	movl	.read_scratch, %edi
+	movl	$.read_scratch, 4(%esp)
 	movl	$.L.read, (%esp)
 	calll	scanf
-	leal	12(%esp), %eax
-	movl	%eax, 4(%esp)
+	movl	.read_scratch, %ebx
+	movl	$.read_scratch, 4(%esp)
 	movl	$.L.read, (%esp)
 	calll	scanf
-	leal	8(%esp), %eax
-	movl	%eax, 4(%esp)
+	movl	.read_scratch, %eax
+	movl	%eax, 8(%esp)           # 4-byte Spill
+	movl	$.read_scratch, 4(%esp)
 	movl	$.L.read, (%esp)
 	calll	scanf
-	movl	24(%esp), %eax
-	movl	%eax, (%esp)
+	movl	.read_scratch, %ebp
+	movl	%esi, (%esp)
 	calll	tailrecursive
-	movl	24(%esp), %eax
-	movl	%eax, 4(%esp)
+	movl	%esi, 4(%esp)
 	movl	$.L.println, (%esp)
 	calll	printf
-	movl	20(%esp), %eax
-	movl	%eax, (%esp)
+	movl	%edi, (%esp)
 	calll	domath
-	movl	20(%esp), %eax
-	movl	%eax, 4(%esp)
+	movl	%edi, 4(%esp)
 	movl	$.L.println, (%esp)
 	calll	printf
-	movl	16(%esp), %eax
-	movl	%eax, (%esp)
+	movl	%ebx, (%esp)
 	calll	objinstantiation
-	movl	16(%esp), %eax
-	movl	%eax, 4(%esp)
+	movl	%ebx, 4(%esp)
 	movl	$.L.println, (%esp)
 	calll	printf
-	movl	12(%esp), %eax
-	movl	8(%esp), %ecx
-	movl	%ecx, 4(%esp)
+	movl	%ebp, 4(%esp)
+	movl	8(%esp), %eax           # 4-byte Reload
 	movl	%eax, (%esp)
 	calll	ackermann
 	movl	%eax, 4(%esp)
 	movl	$.L.println, (%esp)
 	calll	printf
-	movl	28(%esp), %eax
-	addl	$32, %esp
+	xorl	%eax, %eax
+	addl	$12, %esp
+	popl	%esi
+	popl	%edi
+	popl	%ebx
+	popl	%ebp
 	ret
-.Ltmp23:
-	.size	main, .Ltmp23-main
+.Ltmp45:
+	.size	main, .Ltmp45-main
 	.cfi_endproc
 
 	.type	globalfoo,@object       # @globalfoo
