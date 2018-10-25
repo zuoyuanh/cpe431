@@ -236,7 +236,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             retBlock.add("ret " + returnTypeLLVMRep + " %" + ((LLVMPrimitiveType)retValType).getValueRep() + "\n");
          }
       }
-
+      sealBlock(funcExitBlock);  //seal the exit block
       printStringToFile("}\n\n");
 
       return startBlock;
@@ -524,7 +524,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          originalBodyLLVMBlock.addPredecessor(bodyLLVMBlock);
          bodyLLVMBlock.addSuccessor(jointLLVMBlock);
          jointLLVMBlock.addPredecessor(bodyLLVMBlock);
-         
+         sealBlock(originalBodyLLVMBlock);   //seal the while block
          return jointLLVMBlock;
       }
       return new LLVMVoidType();
