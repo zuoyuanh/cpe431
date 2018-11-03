@@ -150,6 +150,11 @@ public class LLVMBlockType implements LLVMType
    {
       this.sealed = sealed;
    }
+
+   public boolean isEntry()
+   {
+      return this.label == Label.ENTRY;
+   }
    
    public String toString()
    {

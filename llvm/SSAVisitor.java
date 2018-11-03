@@ -25,6 +25,8 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    private Table<Integer> typesSizeTable = new Table<Integer>(null, "any");
    private Table<FunctionType> funcsTable = new Table<FunctionType>(null, "functions");
 
+   private LLVMBlockType programBlock = null;
+
    private LLVMBlockType funcExitBlock = null;
    private String funcExitBlockId = null;
    private String funcRetValueTypeRep = null;
@@ -47,7 +49,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    public LLVMType visit(Program program)
    {
       globalBlockList = new ArrayList<LLVMBlockType>();
-      LLVMBlockType programBlock = new LLVMBlockType("PROG", true, LLVMBlockType.Label.PROGRAM);
+      programBlock = new LLVMBlockType("PROG", true, LLVMBlockType.Label.PROGRAM);
       printStringToFile("target triple=\"i686\"\n");
       List<TypeDeclaration> types = program.getTypes();
       for (TypeDeclaration typeDecl : types){
@@ -82,7 +84,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                } */
                printStringToFile("null, align 8");
             }
-            writeVariable(varName, programBlock, new LLVMRegisterType(typeRep, "%" + varName));
+            writeVariable(varName, programBlock, new LLVMRegisterType(typeRep, "@" + varName));
             printStringToFile("\n");
          }
       }
@@ -167,6 +169,8 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       String startBlockId = "LU" + Integer.toString(blockCounter++);
       LLVMBlockType startBlock = new LLVMBlockType(startBlockId, true, LLVMBlockType.Label.ENTRY);
 
+      startBlock.addPredecessor(programBlock);
+
       // Declare params
       for (Declaration param : params) {
          LLVMType t = this.visit(param);
@@ -211,6 +215,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       sealBlock(funcExitBlock);  //seal the exit block
 
       for (LLVMBlockType block : blockList) {
+         if (block.getPredecessors().size() == 0 && !block.isEntry() && !block.getBlockId().equals(funcExitBlockId)) {
+            continue;
+         }
          globalBlockList.add(block);
          printStringToFile(block.getBlockId() + ": \n");
          List<String> llvmCode = block.getLLVMCode();
@@ -422,7 +429,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       LLVMType expType = this.visit(exp, block);
       if (expType instanceof LLVMRegisterType) {
          block.add("call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), "
-                 + ((LLVMRegisterType)expType).getTypeRep() + " %" + ((LLVMRegisterType)expType).getId() + ")\n");
+                 + ((LLVMRegisterType)expType).getTypeRep() + " " + getRegAndValRep(((LLVMRegisterType)expType).getId()) + ")\n");
       } else if (expType instanceof LLVMPrimitiveType) {
          block.add("call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), "
                  + ((LLVMPrimitiveType)expType).getTypeRep() + " " + ((LLVMPrimitiveType)expType).getValueRep() + ")\n");
@@ -436,7 +443,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       LLVMType expType = this.visit(exp, block);
       if (expType instanceof LLVMRegisterType) {
          block.add("call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), "
-                 + ((LLVMRegisterType)expType).getTypeRep() + " %" + ((LLVMRegisterType)expType).getId() + ")\n");
+                 + ((LLVMRegisterType)expType).getTypeRep() + " " + getRegAndValRep(((LLVMRegisterType)expType).getId()) + ")\n");
       } else if (expType instanceof LLVMPrimitiveType) {
          block.add("call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), "
                  + ((LLVMPrimitiveType)expType).getTypeRep() + " " + ((LLVMPrimitiveType)expType).getValueRep() + ")\n");
@@ -622,20 +629,23 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    private String typeConverter(String originalType, String expectedType, 
                                          String opnd, LLVMBlockType block)
    {
+      if (!(opnd.equals("null") || isNumeric(opnd))) {
+         opnd = getRegAndValRep(opnd);
+      }
       if (originalType.equals("i32") && expectedType.equals("i1")) {
          String tmpRegId = "u" + Integer.toString(registerCounter++);
          block.add(getRegAndValRep(tmpRegId) + " = trunc " + originalType 
-                  + " " + getRegAndValRep(opnd) + " to " + expectedType + "\n");
+                  + " " + opnd + " to " + expectedType + "\n");
          return tmpRegId;
       } else if (originalType.equals("i1") && expectedType.equals("i32")) {
          String tmpRegId = "u" + Integer.toString(registerCounter++);
          block.add(getRegAndValRep(tmpRegId) + " = zext " + originalType 
-                  + " " + getRegAndValRep(opnd) + " to " + expectedType + "\n");
+                  + " " + opnd + " to " + expectedType + "\n");
          return tmpRegId;
       } else {
          String tmpRegId = "u" + Integer.toString(registerCounter++);
          block.add(getRegAndValRep(tmpRegId) + " = bitcast " + originalType 
-                  + " " + getRegAndValRep(opnd) + " to " + expectedType + "\n");
+                  + " " + opnd + " to " + expectedType + "\n");
          return tmpRegId;
       }
    }
@@ -646,7 +656,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          String tTypeRep = ((LLVMRegisterType)t).getTypeRep();
          String regId = ((LLVMRegisterType)t).getId();
          if (!expectedType.equals("any") && !tTypeRep.equals(expectedType)) {
-            return getRegAndValRep(typeConverter(tTypeRep, expectedType, "%"+regId, block));
+            return getRegAndValRep(typeConverter(tTypeRep, expectedType, getRegAndValRep(regId), block));
          }
          return getRegAndValRep(regId);
       } else if (t instanceof LLVMPrimitiveType) {
@@ -725,7 +735,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          String typeRep = ((LLVMRegisterType)leftType).getTypeRep();
          String regName = ((LLVMRegisterType)leftType).getId();
          String structTypeRep = typeRep;
-         if (structTypeRep.length() > 1 && structTypeRep.charAt(structTypeRep.length()-1) == '*') {
+         while (structTypeRep.length() > 1 && structTypeRep.charAt(structTypeRep.length()-1) == '*') {
             structTypeRep = structTypeRep.substring(0, structTypeRep.length()-1);
          }
          try {
@@ -751,7 +761,6 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    public LLVMType visit(IdentifierExpression identifierExpression, LLVMBlockType block)
    {
       String id = identifierExpression.getId();
-      String registerName = "u" + Integer.toString(registerCounter++);
       return readVariable(id, block);
    }
 
@@ -817,10 +826,10 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          callArgsRep += ")";
          if (!returnTypeRep.equals("void")) {
             String returnRegId = "u" + Integer.toString(registerCounter++);
-            block.add("%" + returnRegId + " = call " + returnTypeRep + " @" + name + " " + callArgsRep + "\n");
+            block.add("%" + returnRegId + " = call " + returnTypeRep + " @" + name.trim() + callArgsRep + "\n");
             return new LLVMRegisterType(returnTypeRep, returnRegId);
          }
-         block.add("call " + returnTypeRep + " @" + name + callArgsRep + "\n");
+         block.add("call " + returnTypeRep + " @" + name.trim() + callArgsRep + "\n");
       } catch (IdentifierNotFoundException exc) {
          printStringToFile("IDENTIFIER NOT FOUND 3\n");
       }
@@ -887,7 +896,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          String typeRep = ((LLVMRegisterType)leftType).getTypeRep();
          String regName = ((LLVMRegisterType)leftType).getId();
          String structTypeRep = typeRep;
-         if (structTypeRep.length() > 1 && structTypeRep.charAt(structTypeRep.length()-1) == '*') {
+         while (structTypeRep.length() > 1 && structTypeRep.charAt(structTypeRep.length()-1) == '*') {
             structTypeRep = structTypeRep.substring(0, structTypeRep.length()-1);
          }
          try {
@@ -965,6 +974,12 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    private String getRegAndValRep(String name)
    {
       if (name.charAt(0) != '@' && name.charAt(0) != '%') {
+         return "%" + name;
+      }
+      if (name.charAt(0) == '%') {
+         while (name.charAt(0) == '%') {
+            name = name.substring(1);
+         }
          return "%" + name;
       }
       return name;
@@ -1062,25 +1077,42 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
       }
    }
-   private String getValTypeFromPredecessor(LLVMBlockType block, String variable){
+   private String getValTypeFromPredecessor(LLVMBlockType block, String variable)
+   {
       HashMap<String, LLVMType> m = block.getVarTable();
       if (m.containsKey(variable)) {
          LLVMType t = m.get(variable);
-         if (t instanceof LLVMRegisterType) return ((LLVMRegisterType)t).getTypeRep();
-         else if (t instanceof LLVMPrimitiveType ) return ((LLVMPrimitiveType)t).getTypeRep();
-         else return "i32";
-      } 
-      else {
+         if (t instanceof LLVMRegisterType) {
+            return ((LLVMRegisterType)t).getTypeRep();
+         } else if (t instanceof LLVMPrimitiveType) {
+            return ((LLVMPrimitiveType)t).getTypeRep();
+         } else {
+            return "i32";
+         }
+      } else {
          return getValTypeFromPredecessors(block, variable);
       }
    }
-   private String getValTypeFromPredecessors(LLVMBlockType block, String variable){
+   private String getValTypeFromPredecessors(LLVMBlockType block, String variable)
+   {
       for (LLVMBlockType pred : block.getPredecessors()){
          String s =  getValTypeFromPredecessor(pred, variable);
-         if (s==null) continue;
+         if (s == null) {
+            continue;
+         }
          else return s;
       }
       return null;
+   }
+
+   private boolean isNumeric(String s)
+   {
+      for (char c : s.toCharArray()) {
+         if (!Character.isDigit(c)) {
+            return false;
+         }
+      }
+      return true;
    }
 
    private void sealBlock(LLVMBlockType block)
