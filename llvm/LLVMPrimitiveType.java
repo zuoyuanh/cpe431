@@ -25,4 +25,9 @@ public class LLVMPrimitiveType implements LLVMType
    {
       return valueRep;
    }
+
+   public String toString()
+   {
+      return valueRep;
+   }
 }

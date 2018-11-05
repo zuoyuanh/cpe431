@@ -19,4 +19,7 @@ public class LLVMPhiEntryType implements LLVMType {
    public LLVMBlockType getBlock(){
       return this.block;
    }
+   public String getTypeRep() {
+      return "";
+   }
 }

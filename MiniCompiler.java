@@ -4,7 +4,7 @@ import org.antlr.v4.runtime.tree.*;
 import java.io.*;
 import javax.json.JsonValue;
 import staticChecker.*;
-import llvm.StackLLVMVisitor;
+// import llvm.StackLLVMVisitor;
 import llvm.SSAVisitor;
 public class MiniCompiler
 {
@@ -54,7 +54,7 @@ public class MiniCompiler
          SSAVisitor ssaLLVMVisitor = new SSAVisitor(f);
          ssaLLVMVisitor.visit(program);
 
-         f = null;
+         /* f = null;
          if (printStackLLVMProgram) {
             f = new File(llvmOutputFileName);
             System.out.println("--- Generating Stack LLVM Code ---");
@@ -66,7 +66,7 @@ public class MiniCompiler
             System.out.println("block: "+ b.toString());
             for (llvm.LLVMBlockType s : b.getSuccessors())
                System.out.println("successor: "+ s.toString());
-         }
+         } */
 
 
          /* System.out.println("--- Generate CFG ---");

@@ -8,7 +8,7 @@ public class LLVMBlockType implements LLVMType
 {
    private String blockId;
    private Label label;
-   private List<String> llvmCode;
+   private List<LLVMCode> llvmCode;
    private ArrayList<LLVMBlockType> successors;
    private boolean closed;
    private ArrayList<LLVMBlockType> predecessors;
@@ -24,7 +24,7 @@ public class LLVMBlockType implements LLVMType
       this.predecessors = new ArrayList<LLVMBlockType>();
       this.varTable = new HashMap<>();
       this.phiTable = new HashMap<>();
-      this.llvmCode = new ArrayList<String>();
+      this.llvmCode = new ArrayList<LLVMCode>();
       this.closed = false;
       this.sealed = false;
       this.returned = false;
@@ -38,14 +38,14 @@ public class LLVMBlockType implements LLVMType
       this.predecessors = new ArrayList<LLVMBlockType>();
       this.varTable = new HashMap<>();
       this.phiTable = new HashMap<>();
-      this.llvmCode = new ArrayList<String>();
+      this.llvmCode = new ArrayList<LLVMCode>();
       this.closed = false;
       this.sealed = sealed;
       this.returned = false;
       this.label = l;
    }
 
-   public LLVMBlockType(String blockId, List<String> llvmCode, boolean closed, Label l)
+   public LLVMBlockType(String blockId, List<LLVMCode> llvmCode, boolean closed, Label l)
    {
       this.blockId = blockId;
       this.successors = new ArrayList<LLVMBlockType>();
@@ -96,7 +96,7 @@ public class LLVMBlockType implements LLVMType
       return successors;
    }
 
-   public List<String> getLLVMCode()
+   public List<LLVMCode> getLLVMCode()
    {
       return llvmCode;
    }
@@ -128,9 +128,9 @@ public class LLVMBlockType implements LLVMType
       return this.phiTable;
    }
 
-   public void add(String code)
+   public void add(LLVMCode code)
    {
-      if (code.substring(0, 2).equals("br") || code.substring(0, 3).equals("ret")) {
+      if (code.isRedirectInstruction()) {
          this.closed = true;
       }
       llvmCode.add(code);
@@ -191,5 +191,10 @@ public class LLVMBlockType implements LLVMType
    public void setReturned(boolean returned)
    {
       this.returned = returned;
+   }
+
+   public String getTypeRep()
+   {
+      return "";
    }
 }

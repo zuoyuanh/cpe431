@@ -26,4 +26,7 @@ public class LLVMPhiType implements LLVMType {
    public void setRegisterType(String typeRep) {
       this.register.setTypeRep(typeRep);
    }
+   public String getTypeRep() {
+      return "";
+   }
 }

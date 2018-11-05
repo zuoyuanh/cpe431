@@ -1,0 +1,64 @@
+package llvm;
+
+import java.util.List;
+import ast.Declaration;
+
+public class LLVMCallCode extends LLVMCode
+{
+   private String name;
+   private List<LLVMType> args;
+   private List<Declaration> params;
+   private LLVMType resultReg;
+   private boolean isVoid;
+
+   public LLVMCallCode(String name, List<Declaration> params, List<LLVMType> args, LLVMType resultReg)
+   {
+      super();
+      this.name = name;
+      this.args = args;
+      this.params = params;
+      this.resultReg = resultReg;
+      this.isVoid = false;
+   }
+
+   public LLVMCallCode(String name, List<Declaration> params, List<LLVMType> args)
+   {
+      this.name = name;
+      this.args = args;
+      this.params = params;
+      this.isVoid = true;
+   }
+
+   private String getCallsArgsRep()
+   {
+      String callArgsRep = "(";
+      for (int i=0; i<params.size(); i++) {
+         Declaration param = params.get(i);
+         LLVMType arg = args.get(i);
+         String paramTypeRep = getTypeLLVMRepresentation(param.getType());
+         LLVMType opnd = getOperand(arg, paramTypeRep);
+         callArgsRep += opnd.getTypeRep() + " " + opnd + ", ";
+      }
+      if (callArgsRep.length() > 2 && callArgsRep.charAt(callArgsRep.length()-2) == ',') {
+         callArgsRep = callArgsRep.substring(0, callArgsRep.length()-2);
+      }
+      return callArgsRep + ")";
+   }
+
+   public String toString()
+   {
+      if (!isVoid) {
+         return getConversions() + resultReg + " = call " + resultReg.getTypeRep() + " @" + name.trim() + getCallsArgsRep() + "\n";
+      }
+      return getConversions() + "call void @" + name.trim() + getCallsArgsRep() + "\n";
+   }
+
+   public void replaceRegister(LLVMType oldVal, LLVMType newVal)
+   {
+      for (int i=0; i<args.size(); i++) {
+         if (args.get(i).equals(oldVal)) {
+            args.set(i, newVal);
+         }
+      }
+   }
+}
