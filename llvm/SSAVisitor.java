@@ -222,26 +222,20 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
          globalBlockList.add(block);
          printStringToFile(block.getBlockId() + ": \n");
-         List<LLVMCode> llvmCode = block.getLLVMCode();
          HashMap<String, LLVMPhiType> phiTable = block.getPhiTable();
          for (String id : phiTable.keySet()) {
             LLVMPhiType phi = phiTable.get(id);
-            LLVMRegisterType phiRegister = phi.getRegister();
-            String phiOpnds = "";
+            LLVMPhiCode phiCode = new LLVMPhiCode(phi.getRegister(), phi.getPhiOperands());
+            phi.getRegister().setDef(phiCode);
+            block.addToFront(phiCode);
             for (LLVMPhiEntryType ty : phi.getPhiOperands()) {
-               String blockId = ty.getBlock().getBlockId();
                LLVMType t = ty.getOperand();
                if (t instanceof LLVMRegisterType) {
-                  phiOpnds += "[" + ((LLVMRegisterType)t) + ", %" + blockId + "], ";
-               } else if (t instanceof LLVMPrimitiveType) {
-                  phiOpnds += "[" + ((LLVMPrimitiveType)t).getValueRep() + ", %" + blockId + "], ";
+                  ((LLVMRegisterType)t).addUse(phiCode);
                }
             }
-            if (phiOpnds.length() > 2 && phiOpnds.charAt(phiOpnds.length()-2) == ',') {
-               phiOpnds = phiOpnds.substring(0, phiOpnds.length()-2);
-            }
-            printStringToFile("\t%" + phiRegister.getId() + " = phi " + phiRegister.getTypeRep() + " " + phiOpnds + "\n");
          }
+         List<LLVMCode> llvmCode = block.getLLVMCode();
          for (LLVMCode code : llvmCode) {
             printStringToFile("\t" + code);
          }
@@ -298,8 +292,10 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          String id = ((LvalueId)target).getId();
          if (sourceType instanceof LLVMReadExpressionType) {
             String newRegId = "u" + Integer.toString(registerCounter++);
-            LLVMType newReg = new LLVMRegisterType("i32", newRegId);
-            block.add(((LLVMReadExpressionType)sourceType).getSSAReadInstruction(newReg));
+            LLVMRegisterType newReg = new LLVMRegisterType("i32", newRegId);
+            LLVMCode readCode = ((LLVMReadExpressionType)sourceType).getSSAReadInstruction(newReg);
+            block.add(readCode);
+            newReg.setDef(readCode);
             writeVariable(id, block, newReg);
          } else {
             writeVariable(id, block, sourceType);
@@ -308,10 +304,14 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       }
       if (targetType instanceof LLVMRegisterType) {
          if (sourceType instanceof LLVMReadExpressionType) {
-            block.add(((LLVMReadExpressionType)sourceType).getSSAReadInstruction(targetType));
+            LLVMCode readCode = ((LLVMReadExpressionType)sourceType).getSSAReadInstruction(targetType);
+            ((LLVMRegisterType)targetType).setDef(readCode);
+            block.add(readCode);
             return new LLVMVoidType();
          }
-         block.add(new LLVMStoreCode(sourceType, targetType));
+         LLVMCode storeCode = new LLVMStoreCode(sourceType, targetType);
+         block.add(storeCode);
+         ((LLVMRegisterType)targetType).setDef(storeCode);
       }
       return new LLVMVoidType();
    }
@@ -527,7 +527,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       BinaryExpression.Operator operator = binaryExpression.getOperator();
       LLVMBinaryOperationCode c = new LLVMBinaryOperationCode(leftType, rightType, operator);
       block.add(c);
-      return c.getResultReg();
+      LLVMRegisterType resReg = (LLVMRegisterType)(c.getResultReg());
+      resReg.setDef(c);
+      return resReg;
    }
 
    public LLVMType visit(DotExpression dotExpression, LLVMBlockType block)
@@ -545,12 +547,16 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             LLVMStructFieldEntry field = fieldsTable.get(id);
             String fieldPositionRep = field.getPositionRep();
             String fieldTypeRep = field.getTypeRep();
-            LLVMType tempReg = new LLVMRegisterType(fieldTypeRep + "*", "u" + Integer.toString(registerCounter++));
+            LLVMRegisterType tempReg = new LLVMRegisterType(fieldTypeRep + "*", "u" + Integer.toString(registerCounter++));
             /* block.add("%" + tempReg + " = getelementptr " + typeRep + " %" + regName 
                     + ", i1 0, " + fieldTypeRep + " " + fieldPositionRep + "\n"); */
-            block.add(new LLVMGetPtrCode(tempReg, leftType, fieldPositionRep));
-            LLVMType resultReg = new LLVMRegisterType(fieldTypeRep, "u" + Integer.toString(registerCounter++));
-            block.add(new LLVMLoadCode(tempReg, resultReg));
+            LLVMGetPtrCode getPtrCode = new LLVMGetPtrCode(tempReg, leftType, fieldPositionRep);
+            block.add(getPtrCode);
+            tempReg.setDef(getPtrCode);
+            LLVMRegisterType resultReg = new LLVMRegisterType(fieldTypeRep, "u" + Integer.toString(registerCounter++));
+            LLVMLoadCode loadCode = new LLVMLoadCode(tempReg, resultReg);
+            block.add(loadCode);
+            resultReg.setDef(loadCode);
             return resultReg;
          } catch (Exception e) {
             printStringToFile(id + ": IDENTIFIER NOT FOUND 2\n");
@@ -601,8 +607,10 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
 
          if (!returnTypeRep.equals("void")) {
-            LLVMType returnReg = new LLVMRegisterType(returnTypeRep, "u" + Integer.toString(registerCounter++));
-            block.add(new LLVMCallCode(name, params, visitedArgs, returnReg));
+            LLVMRegisterType returnReg = new LLVMRegisterType(returnTypeRep, "u" + Integer.toString(registerCounter++));
+            LLVMCallCode callCode = new LLVMCallCode(name, params, visitedArgs, returnReg);
+            block.add(callCode);
+            returnReg.setDef(callCode);
             return returnReg;
          }
          block.add(new LLVMCallCode(name, params, visitedArgs));
@@ -681,10 +689,12 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             LLVMStructFieldEntry field = fieldsTable.get(id);
             String fieldPositionRep = field.getPositionRep();
             String fieldTypeRep = field.getTypeRep();
-            LLVMType tempReg = new LLVMRegisterType(fieldTypeRep, "u" + Integer.toString(registerCounter++));
+            LLVMRegisterType tempReg = new LLVMRegisterType(fieldTypeRep, "u" + Integer.toString(registerCounter++));
             // block.add("%" + tempReg + " = getelementptr " + typeRep + " %" + regName 
             //         + ", i1 0, " + fieldTypeRep + " " + fieldPositionRep + "\n");
-            block.add(new LLVMGetPtrCode(tempReg, leftType, fieldPositionRep));
+            LLVMGetPtrCode getPtrCode = new LLVMGetPtrCode(tempReg, leftType, fieldPositionRep);
+            block.add(getPtrCode);
+            tempReg.setDef(getPtrCode);
             return tempReg;
          } catch (Exception e) {
             printStringToFile(id + ": IDENTIFIER NOT FOUND 1\n");

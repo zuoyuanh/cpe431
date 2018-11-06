@@ -136,6 +136,15 @@ public class LLVMBlockType implements LLVMType
       llvmCode.add(code);
    }
 
+
+   public void addToFront(LLVMCode code)
+   {
+      if (code.isRedirectInstruction()) {
+         this.closed = true;
+      }
+      llvmCode.add(0, code);
+   }
+
    public void setLabel(Label l)
    {
       this.label = l;

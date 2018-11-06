@@ -1,14 +1,17 @@
 package llvm;
-
+import java.util.ArrayList;
 public class LLVMRegisterType implements  LLVMType
 {
    private String id;
    private String typeRep;
+   private LLVMCode def;
+   private ArrayList<LLVMCode> uses;
 
    public LLVMRegisterType(String typeRep, String id)
    {
       this.id = id;
       this.typeRep = typeRep;
+      this.uses = new ArrayList<LLVMCode>();
    }
 
    public String getId()
@@ -24,6 +27,21 @@ public class LLVMRegisterType implements  LLVMType
    public void setTypeRep(String typeRep)
    {
       this.typeRep = typeRep;
+   }
+
+   public void setDef(LLVMCode c)
+   {
+      this.def = c;
+   }
+
+   public ArrayList<LLVMCode> getUses()
+   {
+      return this.uses;
+   }
+
+   public void addUse(LLVMCode c)
+   {
+      this.uses.add(c);
    }
 
    public String toString()
