@@ -24,6 +24,7 @@ public class LLVMCallCode extends LLVMCode
 
    public LLVMCallCode(String name, List<Declaration> params, List<LLVMType> args)
    {
+      super();
       this.name = name;
       this.args = args;
       this.params = params;
@@ -49,10 +50,11 @@ public class LLVMCallCode extends LLVMCode
 
    public String toString()
    {
+      String callsArgsRep = getCallsArgsRep();
       if (!isVoid) {
-         return getConversions() + resultReg + " = call " + resultReg.getTypeRep() + " @" + name.trim() + getCallsArgsRep() + "\n";
+         return getConversions() + "\t" + resultReg + " = call " + resultReg.getTypeRep() + " @" + name.trim() + callsArgsRep + "\n";
       }
-      return getConversions() + "call void @" + name.trim() + getCallsArgsRep() + "\n";
+      return getConversions() + "\tcall void @" + name.trim() + callsArgsRep + "\n";
    }
 
    public void replaceRegister(LLVMType oldVal, LLVMType newVal)

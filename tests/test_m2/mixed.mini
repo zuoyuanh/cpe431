@@ -18,6 +18,7 @@ fun tailrecursive(int num) void
     {
         return;
     }
+    unused = new foo;
     tailrecursive(num-1);
 }
 

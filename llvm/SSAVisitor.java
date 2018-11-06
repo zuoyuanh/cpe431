@@ -242,6 +242,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       markUsefulInstructionInBlock(blockList);
       
       for (LLVMBlockType block : blockList) {
+         if (block.getPredecessors().size() == 0 && !block.isEntry() && !block.getBlockId().equals(funcExitBlockId)) {
+            continue;
+         }
          globalBlockList.add(block);
          printStringToFile(block.getBlockId() + ": \n");
          List<LLVMCode> llvmCode = block.getLLVMCode();
@@ -315,15 +318,18 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       }
       if (targetType instanceof LLVMRegisterType) {
          if (sourceType instanceof LLVMReadExpressionType) {
-            LLVMCode readCode = ((LLVMReadExpressionType)sourceType).getSSAReadInstruction(targetType);
-            ((LLVMRegisterType)targetType).setDef(readCode);
+            LLVMType tmpReg = createNewRegister("i32");
+            LLVMCode readCode = ((LLVMReadExpressionType)sourceType).getSSAReadInstruction(tmpReg);
+            ((LLVMRegisterType)tmpReg).setDef(readCode);
             block.add(readCode);
+            LLVMCode storeCode = new LLVMStoreCode(tmpReg, targetType);
+            addToUsesList(tmpReg, storeCode);
+            block.add(storeCode);
             return new LLVMVoidType();
          }
          LLVMCode storeCode = new LLVMStoreCode(sourceType, targetType);
          addToUsesList(sourceType, storeCode);
          block.add(storeCode);
-         ((LLVMRegisterType)targetType).setDef(storeCode);
       }
       return new LLVMVoidType();
    }
@@ -1079,7 +1085,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          for (LLVMCode code : block.getLLVMCode()) {
             if ((code instanceof LLVMReturnCode) || (code instanceof LLVMBranchCode)
             || (code instanceof LLVMCallCode) || (code instanceof LLVMStoreCode)
-            || (code instanceof LLVMPrintCode)) {
+            || (code instanceof LLVMPrintCode) || (code instanceof LLVMReadCode)) {
                markUsefulInstruction(code);
             }
          }
