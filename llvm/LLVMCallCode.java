@@ -27,6 +27,7 @@ public class LLVMCallCode extends LLVMCode
       this.args = args;
       this.params = params;
       this.isVoid = true;
+      this.resultReg = null;
    }
 
    private String getCallsArgsRep()
@@ -60,5 +61,21 @@ public class LLVMCallCode extends LLVMCode
             args.set(i, newVal);
          }
       }
+   }
+
+   public List<LLVMRegisterType> dependenciesList()
+   {
+      List<LLVMRegisterType> results = new ArrayList<LLVMRegisterType>();
+      for (LLVMType arg : args) {
+         if (arg instanceof LLVMRegisterType) {
+            results.add((LLVMRegisterType)arg);
+         }
+      } 
+      return results;
+   }
+
+   public LLVMType def()
+   {
+      return resultReg;
    }
 }

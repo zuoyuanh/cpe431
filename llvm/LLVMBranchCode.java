@@ -57,4 +57,13 @@ public class LLVMBranchCode extends LLVMCode
          this.guardType = newVal;
       }
    }
+
+   public List<LLVMRegisterType> dependenciesList()
+   {
+      List<LLVMRegisterType> result = new ArrayList<LLVMRegisterType>();
+      if (guardType instanceof LLVMRegisterType) {
+         result.add((LLVMRegisterType)guardType);
+      }
+      return result;
+   }
 }

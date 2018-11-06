@@ -25,4 +25,9 @@ public class LLVMNewCode extends LLVMCode
    {
       return intermediatorReg + " = call i8* @malloc(i32 " + size + ")\n" + getConversions();
    }
+
+   public LLVMType def()
+   {
+      return resultReg;
+   }
 }

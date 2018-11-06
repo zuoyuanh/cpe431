@@ -46,4 +46,18 @@ public class LLVMReturnConversionCode extends LLVMCode
    {
       return this.resultReg;
    }
+
+   public List<LLVMRegisterType> dependenciesList()
+   {
+      List<LLVMRegisterType> result = new ArrayList<LLVMRegisterType>();
+      if (value instanceof LLVMRegisterType) {
+         result.add((LLVMRegisterType)value);
+      }
+      return result;
+   }
+
+   public LLVMType def()
+   {
+      return this.resultReg;
+   }
 }

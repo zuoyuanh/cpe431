@@ -10,7 +10,14 @@ import ast.VoidType;
 
 public class LLVMCode
 {
-   protected ArrayList<String> typeConversions = new ArrayList<String>();
+   private boolean marked;
+   protected List<String> typeConversions;
+
+   public LLVMCode()
+   {
+      this.marked = false;
+      this.typeConversions = new ArrayList<String>();
+   }
 
    protected LLVMType getOperand(LLVMType t, String expectedType)
    {
@@ -80,12 +87,32 @@ public class LLVMCode
       return false;
    }
 
+   public void replaceRegister(LLVMType oldVal, LLVMType newVal)
+   {
+   }
+
+   public List<LLVMRegisterType> dependenciesList()
+   {
+      return new ArrayList<LLVMRegisterType>();
+   }
+
+   public LLVMType def()
+   {
+      return null;
+   }
+
+   public void mark()
+   {
+      this.marked = true;
+   }
+
+   public boolean isMarked()
+   {
+      return this.marked;
+   }
+
    public String toString()
    {
       return getConversions();
-   }
-
-   public void replaceRegister(LLVMType oldVal, LLVMType newVal)
-   {
    }
 }

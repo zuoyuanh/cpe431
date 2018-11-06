@@ -237,29 +237,18 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             }
          }
       }
+      
       SparseSimpleConstantPropagation();
+      
       for (LLVMBlockType block : blockList) {
-         if (block.getPredecessors().size() == 0 && !block.isEntry() && !block.getBlockId().equals(funcExitBlockId)) {
-            continue;
-         }
+         markUsefulInstructionInBlock(block);
          globalBlockList.add(block);
          printStringToFile(block.getBlockId() + ": \n");
-         /*
-         HashMap<String, LLVMPhiType> phiTable = block.getPhiTable();
-         for (String id : phiTable.keySet()) {
-            LLVMPhiType phi = phiTable.get(id);
-            LLVMPhiCode phiCode = new LLVMPhiCode(phi.getRegister(), phi.getPhiOperands());
-            phi.getRegister().setDef(phiCode);
-            block.addToFront(phiCode);
-            for (LLVMPhiEntryType ty : phi.getPhiOperands()) {
-               LLVMType t = ty.getOperand();
-               addToUsesList(t, phiCode);
-            }
-         }
-         */
          List<LLVMCode> llvmCode = block.getLLVMCode();
          for (LLVMCode code : llvmCode) {
-            printStringToFile("\t" + code);
+            if (code.isMarked()) {
+               printStringToFile("\t" + code);
+            }
          }
          if (!block.isClosed() && !block.getBlockId().equals(funcExitBlockId)) {
             printStringToFile("\tbr label %" + funcExitBlockId + "\n");
@@ -923,7 +912,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    }
    private String getValTypeFromPredecessors(LLVMBlockType block, String variable)
    {
-      for (LLVMBlockType pred : block.getPredecessors()){
+      for (LLVMBlockType pred : block.getPredecessors()) {
          String s =  getValTypeFromPredecessor(pred, variable);
          if (s == null) {
             continue;
@@ -981,7 +970,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
       }
    }
-
+   
    public static SSCPValue initialize(LLVMRegisterType reg, HashMap<LLVMRegisterType, SSCPValue> valueTable){
       LLVMCode c = reg.getDef();
       SSCPValue res = null;
@@ -1071,5 +1060,30 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       }
 
    }
+   
+   private void markUsefulInstructionInBlock(LLVMBlockType block)
+   {
+      List<LLVMCode> rootSet = new ArrayList<LLVMCode>();
+      for (LLVMCode code : block.getLLVMCode()) {
+         if ((code instanceof LLVMReturnCode) || (code instanceof LLVMBranchCode)
+           || (code instanceof LLVMCallCode) || (code instanceof LLVMStoreCode)
+           || (code instanceof LLVMPrintCode)) {
+            markUsefulInstruction(code);
+         }
+      }
+   }
 
+   private void markUsefulInstruction(LLVMCode code)
+   {
+      code.mark();
+      List<LLVMRegisterType> dependencies = code.dependenciesList();
+      for (LLVMRegisterType t : dependencies) {
+         LLVMRegisterType reg = (LLVMRegisterType)t;
+         if (reg.getDependenciesMarked()) {
+            continue;
+         }
+         reg.setDependenciesMarked();
+         this.markUsefulInstruction(reg.def());
+      }
+   }
 }

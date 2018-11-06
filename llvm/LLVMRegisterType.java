@@ -5,6 +5,7 @@ public class LLVMRegisterType implements  LLVMType
    private String id;
    private String typeRep;
    private LLVMCode def;
+   private boolean dependenciesMarked;
    private ArrayList<LLVMCode> uses;
 
    public LLVMRegisterType(String typeRep, String id)
@@ -12,6 +13,7 @@ public class LLVMRegisterType implements  LLVMType
       this.id = id;
       this.typeRep = typeRep;
       this.uses = new ArrayList<LLVMCode>();
+      this.dependenciesMarked = false;
    }
 
    public String getId()
@@ -46,6 +48,16 @@ public class LLVMRegisterType implements  LLVMType
    public void addUse(LLVMCode c)
    {
       this.uses.add(c);
+   }
+
+   public boolean getDependenciesMarked()
+   {
+      return this.dependenciesMarked;
+   }
+
+   public void setDependenciesMarked(boolean marked)
+   {
+      return dependenciesMarked = marked;
    }
 
    public String toString()

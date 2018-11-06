@@ -23,4 +23,18 @@ public class LLVMLoadCode extends LLVMCode
          ptrReg = newVal;
       }
    }
+
+   public List<LLVMRegisterType> dependenciesList()
+   {
+      List<LLVMRegisterType> result = new ArrayList<LLVMRegisterType>();
+      if (ptrReg instanceof LLVMRegisterType) {
+         result.add((LLVMRegisterType)ptrReg);
+      }
+      return result;
+   }
+
+   public LLVMType def()
+   {
+      return resultReg;
+   }
 }
