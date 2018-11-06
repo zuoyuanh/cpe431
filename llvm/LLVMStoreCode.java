@@ -35,11 +35,9 @@ public class LLVMStoreCode extends LLVMCode
       if (source instanceof LLVMRegisterType) {
          result.add((LLVMRegisterType)source);
       }
+      if (target instanceof LLVMRegisterType) {
+         result.add((LLVMRegisterType)target);
+      }
       return result;
-   }
-
-   public LLVMType getDef()
-   {
-      return target;
    }
 }
