@@ -22,4 +22,15 @@ public class LLVMPhiEntryType implements LLVMType {
    public String getTypeRep() {
       return "";
    }
+   public boolean equals(Object o) {
+      if (o == this) { 
+         return true; 
+      }
+      if (!(o instanceof LLVMPhiEntryType)) { 
+         return false; 
+      }
+      LLVMPhiEntryType p = (LLVMPhiEntryType) o;
+      return p.getBlock().equals(block) && p.getOperand().equals(operand);
+   }
+
 }

@@ -229,15 +229,17 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          for (String id : phiTable.keySet()) {
             LLVMPhiType phi = phiTable.get(id);
             LLVMPhiCode phiCode = new LLVMPhiCode(phi.getRegister(), phi.getPhiOperands());
-            phi.getRegister().setDef(phiCode);
-            block.addToFront(phiCode);
-            for (LLVMPhiEntryType ty : phi.getPhiOperands()) {
-               LLVMType t = ty.getOperand();
-               addToUsesList(t, phiCode);
+            LLVMPhiCode res = removeTrivialPhis(phiCode);
+            if (res != null){
+               phi.getRegister().setDef(phiCode);
+               block.addToFront(phiCode);
+               for (LLVMPhiEntryType ty : phi.getPhiOperands()) {
+                  LLVMType t = ty.getOperand();
+                  addToUsesList(t, phiCode);
+               }
             }
          }
       }
-      
       sparseSimpleConstantPropagation();
       markUsefulInstructionInBlock(blockList);
       
@@ -1026,8 +1028,24 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          return res;
       }
       if (c instanceof LLVMPhiCode) {
+         List<SSCPValue> phiTypes = new ArrayList<SSCPValue>();
+         SSCPTop t = new SSCPTop();
+         List<LLVMRegisterType> operands = ((LLVMPhiCode)c).dependenciesList();
+         Set<LLVMRegisterType> ops = new HashSet<LLVMRegisterType>(operands);
+         for (LLVMRegisterType r : ops){
+            SSCPValue val = valueTable.get((LLVMRegisterType)r);
+            if (val instanceof SSCPBottom ) {
+               return new SSCPBottom();
+            } else if (val instanceof SSCPTop) {
+               phiTypes.add(t);
+         //TODO
+         }
+         if (phiTypes.contains(t)) {
+            return t;
+         }
       }
       if (c instanceof LLVMStoreCode) {
+      }
       }
       return new SSCPBottom();
    }
@@ -1076,7 +1094,6 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          if (valRep.equals("false")) return new SSCPBoolConstant(false);
          else return new SSCPNullConstant();
       }
-
    }
    
    private void markUsefulInstructionInBlock(List<LLVMBlockType> blocks)
@@ -1107,5 +1124,8 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          reg.setDependenciesMarked(true);
          this.markUsefulInstruction(reg.getDef());
       }
+   }
+   private static  LLVMPhiCode removeTrivialPhis(LLVMPhiCode phiCode){
+      return phiCode;
    }
 }
