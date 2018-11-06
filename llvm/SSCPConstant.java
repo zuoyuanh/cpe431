@@ -1,4 +1,6 @@
 package llvm;
 
-public abstract class SSCPConstant implements SSCPValue{
+public abstract class SSCPConstant implements SSCPValue
+{
+   
 }

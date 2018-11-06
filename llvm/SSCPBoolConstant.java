@@ -12,4 +12,13 @@ public class SSCPBoolConstant extends SSCPConstant{
    public void setValue(boolean i){
       value = i;
    }
+
+   public boolean equals(Object other)
+   {
+      if ((other == null) || (getClass() != other.getClass())) {
+         return false;
+      } else {
+         return (((SSCPBoolConstant)other).getValue() == value);
+      }
+   }
 }
