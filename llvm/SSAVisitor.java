@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.Map;
 import exceptions.IdentifierNotFoundException;
 import exceptions.DuplicatedIdentifierDeclarationException;
+import java.util.HashSet;
 
 public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 {
@@ -32,6 +33,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    private String funcExitBlockId = null;
    private String funcRetValueTypeRep = null;
    private List<LLVMBlockType> blockList = null;
+   private static HashSet<LLVMRegisterType> regList = null;
 
    private List<LLVMBlockType> globalBlockList;
 
@@ -156,6 +158,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       Type returnType = func.getRetType();
       List<Declaration> params = func.getParams();
       List<Declaration> locals = func.getLocals();
+      regList = new HashSet<LLVMRegisterType>();
       String returnTypeLLVMRep = getTypeLLVMRepresentation(returnType);
 
       blockList = new ArrayList<LLVMBlockType>();
@@ -208,20 +211,20 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       } else {
          LLVMType retValType = readVariable("_retval_", retBlock);
          if (retValType instanceof LLVMRegisterType) {
-            retBlock.add(new LLVMReturnCode(retValType));
+            LLVMReturnCode retCode = new LLVMReturnCode(retValType);
+            retBlock.add(retCode);
+            ((LLVMRegisterType)retValType).addUse(retCode);
          } else if (retValType instanceof LLVMPrimitiveType) {
             retBlock.add(new LLVMReturnCode(retValType));
          }
       }
 
       sealBlock(funcExitBlock);  //seal the exit block
-
+      
       for (LLVMBlockType block : blockList) {
          if (block.getPredecessors().size() == 0 && !block.isEntry() && !block.getBlockId().equals(funcExitBlockId)) {
             continue;
          }
-         globalBlockList.add(block);
-         printStringToFile(block.getBlockId() + ": \n");
          HashMap<String, LLVMPhiType> phiTable = block.getPhiTable();
          for (String id : phiTable.keySet()) {
             LLVMPhiType phi = phiTable.get(id);
@@ -230,15 +233,17 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             block.addToFront(phiCode);
             for (LLVMPhiEntryType ty : phi.getPhiOperands()) {
                LLVMType t = ty.getOperand();
-               if (t instanceof LLVMRegisterType) {
-                  ((LLVMRegisterType)t).addUse(phiCode);
-               }
+               addToUsesList(t, phiCode);
             }
          }
       }
-
+      
+      SparseSimpleConstantPropagation();
+      
       for (LLVMBlockType block : blockList) {
          markUsefulInstructionInBlock(block);
+         globalBlockList.add(block);
+         printStringToFile(block.getBlockId() + ": \n");
          List<LLVMCode> llvmCode = block.getLLVMCode();
          for (LLVMCode code : llvmCode) {
             if (code.isMarked()) {
@@ -316,6 +321,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             return new LLVMVoidType();
          }
          LLVMCode storeCode = new LLVMStoreCode(sourceType, targetType);
+         addToUsesList(sourceType, storeCode);
          block.add(storeCode);
          ((LLVMRegisterType)targetType).setDef(storeCode);
       }
@@ -357,8 +363,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          blockList.add(thenLLVMBlock);
          blockList.add(elseLLVMBlock);
 
-         block.add(new LLVMBranchCode(guardType, thenLLVMBlock, elseLLVMBlock));
-
+         LLVMBranchCode branchCode = new LLVMBranchCode(guardType, thenLLVMBlock, elseLLVMBlock);
+         block.add(branchCode);
+         addToUsesList(guardType, branchCode);
          if (thenBlock != null) {
             LLVMType thenBlockType = this.visit(thenBlock, thenLLVMBlock);
             if (thenBlockType instanceof LLVMBlockType) {
@@ -399,7 +406,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    {
       Expression exp = deleteStatement.getExpression();
       LLVMType expType = this.visit(exp, block);
-      block.add(new LLVMFreeCode(expType));
+      LLVMFreeCode freeCode = new LLVMFreeCode(expType);
+      addToUsesList(expType, freeCode);
+      block.add(freeCode);
       return new LLVMVoidType();
    }
 
@@ -414,7 +423,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    {
       Expression exp = printLnStatement.getExpression();
       LLVMType expType = this.visit(exp, block);
-      block.add(new LLVMPrintCode(expType, true));
+      LLVMPrintCode printCode = new LLVMPrintCode(expType, true);
+      block.add(printCode);
+      addToUsesList(expType, printCode);
       return new LLVMVoidType();
    }
 
@@ -422,7 +433,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    {
       Expression exp = printStatement.getExpression();
       LLVMType expType = this.visit(exp, block);
-      block.add(new LLVMPrintCode(expType, false));
+      LLVMPrintCode printCode = new LLVMPrintCode(expType, false);
+      block.add(printCode);
+      addToUsesList(expType, printCode); 
       return new LLVMVoidType();
    }
 
@@ -441,8 +454,10 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       LLVMType expType = this.visit(exp, block);
       if (expType instanceof LLVMRegisterType || expType instanceof LLVMPrimitiveType) {
          LLVMReturnConversionCode c = new LLVMReturnConversionCode(expType, funcRetValueTypeRep);
+         addToUsesList(expType, c);
          block.add(c);
          LLVMType opnd = c.getConvertedResultReg();
+         if (opnd instanceof LLVMRegisterType) ((LLVMRegisterType)opnd).setDef(c);
          writeVariable("_retval_", block, opnd);
          block.add(new LLVMBranchCode(funcExitBlock));
       }
@@ -473,7 +488,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          block.addSuccessor(jointLLVMBlock);
          jointLLVMBlock.addPredecessor(block);
 
-         block.add(new LLVMBranchCode(guardType, bodyLLVMBlock, jointLLVMBlock));
+         LLVMBranchCode branchCode1 = new LLVMBranchCode(guardType, bodyLLVMBlock, jointLLVMBlock);
+         block.add(branchCode1);
+         addToUsesList(guardType, branchCode1);
 
          if (bodyBlock != null) {
             LLVMType bodyBlockType = this.visit(bodyBlock, bodyLLVMBlock);
@@ -484,8 +501,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
 
          guardType = this.visit(whileStatement.getGuard(), bodyLLVMBlock);
-         bodyLLVMBlock.add(new LLVMBranchCode(guardType, originalBodyLLVMBlock, jointLLVMBlock));
-
+         LLVMBranchCode branchCode2 = new LLVMBranchCode(guardType, originalBodyLLVMBlock, jointLLVMBlock);
+         bodyLLVMBlock.add(branchCode2);
+         addToUsesList(guardType, branchCode2);
          bodyLLVMBlock.addSuccessor(originalBodyLLVMBlock);
          originalBodyLLVMBlock.addPredecessor(bodyLLVMBlock);
          bodyLLVMBlock.addSuccessor(jointLLVMBlock);
@@ -533,6 +551,8 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       BinaryExpression.Operator operator = binaryExpression.getOperator();
       LLVMBinaryOperationCode c = new LLVMBinaryOperationCode(leftType, rightType, operator);
       block.add(c);
+      addToUsesList(leftType, c);
+      addToUsesList(rightType, c);
       LLVMRegisterType resReg = (LLVMRegisterType)(c.getResultReg());
       resReg.setDef(c);
       return resReg;
@@ -556,13 +576,17 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             LLVMRegisterType tempReg = new LLVMRegisterType(fieldTypeRep + "*", "u" + Integer.toString(registerCounter++));
             /* block.add("%" + tempReg + " = getelementptr " + typeRep + " %" + regName 
                     + ", i1 0, " + fieldTypeRep + " " + fieldPositionRep + "\n"); */
+            regList.add(tempReg);
             LLVMGetPtrCode getPtrCode = new LLVMGetPtrCode(tempReg, leftType, fieldPositionRep);
             block.add(getPtrCode);
             tempReg.setDef(getPtrCode);
+            addToUsesList(leftType, getPtrCode);
             LLVMRegisterType resultReg = new LLVMRegisterType(fieldTypeRep, "u" + Integer.toString(registerCounter++));
             LLVMLoadCode loadCode = new LLVMLoadCode(tempReg, resultReg);
             block.add(loadCode);
+            addToUsesList(tempReg, loadCode);
             resultReg.setDef(loadCode);
+            regList.add(resultReg);
             return resultReg;
          } catch (Exception e) {
             printStringToFile(id + ": IDENTIFIER NOT FOUND 2\n");
@@ -615,11 +639,20 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          if (!returnTypeRep.equals("void")) {
             LLVMRegisterType returnReg = new LLVMRegisterType(returnTypeRep, "u" + Integer.toString(registerCounter++));
             LLVMCallCode callCode = new LLVMCallCode(name, params, visitedArgs, returnReg);
+            for (LLVMType arg : visitedArgs){
+               addToUsesList(arg, callCode);
+            }
+            regList.add(returnReg);
             block.add(callCode);
             returnReg.setDef(callCode);
             return returnReg;
+         }else{
+            LLVMCallCode callCode = new LLVMCallCode(name, params, visitedArgs);
+            block.add(callCode);
+            for (LLVMType arg : visitedArgs){
+               addToUsesList(arg, callCode);
+            }
          }
-         block.add(new LLVMCallCode(name, params, visitedArgs));
       } catch (IdentifierNotFoundException exc) {
          printStringToFile("IDENTIFIER NOT FOUND 3\n");
       }
@@ -639,7 +672,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
       LLVMNewCode c = new LLVMNewCode(size, structRep);
       block.add(c);
-      return c.getConvertedResultReg();
+      LLVMType resType = c.getConvertedResultReg();
+      if (resType instanceof LLVMRegisterType) ((LLVMRegisterType)resType).setDef(c);
+      return resType;
    }
 
    public LLVMType visit(ReadExpression readExpression, LLVMBlockType block)
@@ -701,6 +736,8 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             LLVMGetPtrCode getPtrCode = new LLVMGetPtrCode(tempReg, leftType, fieldPositionRep);
             block.add(getPtrCode);
             tempReg.setDef(getPtrCode);
+            addToUsesList(leftType, getPtrCode);
+            regList.add(tempReg);
             return tempReg;
          } catch (Exception e) {
             printStringToFile(id + ": IDENTIFIER NOT FOUND 1\n");
@@ -790,6 +827,8 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       } else { 
          m.put(variable, value); 
       }
+      //add to SSA regList
+      if (value instanceof LLVMRegisterType) regList.add((LLVMRegisterType)value); 
    }
 
    private void writePhiVariable(String variable, LLVMBlockType block, LLVMPhiType value) //write to phiTable
@@ -901,6 +940,127 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       return new LLVMRegisterType(type, regId);
    }
 
+   public static void addToUsesList(LLVMType reg, LLVMCode c){
+      if (reg instanceof LLVMRegisterType){
+         ((LLVMRegisterType)reg).addUse(c);
+      }
+      return;
+   }
+   public static void SparseSimpleConstantPropagation(){
+      ArrayList<LLVMRegisterType> workList = new ArrayList<LLVMRegisterType>();
+      HashMap<LLVMRegisterType, SSCPValue> valueTable = new HashMap<LLVMRegisterType, SSCPValue>();
+      for (LLVMRegisterType r : regList){
+         SSCPValue v = initialize(r, valueTable);
+         if (!(v instanceof SSCPTop)) workList.add(r);
+      }
+      while (!workList.isEmpty()){
+         LLVMRegisterType reg = workList.remove(0);
+         List<LLVMCode> uses = reg.getUses();
+         for (LLVMCode use : uses){
+            LLVMType def = use.getDef(); //for a code, need to find the reg it defined
+            if (def!=null && def instanceof LLVMRegisterType && !(valueTable.get((LLVMRegisterType)def) instanceof SSCPBottom)){
+               LLVMRegisterType m = (LLVMRegisterType) def;
+               SSCPValue val = valueTable.get(m);
+               SSCPValue resVal = evaluate(use, valueTable);
+               if (!resVal.getClass().equals(val.getClass())){
+                  valueTable.put(m, resVal);
+                  if (!workList.contains(m)) workList.add(m);
+               }
+            }
+         }
+      }
+   }
+   
+   public static SSCPValue initialize(LLVMRegisterType reg, HashMap<LLVMRegisterType, SSCPValue> valueTable){
+      LLVMCode c = reg.getDef();
+      SSCPValue res = null;
+      if (c instanceof LLVMReadCode || c instanceof LLVMCallCode || c instanceof LLVMLoadCode) {
+         res = new SSCPBottom();
+      }
+      else{
+         res = new SSCPTop();
+      }
+      valueTable.put (reg, res);
+      return res; 
+   }
+
+   public static SSCPValue evaluate(LLVMCode c, HashMap<LLVMRegisterType, SSCPValue> valueTable){
+      SSCPValue res = null;
+      if (c instanceof LLVMBinaryOperationCode){
+         LLVMType lfType = ((LLVMBinaryOperationCode)c).getLeftType();
+         LLVMType rtType = ((LLVMBinaryOperationCode)c).getRightType();
+         SSCPValue lfVal = new SSCPBottom();
+         SSCPValue rtVal = new SSCPBottom();
+
+         if (lfType instanceof LLVMRegisterType )
+            lfVal = valueTable.get((LLVMRegisterType)lfType);
+         if (rtType instanceof LLVMRegisterType)
+            rtVal = valueTable.get((LLVMRegisterType)rtType);
+         if (lfType instanceof LLVMPrimitiveType)
+            lfVal = getPrimitiveValue((LLVMPrimitiveType)lfType);
+         if (rtType instanceof LLVMPrimitiveType)
+            lfVal = getPrimitiveValue((LLVMPrimitiveType)rtType);
+         
+
+         if (lfVal instanceof SSCPBottom || rtVal instanceof SSCPBottom) res = new SSCPBottom();
+         else if (lfVal instanceof SSCPTop || rtVal instanceof SSCPTop) res = new SSCPTop();
+         else res = evaluateBinaryConstants(((LLVMBinaryOperationCode)c).getOperator(), lfVal, rtVal);
+         
+         return res;
+      }
+      if (c instanceof LLVMPhiCode){
+      }
+      if (c instanceof LLVMStoreCode){
+      }
+      return new SSCPBottom();
+   }
+
+   public static SSCPValue evaluateBinaryConstants(BinaryExpression.Operator op, SSCPValue lfVal, SSCPValue rtVal){
+      switch (op){
+         case TIMES:
+            int lf1 = ((SSCPIntConstant)lfVal).getValue();
+            int rt1 = ((SSCPIntConstant)rtVal).getValue();
+            return new SSCPIntConstant(lf1*rt1);
+            break;
+         case PLUS:
+            int lf2 = ((SSCPIntConstant)lfVal).getValue();
+            int rt2 = ((SSCPIntConstant)rtVal).getValue();
+            return new SSCPIntConstant(lf2+rt2);
+            break;
+         case MINUS:
+            int lf3 = ((SSCPIntConstant)lfVal).getValue();
+            int rt3 = ((SSCPIntConstant)rtVal).getValue();
+            return new SSCPIntConstant(lf3-rt3);
+         case DIVIDE: 
+            int lf4 = ((SSCPIntConstant)lfVal).getValue();
+            int rt4 = ((SSCPIntConstant)rtVal).getValue();
+            return new SSCPIntConstant(lf4/rt4);
+            break;
+         case AND:
+            boolean lf5 = ((SSCPBoolConstant)lfVal).getValue();
+            boolean rt5 = ((SSCPBoolConstant)rtVal).getValue();
+            return new SSCPBoolConstant(lf5&&rt5);
+            break;
+         case OR:
+            boolean lf6 = ((SSCPBoolConstant)lfVal).getValue();
+            boolean rt6 = ((SSCPBoolConstant)rtVal).getValue();
+            return new SSCPBoolConstant(lf6||rt6);
+            break;
+      }
+   }
+   public static SSCPValue getPrimitiveValue(LLVMPrimitiveType p){
+      String valRep = p.getValueRep();
+      try{
+         int i = Integer.parseInt(valRep);
+         return new SSCPIntConstant(i);
+      }catch (Exception e){
+         if (valRep.equals("true")) return new SSCPBoolConstant(true);
+         if (valRep.equals("false")) return new SSCPBoolConstant(false);
+         else return new SSCPNullConstant();
+      }
+
+   }
+   
    private void markUsefulInstructionInBlock(LLVMBlockType block)
    {
       List<LLVMCode> rootSet = new ArrayList<LLVMCode>();
