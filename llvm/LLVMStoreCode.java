@@ -1,5 +1,8 @@
 package llvm;
 
+import java.util.List;
+import java.util.ArrayList;
+
 public class LLVMStoreCode extends LLVMCode
 {
    private LLVMType source;
@@ -35,7 +38,7 @@ public class LLVMStoreCode extends LLVMCode
       return result;
    }
 
-   public LLVMType def()
+   public LLVMType getDef()
    {
       return target;
    }

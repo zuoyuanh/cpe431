@@ -96,7 +96,7 @@ public class LLVMCode
       return new ArrayList<LLVMRegisterType>();
    }
 
-   public LLVMType def()
+   public LLVMType getDef()
    {
       return null;
    }

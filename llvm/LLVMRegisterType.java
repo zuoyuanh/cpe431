@@ -36,7 +36,8 @@ public class LLVMRegisterType implements  LLVMType
       this.def = c;
    }
 
-   public LLVMCode getDef(){
+   public LLVMCode getDef()
+   {
       return this.def;
    }
 
@@ -57,7 +58,7 @@ public class LLVMRegisterType implements  LLVMType
 
    public void setDependenciesMarked(boolean marked)
    {
-      return dependenciesMarked = marked;
+      this.dependenciesMarked = marked;
    }
 
    public String toString()

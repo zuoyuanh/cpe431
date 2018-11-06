@@ -1,5 +1,6 @@
 package llvm;
 
+import java.util.List;
 import java.util.ArrayList;
 
 public class LLVMReturnConversionCode extends LLVMCode
@@ -56,7 +57,7 @@ public class LLVMReturnConversionCode extends LLVMCode
       return result;
    }
 
-   public LLVMType def()
+   public LLVMType getDef()
    {
       return this.resultReg;
    }

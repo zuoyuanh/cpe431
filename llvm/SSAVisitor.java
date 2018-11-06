@@ -33,7 +33,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    private String funcExitBlockId = null;
    private String funcRetValueTypeRep = null;
    private List<LLVMBlockType> blockList = null;
-   private static HashSet<LLVMRegisterType> regList = null;
+   private HashSet<LLVMRegisterType> regList = null;
 
    private List<LLVMBlockType> globalBlockList;
 
@@ -238,10 +238,10 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
       }
       
-      SparseSimpleConstantPropagation();
+      sparseSimpleConstantPropagation();
+      markUsefulInstructionInBlock(blockList);
       
       for (LLVMBlockType block : blockList) {
-         markUsefulInstructionInBlock(block);
          globalBlockList.add(block);
          printStringToFile(block.getBlockId() + ": \n");
          List<LLVMCode> llvmCode = block.getLLVMCode();
@@ -828,7 +828,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          m.put(variable, value); 
       }
       //add to SSA regList
-      if (value instanceof LLVMRegisterType) regList.add((LLVMRegisterType)value); 
+      if ((regList != null) && (value instanceof LLVMRegisterType)) {
+         regList.add((LLVMRegisterType)value); 
+      }
    }
 
    private void writePhiVariable(String variable, LLVMBlockType block, LLVMPhiType value) //write to phiTable
@@ -946,53 +948,58 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       }
       return;
    }
-   public static void SparseSimpleConstantPropagation(){
+
+   private void sparseSimpleConstantPropagation()
+   {
       ArrayList<LLVMRegisterType> workList = new ArrayList<LLVMRegisterType>();
       HashMap<LLVMRegisterType, SSCPValue> valueTable = new HashMap<LLVMRegisterType, SSCPValue>();
-      for (LLVMRegisterType r : regList){
+      for (LLVMRegisterType r : regList) {
          SSCPValue v = initialize(r, valueTable);
          if (!(v instanceof SSCPTop)) workList.add(r);
       }
-      while (!workList.isEmpty()){
+      while (!workList.isEmpty()) {
          LLVMRegisterType reg = workList.remove(0);
          List<LLVMCode> uses = reg.getUses();
-         for (LLVMCode use : uses){
+         for (LLVMCode use : uses) {
             LLVMType def = use.getDef(); //for a code, need to find the reg it defined
-            if (def!=null && def instanceof LLVMRegisterType && !(valueTable.get((LLVMRegisterType)def) instanceof SSCPBottom)){
-               LLVMRegisterType m = (LLVMRegisterType) def;
+            if (def!=null && def instanceof LLVMRegisterType && !(valueTable.get((LLVMRegisterType)def) instanceof SSCPBottom)) {
+               LLVMRegisterType m = (LLVMRegisterType)def;
                SSCPValue val = valueTable.get(m);
                SSCPValue resVal = evaluate(use, valueTable);
-               if (!resVal.getClass().equals(val.getClass())){
+               if ((resVal != null) && (val != null) && (!resVal.getClass().equals(val.getClass()))) {
                   valueTable.put(m, resVal);
-                  if (!workList.contains(m)) workList.add(m);
+                  if (!workList.contains(m)) {
+                     workList.add(m);
+                  }
                }
             }
          }
       }
    }
    
-   public static SSCPValue initialize(LLVMRegisterType reg, HashMap<LLVMRegisterType, SSCPValue> valueTable){
+   private SSCPValue initialize(LLVMRegisterType reg, HashMap<LLVMRegisterType, SSCPValue> valueTable)
+   {
       LLVMCode c = reg.getDef();
       SSCPValue res = null;
       if (c instanceof LLVMReadCode || c instanceof LLVMCallCode || c instanceof LLVMLoadCode) {
          res = new SSCPBottom();
-      }
-      else{
+      } else {
          res = new SSCPTop();
       }
-      valueTable.put (reg, res);
+      valueTable.put(reg, res);
       return res; 
    }
 
-   public static SSCPValue evaluate(LLVMCode c, HashMap<LLVMRegisterType, SSCPValue> valueTable){
+   private SSCPValue evaluate(LLVMCode c, HashMap<LLVMRegisterType, SSCPValue> valueTable)
+   {
       SSCPValue res = null;
-      if (c instanceof LLVMBinaryOperationCode){
+      if (c instanceof LLVMBinaryOperationCode) {
          LLVMType lfType = ((LLVMBinaryOperationCode)c).getLeftType();
          LLVMType rtType = ((LLVMBinaryOperationCode)c).getRightType();
          SSCPValue lfVal = new SSCPBottom();
          SSCPValue rtVal = new SSCPBottom();
 
-         if (lfType instanceof LLVMRegisterType )
+         if (lfType instanceof LLVMRegisterType)
             lfVal = valueTable.get((LLVMRegisterType)lfType);
          if (rtType instanceof LLVMRegisterType)
             rtVal = valueTable.get((LLVMRegisterType)rtType);
@@ -1002,58 +1009,63 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             lfVal = getPrimitiveValue((LLVMPrimitiveType)rtType);
          
 
-         if (lfVal instanceof SSCPBottom || rtVal instanceof SSCPBottom) res = new SSCPBottom();
-         else if (lfVal instanceof SSCPTop || rtVal instanceof SSCPTop) res = new SSCPTop();
-         else res = evaluateBinaryConstants(((LLVMBinaryOperationCode)c).getOperator(), lfVal, rtVal);
+         if (lfVal instanceof SSCPBottom || rtVal instanceof SSCPBottom) {
+            res = new SSCPBottom();
+         } else if (lfVal instanceof SSCPTop || rtVal instanceof SSCPTop) {
+            res = new SSCPTop();
+         } else {
+            res = evaluateBinaryConstants(((LLVMBinaryOperationCode)c).getOperator(), lfVal, rtVal);
+         }
          
          return res;
       }
-      if (c instanceof LLVMPhiCode){
+      if (c instanceof LLVMPhiCode) {
       }
-      if (c instanceof LLVMStoreCode){
+      if (c instanceof LLVMStoreCode) {
       }
       return new SSCPBottom();
    }
 
-   public static SSCPValue evaluateBinaryConstants(BinaryExpression.Operator op, SSCPValue lfVal, SSCPValue rtVal){
-      switch (op){
-         case TIMES:
-            int lf1 = ((SSCPIntConstant)lfVal).getValue();
-            int rt1 = ((SSCPIntConstant)rtVal).getValue();
-            return new SSCPIntConstant(lf1*rt1);
-            break;
-         case PLUS:
-            int lf2 = ((SSCPIntConstant)lfVal).getValue();
-            int rt2 = ((SSCPIntConstant)rtVal).getValue();
-            return new SSCPIntConstant(lf2+rt2);
-            break;
-         case MINUS:
-            int lf3 = ((SSCPIntConstant)lfVal).getValue();
-            int rt3 = ((SSCPIntConstant)rtVal).getValue();
-            return new SSCPIntConstant(lf3-rt3);
-         case DIVIDE: 
-            int lf4 = ((SSCPIntConstant)lfVal).getValue();
-            int rt4 = ((SSCPIntConstant)rtVal).getValue();
-            return new SSCPIntConstant(lf4/rt4);
-            break;
-         case AND:
-            boolean lf5 = ((SSCPBoolConstant)lfVal).getValue();
-            boolean rt5 = ((SSCPBoolConstant)rtVal).getValue();
-            return new SSCPBoolConstant(lf5&&rt5);
-            break;
-         case OR:
-            boolean lf6 = ((SSCPBoolConstant)lfVal).getValue();
-            boolean rt6 = ((SSCPBoolConstant)rtVal).getValue();
-            return new SSCPBoolConstant(lf6||rt6);
-            break;
+   private SSCPValue evaluateBinaryConstants(BinaryExpression.Operator op, SSCPValue lfVal, SSCPValue rtVal)
+   {
+      switch (op)
+      {
+      case TIMES:
+         int lf1 = ((SSCPIntConstant)lfVal).getValue();
+         int rt1 = ((SSCPIntConstant)rtVal).getValue();
+         return new SSCPIntConstant(lf1*rt1);
+      case PLUS:
+         int lf2 = ((SSCPIntConstant)lfVal).getValue();
+         int rt2 = ((SSCPIntConstant)rtVal).getValue();
+         return new SSCPIntConstant(lf2+rt2);
+      case MINUS:
+         int lf3 = ((SSCPIntConstant)lfVal).getValue();
+         int rt3 = ((SSCPIntConstant)rtVal).getValue();
+         return new SSCPIntConstant(lf3-rt3);
+      case DIVIDE: 
+         int lf4 = ((SSCPIntConstant)lfVal).getValue();
+         int rt4 = ((SSCPIntConstant)rtVal).getValue();
+         return new SSCPIntConstant(lf4/rt4);
+      case AND:
+         boolean lf5 = ((SSCPBoolConstant)lfVal).getValue();
+         boolean rt5 = ((SSCPBoolConstant)rtVal).getValue();
+         return new SSCPBoolConstant(lf5&&rt5);
+      case OR:
+         boolean lf6 = ((SSCPBoolConstant)lfVal).getValue();
+         boolean rt6 = ((SSCPBoolConstant)rtVal).getValue();
+         return new SSCPBoolConstant(lf6||rt6);
+      default:
+         return new SSCPBoolConstant(false);
       }
    }
-   public static SSCPValue getPrimitiveValue(LLVMPrimitiveType p){
+
+   private SSCPValue getPrimitiveValue(LLVMPrimitiveType p)
+   {
       String valRep = p.getValueRep();
-      try{
+      try {
          int i = Integer.parseInt(valRep);
          return new SSCPIntConstant(i);
-      }catch (Exception e){
+      } catch (Exception e) {
          if (valRep.equals("true")) return new SSCPBoolConstant(true);
          if (valRep.equals("false")) return new SSCPBoolConstant(false);
          else return new SSCPNullConstant();
@@ -1061,20 +1073,24 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
    }
    
-   private void markUsefulInstructionInBlock(LLVMBlockType block)
+   private void markUsefulInstructionInBlock(List<LLVMBlockType> blocks)
    {
-      List<LLVMCode> rootSet = new ArrayList<LLVMCode>();
-      for (LLVMCode code : block.getLLVMCode()) {
-         if ((code instanceof LLVMReturnCode) || (code instanceof LLVMBranchCode)
-           || (code instanceof LLVMCallCode) || (code instanceof LLVMStoreCode)
-           || (code instanceof LLVMPrintCode)) {
-            markUsefulInstruction(code);
+      for (LLVMBlockType block : blocks) {
+         for (LLVMCode code : block.getLLVMCode()) {
+            if ((code instanceof LLVMReturnCode) || (code instanceof LLVMBranchCode)
+            || (code instanceof LLVMCallCode) || (code instanceof LLVMStoreCode)
+            || (code instanceof LLVMPrintCode)) {
+               markUsefulInstruction(code);
+            }
          }
       }
    }
 
    private void markUsefulInstruction(LLVMCode code)
    {
+      if (code == null) {
+         return;
+      }
       code.mark();
       List<LLVMRegisterType> dependencies = code.dependenciesList();
       for (LLVMRegisterType t : dependencies) {
@@ -1082,8 +1098,8 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          if (reg.getDependenciesMarked()) {
             continue;
          }
-         reg.setDependenciesMarked();
-         this.markUsefulInstruction(reg.def());
+         reg.setDependenciesMarked(true);
+         this.markUsefulInstruction(reg.getDef());
       }
    }
 }

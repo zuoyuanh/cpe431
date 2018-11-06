@@ -1,6 +1,7 @@
 package llvm;
 
 import java.util.List;
+import java.util.ArrayList;
 
 public class LLVMPhiCode extends LLVMCode
 {
@@ -43,7 +44,7 @@ public class LLVMPhiCode extends LLVMCode
       return results;
    }
 
-   public LLVMType def()
+   public LLVMType getDef()
    {
       return phiRegister;
    }

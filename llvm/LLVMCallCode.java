@@ -1,6 +1,7 @@
 package llvm;
 
 import java.util.List;
+import java.util.ArrayList;
 import ast.Declaration;
 
 public class LLVMCallCode extends LLVMCode
@@ -74,7 +75,7 @@ public class LLVMCallCode extends LLVMCode
       return results;
    }
 
-   public LLVMType def()
+   public LLVMType getDef()
    {
       return resultReg;
    }

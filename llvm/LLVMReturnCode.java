@@ -1,5 +1,8 @@
 package llvm;
 
+import java.util.List;
+import java.util.ArrayList;
+
 public class LLVMReturnCode extends LLVMCode
 {
    private LLVMType value;

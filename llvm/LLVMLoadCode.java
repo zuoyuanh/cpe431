@@ -1,5 +1,8 @@
 package llvm;
 
+import java.util.List;
+import java.util.ArrayList;
+
 public class LLVMLoadCode extends LLVMCode
 {
    private LLVMType ptrReg;
@@ -33,7 +36,7 @@ public class LLVMLoadCode extends LLVMCode
       return result;
    }
 
-   public LLVMType def()
+   public LLVMType getDef()
    {
       return resultReg;
    }

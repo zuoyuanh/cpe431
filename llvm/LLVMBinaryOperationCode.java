@@ -1,5 +1,7 @@
 package llvm;
 
+import java.util.List;
+import java.util.ArrayList;
 import ast.BinaryExpression;
 
 public class LLVMBinaryOperationCode extends LLVMCode
@@ -138,7 +140,7 @@ public class LLVMBinaryOperationCode extends LLVMCode
       return result;
    }
 
-   public LLVMType def()
+   public LLVMType getDef()
    {
       return resultReg;
    }
