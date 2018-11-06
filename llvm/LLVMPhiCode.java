@@ -44,6 +44,13 @@ public class LLVMPhiCode extends LLVMCode
       return results;
    }
 
+   public List<LLVMPhiEntryType> getEntries(){
+      return entries;
+   }
+
+   public void setEntries(List<LLVMPhiEntryType> e){
+      this.entries = e;
+   }
    public LLVMType getDef()
    {
       return phiRegister;

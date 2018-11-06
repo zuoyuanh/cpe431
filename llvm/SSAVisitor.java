@@ -1125,7 +1125,13 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          this.markUsefulInstruction(reg.getDef());
       }
    }
-   private static  LLVMPhiCode removeTrivialPhis(LLVMPhiCode phiCode){
+   private static LLVMPhiCode removeTrivialPhis(LLVMPhiCode phiCode){
+      List<LLVMPhiEntryType> entries = phiCode.getEntries();
+      Set<LLVMPhiEntryType> set = new HashSet<LLVMPhiEntryType>(entries);
+      if (set.size() == 0) return null;
+      List<LLVMPhiEntryType> res = new ArrayList<LLVMPhiEntryType>();
+      res.addAll(set);
+      phiCode.setEntries(res);
       return phiCode;
    }
 }
