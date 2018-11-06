@@ -12,4 +12,12 @@ public class SSCPIntConstant extends SSCPConstant{
    public void setValue(int i){
       value = i;
    }
+   public boolean equals(Object other)
+   {
+      if ((other == null) || (getClass() != other.getClass())) {
+         return false;
+      } else {
+         return (((SSCPIntConstant)other).getValue() == value);
+      }
+   }
 }

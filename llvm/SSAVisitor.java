@@ -229,9 +229,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          for (String id : phiTable.keySet()) {
             LLVMPhiType phi = phiTable.get(id);
             LLVMPhiCode phiCode = new LLVMPhiCode(phi.getRegister(), phi.getPhiOperands());
+            phi.getRegister().setDef(phiCode);
             LLVMPhiCode res = removeTrivialPhis(phiCode);
-            if (res != null){
-               phi.getRegister().setDef(phiCode);
+            if (res != null) {
                block.addToFront(phiCode);
                for (LLVMPhiEntryType ty : phi.getPhiOperands()) {
                   LLVMType t = ty.getOperand();
@@ -240,6 +240,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             }
          }
       }
+      
       sparseSimpleConstantPropagation();
       markUsefulInstructionInBlock(blockList);
       
@@ -983,7 +984,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             }
          }
       }
-      for (LLVMRegisterType key : valueTable.keySet()) {
+      /* for (LLVMRegisterType key : valueTable.keySet()) {
          SSCPValue val = valueTable.get(key);
          if (val instanceof SSCPConstant) {
             LLVMPrimitiveType constant = null;
@@ -998,7 +999,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                code.replaceRegister(key, constant);
             }
          }
-      }
+      } */
    }
    
    private SSCPValue initialize(LLVMRegisterType reg, HashMap<LLVMRegisterType, SSCPValue> valueTable)
@@ -1054,14 +1055,24 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                return new SSCPBottom();
             } else if (val instanceof SSCPTop) {
                phiTypes.add(t);
-         //TODO
+            } else {
+               phiTypes.add(t);
+            }
          }
          if (phiTypes.contains(t)) {
             return t;
          }
+         SSCPValue tmp = null;
+         for (SSCPValue v : phiTypes) {
+            if (tmp == null) {
+               tmp = v;
+            } else if (!tmp.equals(v)) {
+               return new SSCPBottom(); 
+            }
+         }
+         return tmp;
       }
       if (c instanceof LLVMStoreCode) {
-      }
       }
       return new SSCPBottom();
    }
@@ -1143,11 +1154,26 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    }
    private static LLVMPhiCode removeTrivialPhis(LLVMPhiCode phiCode){
       List<LLVMPhiEntryType> entries = phiCode.getEntries();
-      Set<LLVMPhiEntryType> set = new HashSet<LLVMPhiEntryType>(entries);
+      List<LLVMPhiEntryType> results = new ArrayList<LLVMPhiEntryType>();
+      Set<String> set = new HashSet<String>();
+      for (LLVMPhiEntryType phiTy : entries) {
+         LLVMType t = phiTy.getOperand();
+         if (t instanceof LLVMRegisterType) {
+            String id = ((LLVMRegisterType)t).getId();
+            if (!set.contains(id)) {
+               set.add(id);
+               results.add(phiTy);
+            }
+         }
+      }
       if (set.size() == 0) return null;
-      List<LLVMPhiEntryType> res = new ArrayList<LLVMPhiEntryType>();
-      res.addAll(set);
-      phiCode.setEntries(res);
+
+      if (set.size() == 1) {
+         for (LLVMCode code : ((LLVMRegisterType)(phiCode.getDef())).getUses()) {
+            code.replaceRegister(phiCode.getDef(), results.get(0).getOperand());
+         }
+      }
+      phiCode.setEntries(results);
       return phiCode;
    }
 }
