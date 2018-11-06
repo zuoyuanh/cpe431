@@ -655,7 +655,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             block.add(callCode);
             returnReg.setDef(callCode);
             return returnReg;
-         }else{
+         } else {
             LLVMCallCode callCode = new LLVMCallCode(name, params, visitedArgs);
             block.add(callCode);
             for (LLVMType arg : visitedArgs){
@@ -964,7 +964,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       HashMap<LLVMRegisterType, SSCPValue> valueTable = new HashMap<LLVMRegisterType, SSCPValue>();
       for (LLVMRegisterType r : regList) {
          SSCPValue v = initialize(r, valueTable);
-         if (!(v instanceof SSCPTop)) workList.add(r);
+         if (!(v instanceof SSCPTop)) {
+            workList.add(r);
+         }
       }
       while (!workList.isEmpty()) {
          LLVMRegisterType reg = workList.remove(0);
@@ -984,7 +986,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             }
          }
       }
-      /* for (LLVMRegisterType key : valueTable.keySet()) {
+      for (LLVMRegisterType key : valueTable.keySet()) {
          SSCPValue val = valueTable.get(key);
          if (val instanceof SSCPConstant) {
             LLVMPrimitiveType constant = null;
@@ -999,7 +1001,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                code.replaceRegister(key, constant);
             }
          }
-      } */
+      }
    }
    
    private SSCPValue initialize(LLVMRegisterType reg, HashMap<LLVMRegisterType, SSCPValue> valueTable)
@@ -1158,12 +1160,10 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       Set<String> set = new HashSet<String>();
       for (LLVMPhiEntryType phiTy : entries) {
          LLVMType t = phiTy.getOperand();
-         if (t instanceof LLVMRegisterType) {
-            String id = ((LLVMRegisterType)t).getId();
-            if (!set.contains(id)) {
-               set.add(id);
-               results.add(phiTy);
-            }
+         String tRep = t.toString();
+         if (!set.contains(tRep)) {
+            set.add(tRep);
+            results.add(phiTy);
          }
       }
       if (set.size() == 0) return null;
