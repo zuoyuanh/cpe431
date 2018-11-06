@@ -29,4 +29,14 @@ public class LLVMPrintCode extends LLVMCode
          opnd = newVal;
       }
    }
+
+   public List<LLVMRegisterType> dependenciesList()
+   {
+      List<LLVMRegisterType> result = new ArrayList<LLVMRegisterType>();
+      if (opnd instanceof LLVMRegisterType) {
+         result.add((LLVMRegisterType)opnd);
+
+      }
+      return result;
+   }
 }

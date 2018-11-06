@@ -35,4 +35,13 @@ public class LLVMReturnCode extends LLVMCode
          value = newVal;
       }
    }
+
+   public List<LLVMRegisterType> dependenciesList()
+   {
+      List<LLVMRegisterType> result = new ArrayList<LLVMRegisterType>();
+      if (value instanceof LLVMRegisterType) {
+         result.add((LLVMRegisterType)value);
+      }
+      return result;
+   }
 }

@@ -25,4 +25,18 @@ public class LLVMStoreCode extends LLVMCode
          source = newVal;
       }
    }
+
+   public List<LLVMRegisterType> dependenciesList()
+   {
+      List<LLVMRegisterType> result = new ArrayList<LLVMRegisterType>();
+      if (source instanceof LLVMRegisterType) {
+         result.add((LLVMRegisterType)source);
+      }
+      return result;
+   }
+
+   public LLVMType def()
+   {
+      return target;
+   }
 }

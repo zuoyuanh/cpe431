@@ -12,7 +12,8 @@ public class LLVMPhiCode extends LLVMCode
       phiRegister = r;
       this.entries = entries;
    }
-   public String toString(){
+   public String toString()
+   {
       String phiOpnds = "";
       for (LLVMPhiEntryType ty : entries) 
       {
@@ -28,6 +29,22 @@ public class LLVMPhiCode extends LLVMCode
          phiOpnds = phiOpnds.substring(0, phiOpnds.length()-2);
       }
       return ("%" + phiRegister.getId() + " = phi " + phiRegister.getTypeRep() + " " + phiOpnds + "\n");
-         
+   }
+
+   public List<LLVMRegisterType> dependenciesList()
+   {
+      List<LLVMRegisterType> results = new ArrayList<LLVMRegisterType>();
+      for (LLVMPhiEntryType phi : entries) {
+         LLVMType phiType = phi.getOperand();
+         if (phiType instanceof LLVMRegisterType) {
+            results.add((LLVMRegisterType)phiType);
+         }
+      }
+      return results;
+   }
+
+   public LLVMType def()
+   {
+      return phiRegister;
    }
 }

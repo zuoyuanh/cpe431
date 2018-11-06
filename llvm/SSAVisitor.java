@@ -235,9 +235,15 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                }
             }
          }
+      }
+
+      for (LLVMBlockType block : blockList) {
+         markUsefulInstructionInBlock(block);
          List<LLVMCode> llvmCode = block.getLLVMCode();
          for (LLVMCode code : llvmCode) {
-            printStringToFile("\t" + code);
+            if (code.isMarked()) {
+               printStringToFile("\t" + code);
+            }
          }
          if (!block.isClosed() && !block.getBlockId().equals(funcExitBlockId)) {
             printStringToFile("\tbr label %" + funcExitBlockId + "\n");
@@ -867,7 +873,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    }
    private String getValTypeFromPredecessors(LLVMBlockType block, String variable)
    {
-      for (LLVMBlockType pred : block.getPredecessors()){
+      for (LLVMBlockType pred : block.getPredecessors()) {
          String s =  getValTypeFromPredecessor(pred, variable);
          if (s == null) {
             continue;
@@ -893,5 +899,31 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    {
       String regId = "u" + Integer.toString(registerCounter++);
       return new LLVMRegisterType(type, regId);
+   }
+
+   private void markUsefulInstructionInBlock(LLVMBlockType block)
+   {
+      List<LLVMCode> rootSet = new ArrayList<LLVMCode>();
+      for (LLVMCode code : block.getLLVMCode()) {
+         if ((code instanceof LLVMReturnCode) || (code instanceof LLVMBranchCode)
+           || (code instanceof LLVMCallCode) || (code instanceof LLVMStoreCode)
+           || (code instanceof LLVMPrintCode)) {
+            markUsefulInstruction(code);
+         }
+      }
+   }
+
+   private void markUsefulInstruction(LLVMCode code)
+   {
+      code.mark();
+      List<LLVMRegisterType> dependencies = code.dependenciesList();
+      for (LLVMRegisterType t : dependencies) {
+         LLVMRegisterType reg = (LLVMRegisterType)t;
+         if (reg.getDependenciesMarked()) {
+            continue;
+         }
+         reg.setDependenciesMarked();
+         this.markUsefulInstruction(reg.def());
+      }
    }
 }

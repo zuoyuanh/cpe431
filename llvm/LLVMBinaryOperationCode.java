@@ -111,4 +111,21 @@ public class LLVMBinaryOperationCode extends LLVMCode
          rightType = newVal;
       }
    }
+
+   public List<LLVMRegisterType> dependenciesList()
+   {
+      List<LLVMRegisterType> result = new ArrayList<LLVMRegisterType>();
+      if (leftType instanceof LLVMRegisterType) {
+         result.add((LLVMRegisterType)leftType);
+      }
+      if (rightType instanceof LLVMRegisterType) {
+         result.add((LLVMRegisterType)rightType);
+      }
+      return result;
+   }
+
+   public LLVMType def()
+   {
+      return resultReg;
+   }
 }
