@@ -983,6 +983,22 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             }
          }
       }
+      for (LLVMRegisterType key : valueTable.keySet()) {
+         SSCPValue val = valueTable.get(key);
+         if (val instanceof SSCPConstant) {
+            LLVMPrimitiveType constant = null;
+            if (val instanceof SSCPIntConstant) {
+               constant = new LLVMPrimitiveType("i32", Integer.toString(((SSCPIntConstant)val).getValue()));
+            } else if (val instanceof SSCPBoolConstant) {
+               constant = new LLVMPrimitiveType("i1", Integer.toString(((SSCPBoolConstant)val).getValue() ? 1 : 0));
+            } else {
+               constant = new LLVMPrimitiveType("null", "null");
+            }
+            for (LLVMCode code : key.getUses()) {
+               code.replaceRegister(key, constant);
+            }
+         }
+      }
    }
    
    private SSCPValue initialize(LLVMRegisterType reg, HashMap<LLVMRegisterType, SSCPValue> valueTable)
