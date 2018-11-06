@@ -81,6 +81,17 @@ public class LLVMBinaryOperationCode extends LLVMCode
       }
    }
 
+   public  BinaryExpression.Operator getOperator(){
+      return operator;
+   }
+   public LLVMType getRightType()
+   {
+      return this.rightType;
+   }
+   public LLVMType getLeftType()
+   {
+      return this.leftType;
+   }
    public LLVMType getResultReg()
    {
       return this.resultReg;
