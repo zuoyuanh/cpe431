@@ -34,6 +34,10 @@ public class LLVMRegisterType implements  LLVMType
       this.def = c;
    }
 
+   public LLVMCode getDef(){
+      return this.def;
+   }
+
    public ArrayList<LLVMCode> getUses()
    {
       return this.uses;
