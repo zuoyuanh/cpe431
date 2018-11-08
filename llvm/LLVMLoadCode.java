@@ -24,6 +24,9 @@ public class LLVMLoadCode extends LLVMCode
    {
       if (ptrReg.equals(oldVal)) {
          ptrReg = newVal;
+         if (newVal instanceof LLVMRegisterType) {
+            ((LLVMRegisterType)newVal).addUse(this);
+         }
       }
    }
 

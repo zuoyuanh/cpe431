@@ -30,6 +30,9 @@ public class LLVMPrintCode extends LLVMCode
    {
       if (opnd.equals(oldVal)) {
          opnd = newVal;
+         if (newVal instanceof LLVMRegisterType) {
+            ((LLVMRegisterType)newVal).addUse(this);
+         }
       }
    }
 

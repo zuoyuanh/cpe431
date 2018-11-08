@@ -36,6 +36,9 @@ public class LLVMReturnCode extends LLVMCode
    {
       if (value.equals(oldVal)) {
          value = newVal;
+         if (newVal instanceof LLVMRegisterType) {
+            ((LLVMRegisterType)newVal).addUse(this);
+         }
       }
    }
 

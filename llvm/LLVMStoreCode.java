@@ -26,6 +26,9 @@ public class LLVMStoreCode extends LLVMCode
    {
       if (source.equals(oldVal)) {
          source = newVal;
+         if (newVal instanceof LLVMRegisterType) {
+            ((LLVMRegisterType)newVal).addUse(this);
+         }
       }
    }
 

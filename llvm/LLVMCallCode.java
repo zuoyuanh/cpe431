@@ -62,6 +62,9 @@ public class LLVMCallCode extends LLVMCode
       for (int i=0; i<args.size(); i++) {
          if (args.get(i).equals(oldVal)) {
             args.set(i, newVal);
+            if (newVal instanceof LLVMRegisterType) {
+               ((LLVMRegisterType)newVal).addUse(this);
+            }
          }
       }
    }
