@@ -1,6 +1,6 @@
 package llvm;
 import java.util.ArrayList;
-public class LLVMRegisterType implements  LLVMType
+public class LLVMRegisterType implements LLVMType
 {
    private String id;
    private String typeRep;
@@ -48,6 +48,9 @@ public class LLVMRegisterType implements  LLVMType
 
    public void addUse(LLVMCode c)
    {
+      if (uses.contains(c)) {
+         return;
+      }
       this.uses.add(c);
    }
 

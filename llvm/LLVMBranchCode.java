@@ -58,6 +58,9 @@ public class LLVMBranchCode extends LLVMCode
    {
       if (guardType.equals(oldVal)) {
          this.guardType = newVal;
+         if (newVal instanceof LLVMRegisterType) {
+            ((LLVMRegisterType)newVal).addUse(this);
+         }
       }
    }
 

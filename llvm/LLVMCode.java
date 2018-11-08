@@ -11,11 +11,13 @@ import ast.VoidType;
 public class LLVMCode
 {
    private boolean marked;
+   protected boolean removed;
    protected List<String> typeConversions;
 
    public LLVMCode()
    {
       this.marked = false;
+      this.removed = false;
       this.typeConversions = new ArrayList<String>();
    }
 
@@ -109,6 +111,16 @@ public class LLVMCode
    public boolean isMarked()
    {
       return this.marked;
+   }
+
+   public void remove()
+   {
+      this.removed = true;
+   }
+
+   public boolean isRemoved()
+   {
+      return this.removed;
    }
 
    public String toString()

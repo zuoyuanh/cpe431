@@ -44,15 +44,32 @@ public class LLVMPhiCode extends LLVMCode
       return results;
    }
 
-   public List<LLVMPhiEntryType> getEntries(){
+   public void replaceRegister(LLVMType oldVal, LLVMType newVal)
+   {
+      for (LLVMPhiEntryType phi : entries) {
+         if (phi.getOperand().equals(oldVal)) {
+            phi.setOperand(newVal);
+            if (newVal instanceof LLVMRegisterType) {
+               ((LLVMRegisterType)newVal).addUse(this);
+            }
+         }
+      }
+   }
+
+   public List<LLVMPhiEntryType> getEntries()
+   {
       return entries;
    }
 
-   public void setEntries(List<LLVMPhiEntryType> e){
+   public void setEntries(List<LLVMPhiEntryType> e)
+   {
       this.entries = e;
    }
+
    public LLVMType getDef()
    {
       return phiRegister;
    }
+
+   
 }

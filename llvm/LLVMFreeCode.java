@@ -23,6 +23,9 @@ public class LLVMFreeCode extends LLVMCode
    {
       if (opnd.equals(oldVal)) {
          opnd = newVal;
+         if (newVal instanceof LLVMRegisterType) {
+            ((LLVMRegisterType)newVal).addUse(this);
+         }
       }
    }
 

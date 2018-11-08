@@ -122,9 +122,15 @@ public class LLVMBinaryOperationCode extends LLVMCode
    {
       if (leftType.equals(oldVal)) {
          leftType = newVal;
+         if (newVal instanceof LLVMRegisterType) {
+            ((LLVMRegisterType)newVal).addUse(this);
+         }
       }
       if (rightType.equals(oldVal)) {
          rightType = newVal;
+         if (newVal instanceof LLVMRegisterType) {
+            ((LLVMRegisterType)newVal).addUse(this);
+         }
       }
    }
 

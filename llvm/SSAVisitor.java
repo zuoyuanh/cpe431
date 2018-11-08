@@ -220,6 +220,8 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       }
 
       sealBlock(funcExitBlock);  //seal the exit block
+
+      List<LLVMPhiCode> phiCodes = new ArrayList<LLVMPhiCode>();
       
       for (LLVMBlockType block : blockList) {
          if (block.getPredecessors().size() == 0 && !block.isEntry() && !block.getBlockId().equals(funcExitBlockId)) {
@@ -230,17 +232,16 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             LLVMPhiType phi = phiTable.get(id);
             LLVMPhiCode phiCode = new LLVMPhiCode(phi.getRegister(), phi.getPhiOperands());
             phi.getRegister().setDef(phiCode);
-            LLVMPhiCode res = removeTrivialPhis(phiCode);
-            if (res != null) {
-               block.addToFront(phiCode);
-               for (LLVMPhiEntryType ty : phi.getPhiOperands()) {
-                  LLVMType t = ty.getOperand();
-                  addToUsesList(t, phiCode);
-               }
+            block.addToFront(phiCode);
+            phiCodes.add(phiCode);
+            for (LLVMPhiEntryType ty : phi.getPhiOperands()) {
+               LLVMType t = ty.getOperand();
+               addToUsesList(t, phiCode);
             }
          }
       }
       
+      removeTrivialPhis(phiCodes);
       sparseSimpleConstantPropagation();
       markUsefulInstructionInBlock(blockList);
       
@@ -252,7 +253,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          printStringToFile(block.getBlockId() + ": \n");
          List<LLVMCode> llvmCode = block.getLLVMCode();
          for (LLVMCode code : llvmCode) {
-            if (code.isMarked()) {
+            if (code.isMarked() && (!code.isRemoved())) {
                printStringToFile("\t" + code);
             }
          }
@@ -951,11 +952,10 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       return new LLVMRegisterType(type, regId);
    }
 
-   public static void addToUsesList(LLVMType reg, LLVMCode c){
+   private void addToUsesList(LLVMType reg, LLVMCode c){
       if (reg instanceof LLVMRegisterType){
          ((LLVMRegisterType)reg).addUse(c);
       }
-      return;
    }
 
    private void sparseSimpleConstantPropagation()
@@ -1162,26 +1162,61 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          this.markUsefulInstruction(reg.getDef());
       }
    }
-   private static LLVMPhiCode removeTrivialPhis(LLVMPhiCode phiCode){
+
+   // remove trivial phis
+
+   private boolean isTrivialPhiCode(LLVMPhiCode phiCode)
+   {
       List<LLVMPhiEntryType> entries = phiCode.getEntries();
-      List<LLVMPhiEntryType> results = new ArrayList<LLVMPhiEntryType>();
       Set<String> set = new HashSet<String>();
       for (LLVMPhiEntryType phiTy : entries) {
          LLVMType t = phiTy.getOperand();
          String tRep = t.toString();
          if (!set.contains(tRep)) {
             set.add(tRep);
-            results.add(phiTy);
          }
       }
-      if (set.size() == 0) return null;
+      if (set.size() == 0 || set.size() == 1) {
+         return true;
+      }
+      return false;
+   }
 
-      if (set.size() == 1) {
+   private void removeTrivialPhi(LLVMPhiCode phiCode)
+   {
+      List<LLVMPhiEntryType> entries = phiCode.getEntries();
+      if (entries.size() > 0) {
          for (LLVMCode code : ((LLVMRegisterType)(phiCode.getDef())).getUses()) {
-            code.replaceRegister(phiCode.getDef(), results.get(0).getOperand());
+            code.replaceRegister(phiCode.getDef(), entries.get(0).getOperand());
          }
       }
-      phiCode.setEntries(results);
-      return phiCode;
+      phiCode.remove();
+   }
+
+   private List<LLVMPhiCode> splitPhiCodes(List<LLVMPhiCode> workList)
+   {
+      List<LLVMPhiCode> results = new ArrayList<LLVMPhiCode>();
+      List<LLVMPhiCode> originalWorkList = new ArrayList<LLVMPhiCode>();
+      for (LLVMPhiCode code : workList) {
+         originalWorkList.add(code);
+      }
+      for (LLVMPhiCode code : originalWorkList) {
+         if (isTrivialPhiCode(code)) {
+            workList.remove(code);
+            results.add(code);
+         }
+      }
+      return results;
+   }
+
+   private void removeTrivialPhis(List<LLVMPhiCode> workList)
+   {
+      List<LLVMPhiCode> trivialList = splitPhiCodes(workList);
+      while (trivialList.size() > 0) {
+         for (LLVMPhiCode phiCode : trivialList) {
+            removeTrivialPhi(phiCode);
+         }
+         trivialList = splitPhiCodes(workList);
+      }
    }
 }
