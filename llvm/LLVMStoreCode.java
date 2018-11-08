@@ -15,6 +15,14 @@ public class LLVMStoreCode extends LLVMCode
       this.target = target;
    }
 
+   public LLVMType getSource(){
+      return this.source;
+   }
+
+   public LLVMType getTarget(){
+      return this.target;
+   }
+
    public String toString()
    {
       source = getOperand(source, target.getTypeRep());

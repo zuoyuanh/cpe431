@@ -1033,7 +1033,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          if (lfType instanceof LLVMPrimitiveType)
             lfVal = getPrimitiveValue((LLVMPrimitiveType)lfType);
          if (rtType instanceof LLVMPrimitiveType)
-            lfVal = getPrimitiveValue((LLVMPrimitiveType)rtType);
+            rtVal = getPrimitiveValue((LLVMPrimitiveType)rtType);
          
 
          if (lfVal instanceof SSCPBottom || rtVal instanceof SSCPBottom) {
@@ -1049,16 +1049,21 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       if (c instanceof LLVMPhiCode) {
          List<SSCPValue> phiTypes = new ArrayList<SSCPValue>();
          SSCPTop t = new SSCPTop();
-         List<LLVMRegisterType> operands = ((LLVMPhiCode)c).dependenciesList();
-         Set<LLVMRegisterType> ops = new HashSet<LLVMRegisterType>(operands);
-         for (LLVMRegisterType r : ops){
-            SSCPValue val = valueTable.get((LLVMRegisterType)r);
-            if (val instanceof SSCPBottom ) {
-               return new SSCPBottom();
-            } else if (val instanceof SSCPTop) {
-               phiTypes.add(t);
-            } else {
-               phiTypes.add(t);
+         List<LLVMPhiEntryType> entries = ((LLVMPhiCode)c).getEntries();
+         for (LLVMPhiEntryType r : entries){
+            LLVMType operand = r.getOperand();
+            if (operand instanceof LLVMRegisterType){
+               SSCPValue val = valueTable.get((LLVMRegisterType)operand);
+               if (val instanceof SSCPBottom ) {
+                  return new SSCPBottom();
+               } else if (val instanceof SSCPTop) {
+                  phiTypes.add(t);
+               } else {
+                  phiTypes.add(t);
+               }
+            }
+            else if (operand instanceof LLVMPrimitiveType){
+               phiTypes.add(getPrimitiveValue((LLVMPrimitiveType)operand));
             }
          }
          if (phiTypes.contains(t)) {
@@ -1075,6 +1080,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          return tmp;
       }
       if (c instanceof LLVMStoreCode) {
+         LLVMType source = ((LLVMStoreCode)c).getSource();
+         if (source instanceof LLVMPrimitiveType) return getPrimitiveValue((LLVMPrimitiveType)source);
+         else if (source instanceof LLVMRegisterType) return valueTable.get((LLVMRegisterType)source);
       }
       return new SSCPBottom();
    }
