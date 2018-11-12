@@ -20,4 +20,7 @@ public class SSCPIntConstant extends SSCPConstant{
          return (((SSCPIntConstant)other).getValue() == value);
       }
    }
+   public String toString(){
+      return value + "";
+   }
 }
