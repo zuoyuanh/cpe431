@@ -86,4 +86,9 @@ public class LLVMRegisterType implements LLVMType
          return id.equals(((LLVMRegisterType)other).getId());
       }
    }
+   public int hashCode() {
+      int hash = 7;
+      hash = 31 * hash + id.hashCode();
+      return hash;
+   }
 }

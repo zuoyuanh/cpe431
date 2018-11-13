@@ -241,6 +241,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
       }
       
+      for (LLVMPhiCode c : phiCodes){
+         System.out.println("Phi code: "+ c+"\n"+"phiCode reg: "+c.getDef()+"\ndependencies: "+c.dependenciesList());
+      }
       removeTrivialPhis(phiCodes);
       sparseSimpleConstantPropagation();
       markUsefulInstructionInBlock(blockList);
@@ -253,9 +256,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          printStringToFile(block.getBlockId() + ": \n");
          List<LLVMCode> llvmCode = block.getLLVMCode();
          for (LLVMCode code : llvmCode) {
-            if (code.isMarked() && (!code.isRemoved())) {
+            //if (code.isMarked() && (!code.isRemoved())) {
                printStringToFile("\t" + code);
-            }
+            //}
          }
          if (!block.isClosed() && !block.getBlockId().equals(funcExitBlockId)) {
             printStringToFile("\tbr label %" + funcExitBlockId + "\n");
@@ -565,6 +568,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       addToUsesList(rightType, c);
       LLVMRegisterType resReg = (LLVMRegisterType)(c.getResultReg());
       resReg.setDef(c);
+      regList.add(resReg);
       return resReg;
    }
 
@@ -899,6 +903,8 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          phi.addPhiOperand(new LLVMPhiEntryType(val, pred));
          if (val instanceof LLVMRegisterType) {
             phi.setRegisterType(((LLVMRegisterType)val).getTypeRep());
+            //phi.getRegister().addUse();
+            //r.
          } else if (val instanceof LLVMPrimitiveType) {
             phi.setRegisterType(((LLVMPrimitiveType)val).getTypeRep());
          } else {
@@ -964,28 +970,39 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       HashMap<LLVMRegisterType, SSCPValue> valueTable = new HashMap<LLVMRegisterType, SSCPValue>();
       
       for (LLVMRegisterType r : regList) {
+         System.out.println(r+" "+ r.getDef());
          initialize(r, valueTable);
       }
+      System.out.println(valueTable);
       for (LLVMRegisterType r : regList){
          SSCPValue orig = valueTable.get(r);
+         System.out.println(r+" "+ r.getDef());
          SSCPValue v = evaluate(r.getDef(), valueTable);
-         if (! orig.getClass().equals(v.getClass()))
+         if (! orig.equals(v))
             valueTable.put(r, v);
          if (!(v instanceof SSCPTop)) {
             workList.add(r);
          }
       }
-
+      System.out.println(valueTable);
+   
       while (!workList.isEmpty()) {
          LLVMRegisterType reg = workList.remove(0);
+         System.out.println("remove: " +reg);
          List<LLVMCode> uses = reg.getUses();
          for (LLVMCode use : uses) {
+         System.out.println("use "+use);
             LLVMType def = use.getDef(); //for a code, need to find the reg it defined
+         System.out.println("def "+def);
             if (def!=null && def instanceof LLVMRegisterType && !(valueTable.get((LLVMRegisterType)def) instanceof SSCPBottom)) {
                LLVMRegisterType m = (LLVMRegisterType)def;
                SSCPValue val = valueTable.get(m);
                SSCPValue resVal = evaluate(use, valueTable);
-               if ((resVal != null) && (val != null) && !(resVal.getClass().equals(val.getClass()))) {
+               if (resVal instanceof SSCPConstant) System.out.println("constant: "+  m + val + resVal);
+               if (resVal instanceof SSCPBottom) System.out.println("bottom: "+  m);
+               if ((resVal != null)  && !(resVal.equals(val))) {
+               if (resVal instanceof SSCPConstant) System.out.println("constant: "+  m);
+
                   valueTable.put(m, resVal);
                   if (!workList.contains(m)) {
                      workList.add(m);
