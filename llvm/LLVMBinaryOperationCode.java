@@ -150,4 +150,9 @@ public class LLVMBinaryOperationCode extends LLVMCode
    {
       return resultReg;
    }
+
+   public LocalNumberingExpression getExpressionForLocalNumbering()
+   {
+      return new LocalNumberingBinaryExpression(operator, leftType, rightType);
+   }
 }

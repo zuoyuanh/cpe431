@@ -127,4 +127,9 @@ public class LLVMCode
    {
       return getConversions();
    }
+
+   public LocalNumberingExpression getExpressionForLocalNumbering()
+   {
+      return null;
+   }
 }
