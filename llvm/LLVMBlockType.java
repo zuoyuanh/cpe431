@@ -9,6 +9,7 @@ public class LLVMBlockType implements LLVMType
    private String blockId;
    private Label label;
    private List<LLVMCode> llvmCode;
+   private List<ARMCode> armCode;
    private ArrayList<LLVMBlockType> successors;
    private boolean closed;
    private ArrayList<LLVMBlockType> predecessors;
