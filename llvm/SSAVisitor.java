@@ -87,26 +87,34 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                declsTable.insert(declName, decl.getType());
             } catch (Exception e) {
             } */
-            printStringToFile(declName + " = common global ");
-            printStringToFile(typeRep + " ");
-            if (typeRep.equals("i32")) {
-               printStringToFile("0, align 4");
-            } else if (typeRep.equals("i1")) {
-               printStringToFile("0, align 1");
+            if (generateARM) {
+               printStringToFile("\t.comm   " + varName + ",4,4");
             } else {
-               /* try {
-                  String structName = typeRep.substring(0, typeRep.length()-1);
-                  int size = typesSizeTable.get(structName);
-                  printStringToFile("null, align " + Integer.toString(size * 8));
-               } catch (Exception esc) {
-               } */
-               printStringToFile("null, align 8");
+               printStringToFile(declName + " = common global ");
+               printStringToFile(typeRep + " ");
+               if (typeRep.equals("i32")) {
+                  printStringToFile("0, align 4");
+               } else if (typeRep.equals("i1")) {
+                  printStringToFile("0, align 1");
+               } else {
+                  /* try {
+                     String structName = typeRep.substring(0, typeRep.length()-1);
+                     int size = typesSizeTable.get(structName);
+                     printStringToFile("null, align " + Integer.toString(size * 8));
+                  } catch (Exception esc) {
+                  } */
+                  printStringToFile("null, align 8");
+               }
             }
             writeVariable(varName, programBlock, new LLVMRegisterType(typeRep, "@" + varName));
             printStringToFile("\n");
          }
       }
       printStringToFile("\n");
+
+      if (generateARM) {
+         printStringToFile("\t.text\n");
+      }
 
       List<Function> funcs = program.getFuncs();
       for (Function func : funcs){

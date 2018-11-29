@@ -1,6 +1,7 @@
 	.arch armv7-a
-@globalfoo = common global %struct.foo* null, align 8
+	.comm   globalfoo,4,4
 
+	.text
 	.align 2
 	.global tailrecursive
 tailrecursive:
