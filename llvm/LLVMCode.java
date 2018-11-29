@@ -13,6 +13,7 @@ public class LLVMCode
    private boolean marked;
    protected boolean removed;
    protected List<String> typeConversions;
+   protected List<ARMCode> armConversions;
    private LLVMBlockType block;
    protected List<ARMCode> armCode;
 
@@ -23,6 +24,7 @@ public class LLVMCode
       this.typeConversions = new ArrayList<String>();
       this.block = null;
       this.armCode = new ArrayList<ARMCode>();
+      this.armConversions = new ArrayList<ARMCode>();
    }
 
    protected LLVMType getOperand(LLVMType t, String expectedType)
@@ -65,7 +67,7 @@ public class LLVMCode
          res =  new LLVMRegisterType(expectedType, tmpRegId);
       }
       LLVMRegisterType opndReg = getReg(opndType);
-      armCode.add(new ARMMoveCode(res, opndReg, ARMMoveCode.Operator.MOV));
+      armConversions.add(new ARMMoveCode(res, opndReg, ARMMoveCode.Operator.MOV));
       return res;
    }
 
@@ -90,6 +92,13 @@ public class LLVMCode
          return "%struct." + structName + "*";
       }
       return "unknown";
+   }
+
+   protected void mergeARMConversions()
+   {
+      for (ARMCode code : armConversions) {
+         this.armCode.add(code);
+      }
    }
 
    public boolean isRedirectInstruction()

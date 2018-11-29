@@ -167,6 +167,10 @@ public class LLVMBlockType implements LLVMType
       LLVMCode code = new LLVMPhiDefCode(phiDefRegister, target);
       if (target instanceof LLVMRegisterType) {
          ((LLVMRegisterType)target).addUse(code);
+         if (((LLVMRegisterType)target).getDef() == null) {
+            llvmCode.add(0, code);
+            return code;
+         }
          for (int i=0; i<llvmCode.size(); i++) {
             if (llvmCode.get(i).getDef() != null && llvmCode.get(i).getDef().equals(target)) {
                llvmCode.add(i + 1, code);

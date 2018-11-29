@@ -38,6 +38,7 @@ public class LLVMNewCode extends LLVMCode
       armCode.add(new ARMBranchCode("malloc", ARMBranchCode.Operator.BL));
       LLVMRegisterType iReg = getReg(intermediatorReg);
       armCode.add(new ARMMoveCode(iReg, ARMCode.r0, ARMMoveCode.Operator.MOV));
+      mergeARMConversions();
       return armCode;
    }
 }

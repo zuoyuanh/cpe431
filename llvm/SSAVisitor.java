@@ -776,7 +776,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       int size = 4;
 
       try {
-         size = 8 * typesSizeTable.get(structRep);
+         size = 4 * typesSizeTable.get(structRep);
       } catch (Exception exc) {
       }
 
