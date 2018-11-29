@@ -72,4 +72,20 @@ public class LLVMBranchCode extends LLVMCode
       }
       return result;
    }
+   public List<ARMCode> generateArmCode()
+   {
+      this.armCode = new ArrayList<ARMCode>();
+      if (conditonal){
+         LLVMRegisterType g = getReg(guardType);
+         armCode.add(new ARMMoveCode(g, new LLVMPrimitiveType("i32", "1"),ARMMoveCode.Operator.CMP));
+         armCode.add(new ARMBranchCode(thenLLVMBlock.getBlockId(), ARMBranchCode.Operator.BEQ));
+         armCode.add(new ARMBranchCode(elseLLVMBlock.getBlockId(), ARMBranchCode.Operator.B));
+      }
+      else{
+         armCode.add(new ARMBranchCode(elseLLVMBlock.getBlockId(), ARMBranchCode.Operator.B)); 
+      }
+      return armCode;
+   }
+   
+
 }

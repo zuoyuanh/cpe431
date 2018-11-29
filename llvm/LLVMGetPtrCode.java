@@ -8,6 +8,7 @@ public class LLVMGetPtrCode extends LLVMCode
    private LLVMType resultReg;
    private LLVMType source;
    private String positionOffset;
+   private List<ARMCode> armCode;
 
    public LLVMGetPtrCode(LLVMType resultReg, LLVMType source, String positionOffset)
    {
@@ -45,5 +46,23 @@ public class LLVMGetPtrCode extends LLVMCode
    public LLVMType getDef()
    {
       return resultReg;
+   }
+
+   public List<ARMCode> getArmCode()
+   {
+      return this.armCode;
+   }
+   public List<ARMCode> generateArmCode()
+   {
+      this.armCode = new ArrayList<ARMCode>();
+      int offset = 0;
+      try{
+         offset = Integer.parseInt(positionOffset);
+      }catch (Exception e){
+         System.out.println("offset is not integer");
+      }
+      LLVMPrimitiveType o = new LLVMPrimitiveType("i32", ""+ (offset*4));
+      armCode.add(new ARMBinaryOperationCode( (LLVMRegisterType)source, o,  (LLVMRegisterType)resultReg, ARMBinaryOperationCode.Operator.ADD));
+      return armCode;
    }
 }
