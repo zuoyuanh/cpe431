@@ -1,12 +1,12 @@
 package llvm;
-import java.util.ArrayList;
+import java.util.List;
 public class ARMPushPopCode extends ARMCode
 {
    
    private Operator operator;
-   private ArrayList<LLVMRegisterType> regList;
+   private List<LLVMRegisterType> regList;
 
-   public ARMPushPopCode(ArrayList<LLVMRegisterType> regList,  Operator operator)
+   public ARMPushPopCode(List<LLVMRegisterType> regList,  Operator operator)
    {
       super();
       this.regList = regList;
@@ -35,7 +35,7 @@ public class ARMPushPopCode extends ARMCode
       if (regList.size() == 0) return "";
       String res = operatorToString(operator) + " {";
       for (LLVMRegisterType reg : regList){
-         res = res + " " + reg +", ";
+         res += reg +", ";
       }
       res = res.substring(0, res.length()-2);
       res +="}\n";

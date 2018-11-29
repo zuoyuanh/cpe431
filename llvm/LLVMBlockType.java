@@ -165,12 +165,12 @@ public class LLVMBlockType implements LLVMType
    public LLVMCode addPhiRegisterDef(LLVMRegisterType phiDefRegister, LLVMType target)
    {
       LLVMCode code = new LLVMPhiDefCode(phiDefRegister, target);
-      code.mark();
       if (target instanceof LLVMRegisterType) {
          ((LLVMRegisterType)target).addUse(code);
          for (int i=0; i<llvmCode.size(); i++) {
             if (llvmCode.get(i).getDef() != null && llvmCode.get(i).getDef().equals(target)) {
                llvmCode.add(i + 1, code);
+               break;
             }
          }
       } else if (target instanceof LLVMPrimitiveType) {
@@ -190,6 +190,23 @@ public class LLVMBlockType implements LLVMType
          this.closed = true;
       }
       llvmCode.add(0, code);
+   }
+
+   public void addToARMFront(ARMCode code)
+   {
+      armCode.add(0, code);
+   }
+
+   public void addToARMFront(List<ARMCode> codeList)
+   {
+      List<ARMCode> resultList = new ArrayList<ARMCode>();
+      for (ARMCode code : codeList) {
+         resultList.add(code);
+      }
+      for (ARMCode code : armCode) {
+         resultList.add(code);
+      }
+      armCode = resultList;
    }
 
    public void setLabel(Label l)

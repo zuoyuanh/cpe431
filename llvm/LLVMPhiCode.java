@@ -97,4 +97,12 @@ public class LLVMPhiCode extends LLVMCode
          code.remove();
       }
    }
+
+   public void mark()
+   {
+      super.mark();
+      for (LLVMCode code : defCodes) {
+         code.mark();
+      }
+   }
 }

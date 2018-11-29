@@ -18,6 +18,8 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 {
    public static int registerCounter = 0;
 
+   public static final int PARAM_REG_NUMS = 4;
+
    private File output;
    private BufferedWriter bufferedWriter;
 
@@ -43,7 +45,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
     * if set to be true, the visitor will generate ARM code
     * otherwise the visitor will generate LLVM code
     */
-   public static boolean generateARM = true;
+   public static boolean generateARM = false;
 
    public SSAVisitor(File output)
    {
@@ -207,16 +209,32 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
       startBlock.addPredecessor(programBlock);
 
+      List<ARMCode> functionSetup = new ArrayList<ARMCode>();
+
+      // Push fp, lr
+      List<LLVMRegisterType> pushList = new ArrayList<LLVMRegisterType>();
+      pushList.add(ARMCode.fp);
+      pushList.add(ARMCode.lr);
+      functionSetup.add(new ARMPushPopCode(pushList, ARMPushPopCode.Operator.PUSH));
+      functionSetup.add(new ARMBinaryOperationCode(ARMCode.sp, new LLVMPrimitiveType("i32", "4"), ARMCode.fp, ARMBinaryOperationCode.Operator.ADD));
+
       // Declare params
+      int paramCnt = 0;
       for (Declaration param : params) {
          LLVMType t = this.visit(param);
          if (t instanceof LLVMDeclType) {
             String originalName = ((LLVMDeclType)t).getName();
             String tTypeRep = ((LLVMDeclType)t).getTypeRep();
             paramsRep += tTypeRep + " %" + ((LLVMDeclType)t).getName() + ", ";
-            writeVariable(originalName, startBlock, new LLVMRegisterType(tTypeRep, "%" + originalName));
+            LLVMRegisterType reg = new LLVMRegisterType(tTypeRep, "%" + originalName);
+            writeVariable(originalName, startBlock, reg);
+            // TODO: more args?
+            functionSetup.add(new ARMMoveCode(reg, new LLVMRegisterType("i32", ("r" + Integer.toString(paramCnt++))), ARMMoveCode.Operator.MOV));
          }
       }
+
+      startBlock.addToARMFront(functionSetup);
+
       if (paramsRep.length() > 2 && paramsRep.charAt(paramsRep.length()-2) == ',') {
          paramsRep = paramsRep.substring(0, paramsRep.length()-2);
       }
@@ -281,13 +299,14 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       
       removeTrivialPhis(phiCodes);
       // sparseSimpleConstantPropagation();
-      markUsefulInstructionInBlock(blockList);
 
       if (generateARM) {
          for (LLVMPhiCode phiCode : phiCodes) {
             phiCode.processPhiDefs();
          }
       }
+
+      markUsefulInstructionInBlock(blockList);
       
       for (LLVMBlockType block : blockList) {
          if (block.getPredecessors().size() == 0 && !block.isEntry() && !block.getBlockId().equals(funcExitBlockId)) {
@@ -322,7 +341,11 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
       }
 
-      printStringToFile("}\n\n");
+      if (generateARM) {
+         printStringToFile("\t.size " + func.getName() + ", .-" + func.getName() + "\n");
+      } else {
+         printStringToFile("}\n\n");
+      }
 
       return startBlock;
    }

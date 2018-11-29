@@ -16,7 +16,7 @@ public class ARMMoveCode extends ARMCode
 
    public static enum Operator
    {
-      MOV, MOVW, MOVT, MOVEQ, MOVLT, MOVGT, MOVNE, MOVLE, MOVGE, CMP
+      MOV, MOVW, MOVT, MOVEQ, MOVLT, MOVGT, MOVNE, MOVLE, MOVGE, CMP, TMP
    }
 
    public String operatorToString(Operator op)
@@ -43,6 +43,8 @@ public class ARMMoveCode extends ARMCode
          return "movle";
       case CMP:
          return "cmp";
+      case TMP:
+         return "mov-tmp";
       default:
          return "";
       }

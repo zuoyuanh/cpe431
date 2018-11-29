@@ -15,7 +15,7 @@ public class LLVMPhiDefCode extends LLVMCode
 
    public String toString()
    {
-      return "aha";
+      return "";
    }
 
    public void replaceRegister(LLVMType oldVal, LLVMType newVal)
@@ -30,7 +30,7 @@ public class LLVMPhiDefCode extends LLVMCode
 
    public List<ARMCode> generateArmCode()
    {
-      this.armCode.add(new ARMMoveCode(phiRegister, target, ARMMoveCode.Operator.MOV));
+      this.armCode.add(new ARMMoveCode(phiRegister, target, ARMMoveCode.Operator.TMP));
       return armCode;
    }
 }
