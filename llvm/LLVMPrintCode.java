@@ -45,9 +45,9 @@ public class LLVMPrintCode extends LLVMCode
       }
       return result;
    }
+   
    public List<ARMCode> generateArmCode()
    {
-      this.armCode = new ArrayList<ARMCode>();
       LLVMType opndType = getOperand(opnd);
       armCode.add(new ARMMoveCode(ARMCode.r1, opndType, ARMMoveCode.Operator.MOV));
       armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ":lower16:.PRINTLN_FMT"), ARMMoveCode.Operator.MOVW));

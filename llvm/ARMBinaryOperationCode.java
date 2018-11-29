@@ -23,25 +23,27 @@ public class ARMBinaryOperationCode extends ARMCode
    }
 
    public String operatorToString(Operator op){
-      switch (op){
-         case ADD: 
-            return "add";
-         case SUB: 
-            return "sub";
-         case MUL:
-            return "mul";
-         case AND:
-            return "and";
-         case ORR:
-            return "orr";
-         case EOR:
-            return "eor";
-         default:
-            return "";
+      switch (op)
+      {
+      case ADD: 
+         return "add";
+      case SUB: 
+         return "sub";
+      case MUL:
+         return "mul";
+      case AND:
+         return "and";
+      case ORR:
+         return "orr";
+      case EOR:
+         return "eor";
+      default:
+         return "";
       }
    }
 
-   public String toString(){
+   public String toString()
+   {
       String lf = leftType.toString();
       String rt = "";
       if (rightType instanceof LLVMRegisterType) rt = ((LLVMRegisterType)rightType).toString();

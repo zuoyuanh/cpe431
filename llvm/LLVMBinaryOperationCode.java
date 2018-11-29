@@ -154,7 +154,6 @@ public class LLVMBinaryOperationCode extends LLVMCode
 
    public List<ARMCode> generateArmCode()
    {
-      this.armCode = new ArrayList<ARMCode>();
       switch (operator) {
          case TIMES:
             LLVMRegisterType lftOp1 = getReg(leftType);
@@ -237,65 +236,4 @@ public class LLVMBinaryOperationCode extends LLVMCode
       }
       return armCode;
    }
-   /*
-   public LLVMRegisterType getReg(LLVMType t, List<ARMCode> armCodeList)
-   {
-      if (t instanceof LLVMRegisterType) return (LLVMRegisterType)t ;
-      LLVMRegisterType resReg = SSAVisitor.createNewRegister("i32");
-      if (t instanceof LLVMPrimitiveType){
-         LLVMPrimitiveType p = (LLVMPrimitiveType)t;
-         String v = p.getValueRep();
-         if (v.equals("null"))
-         {
-            System.out.println("null in binary operation");
-         }
-         int i = 0;
-         try{
-            i = Integer.parseInt(v);
-         }catch (Exception e){
-            System.out.println("primitive can't be cast to int");
-         }
-         if (i<9999){
-            armCodeList.add(new ARMMoveCode(resReg, t, ARMMoveCode.Operator.MOV));
-            return resReg;
-         }
-         else{
-            armCodeList.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":lower16:"+v.substring(0,4)), ARMMoveCode.Operator.MOVW));
-            armCodeList.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":upper16:"+v.substring(4,8)), ARMMoveCode.Operator.MOVT));
-            return resReg;
-         }
-      }
-      System.out.println(t+" is not a valid type");
-      return null;
-   }
-
-   public LLVMType getOperand(LLVMType t, List<ARMCode> armCodeList)
-   {
-      if (t instanceof LLVMRegisterType) return (LLVMRegisterType)t ;
-      if (t instanceof LLVMPrimitiveType){
-         LLVMPrimitiveType p = (LLVMPrimitiveType)t;
-         String v = p.getValueRep();
-         if (v.equals("null"))
-         {
-            System.out.println("null in binary operation");
-         }
-         int i = 0;
-         try{
-            i = Integer.parseInt(v);
-         }catch (Exception e){
-            System.out.println("primitive can't be cast to int");
-         }
-         if (i<9999)
-            return p;
-         else{
-            LLVMRegisterType resReg = SSAVisitor.createNewRegister("i32");
-            armCodeList.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":lower16:"+v.substring(0,4)), ARMMoveCode.Operator.MOVW));
-            armCodeList.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":upper16:"+v.substring(4,8)), ARMMoveCode.Operator.MOVT));
-            return resReg;
-         }
-      }
-      System.out.println(t+" is not a valid type");
-      return null;
-   }
-   */
 }

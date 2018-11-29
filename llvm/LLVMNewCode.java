@@ -31,9 +31,9 @@ public class LLVMNewCode extends LLVMCode
    {
       return resultReg;
    }
+
    public List<ARMCode> generateArmCode()
    {
-      this.armCode = new ArrayList<ARMCode>();
       armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ""+size), ARMMoveCode.Operator.MOV));
       armCode.add(new ARMBranchCode("malloc", ARMBranchCode.Operator.BL));
       LLVMRegisterType iReg = getReg(intermediatorReg);

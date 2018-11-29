@@ -17,7 +17,9 @@ public class ARMPushPopCode extends ARMCode
    {
       PUSH, POP
    }
-   public String operatorToString(Operator op){
+
+   public String operatorToString(Operator op)
+   {
       switch (op){
          case PUSH:
             return "push";
@@ -27,7 +29,9 @@ public class ARMPushPopCode extends ARMCode
             return "";
       }
    }
-   public String toString(){
+
+   public String toString()
+   {
       if (regList.size() == 0) return "";
       String res = operatorToString(operator) + " {";
       for (LLVMRegisterType reg : regList){

@@ -7,12 +7,17 @@ public class LLVMPhiCode extends LLVMCode
 {
    private List<LLVMPhiEntryType> entries;
    private LLVMRegisterType phiRegister;
+   private LLVMRegisterType phiDefRegister;
+   private List<LLVMCode> defCodes;
 
    public LLVMPhiCode(LLVMRegisterType r, List<LLVMPhiEntryType> entries)
    {
       phiRegister = r;
       this.entries = entries;
+      this.defCodes = new ArrayList<LLVMCode>();
+      this.phiDefRegister = SSAVisitor.createNewRegister("i32");
    }
+
    public String toString()
    {
       String phiOpnds = "";
@@ -71,5 +76,25 @@ public class LLVMPhiCode extends LLVMCode
       return phiRegister;
    }
 
-   
+   public List<ARMCode> generateArmCode()
+   {
+      this.armCode.add(new ARMMoveCode(phiRegister, phiDefRegister, ARMMoveCode.Operator.MOV));
+      return armCode;
+   }
+
+   public void processPhiDefs()
+   {
+      this.phiDefRegister.setTypeRep(this.phiRegister.getTypeRep());
+      for (LLVMPhiEntryType entry : entries) {
+         defCodes.add(entry.getBlock().addPhiRegisterDef(phiDefRegister, entry.getOperand()));
+      }
+   }
+
+   public void remove()
+   {
+      this.removed = true;
+      for (LLVMCode code : defCodes) {
+         code.remove();
+      }
+   }
 }

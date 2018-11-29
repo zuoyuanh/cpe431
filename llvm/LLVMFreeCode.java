@@ -39,7 +39,6 @@ public class LLVMFreeCode extends LLVMCode
    }
    public List<ARMCode> generateArmCode()
    {
-      this.armCode = new ArrayList<ARMCode>();
       LLVMType opndType = getOperand(opnd);
       armCode.add(new ARMMoveCode(ARMCode.r0, opndType, ARMMoveCode.Operator.MOV));
       armCode.add(new ARMBranchCode("free", ARMBranchCode.Operator.BL));

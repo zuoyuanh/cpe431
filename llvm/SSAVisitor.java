@@ -37,6 +37,14 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
    private List<LLVMBlockType> globalBlockList;
 
+   /**
+    * @local generateARM
+    *
+    * if set to be true, the visitor will generate ARM code
+    * otherwise the visitor will generate LLVM code
+    */
+   public static boolean generateARM = true;
+
    public SSAVisitor(File output)
    {
       registerCounter = 0;
@@ -54,7 +62,11 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    {
       globalBlockList = new ArrayList<LLVMBlockType>();
       programBlock = new LLVMBlockType("PROG", true, LLVMBlockType.Label.PROGRAM);
-      printStringToFile("target triple=\"i686\"\n");
+      if (generateARM) {
+         printStringToFile("\t.arch armv7-a");
+      } else {
+         printStringToFile("target triple=\"i686\"\n");
+      }
       List<TypeDeclaration> types = program.getTypes();
       for (TypeDeclaration typeDecl : types) {
          this.visit(typeDecl);
@@ -102,14 +114,30 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
       }
 
-      printStringToFile("declare i8* @malloc(i32)\n");
-      printStringToFile("declare void @free(i8*)\n");
-      printStringToFile("declare i32 @printf(i8*, ...)\n");
-      printStringToFile("declare i32 @scanf(i8*, ...)\n");
-      printStringToFile("@.println = private unnamed_addr constant [5 x i8] c\"%ld\\0A\\00\", align 1\n");
-      printStringToFile("@.print = private unnamed_addr constant [5 x i8] c\"%ld \\00\", align 1\n");
-      printStringToFile("@.read = private unnamed_addr constant [4 x i8] c\"%ld\\00\", align 1\n");
-      printStringToFile("@.read_scratch = common global i32 0, align 8\n");
+      if (generateARM) {
+         printStringToFile("\t.section\t.rodata\n");
+         printStringToFile("\t.align	2\n");
+         printStringToFile(".PRINTLN_FMT:\n");
+         printStringToFile("\t.asciz	\"%ld\"\n");
+         printStringToFile("\t.align	2\n");
+         printStringToFile(".PRINT_FMT:\n");
+         printStringToFile("\t.asciz	\"%ld \"\n");
+         printStringToFile("\t.align	2\n");
+         printStringToFile(".READ_FMT:\n");
+         printStringToFile("\t.asciz	\"%ld\"\n");
+         printStringToFile("\t.comm	.read_scratch,4,4\n");
+         printStringToFile("\t.global	__aeabi_idiv\n");
+      } else {
+         printStringToFile("declare i8* @malloc(i32)\n");
+         printStringToFile("declare void @free(i8*)\n");
+         printStringToFile("declare i32 @printf(i8*, ...)\n");
+         printStringToFile("declare i32 @scanf(i8*, ...)\n");
+         printStringToFile("@.println = private unnamed_addr constant [5 x i8] c\"%ld\\0A\\00\", align 1\n");
+         printStringToFile("@.print = private unnamed_addr constant [5 x i8] c\"%ld \\00\", align 1\n");
+         printStringToFile("@.read = private unnamed_addr constant [4 x i8] c\"%ld\\00\", align 1\n");
+         printStringToFile("@.read_scratch = common global i32 0, align 8\n");
+      }
+
       try {
          bufferedWriter.close();
       } catch (Exception e) {
@@ -141,7 +169,10 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       if (typeDeclString.length() > 2 && typeDeclString.charAt(typeDeclString.length()-2) == ',') {
          typeDeclString = typeDeclString.substring(0, typeDeclString.length()-2);
       }
-      printStringToFile(typeDeclString + "}\n");
+
+      if (!generateARM) {
+         printStringToFile(typeDeclString + "}\n");
+      }
       return new LLVMVoidType(); 
    }
 
@@ -190,7 +221,14 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          paramsRep = paramsRep.substring(0, paramsRep.length()-2);
       }
       paramsRep += ")";
-      printStringToFile("define " + returnTypeLLVMRep + " @" + func.getName() + paramsRep + "\n{\n");
+
+      if (generateARM) {
+         printStringToFile("\t.align 2\n");
+         printStringToFile("\t.global " + func.getName() + "\n");
+         printStringToFile(func.getName() + ":\n");
+      } else {
+         printStringToFile("define " + returnTypeLLVMRep + " @" + func.getName() + paramsRep + "\n{\n");
+      }
 
       // Declare locals
       for (Declaration local : locals) {
@@ -241,12 +279,15 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
       }
       
-      for (LLVMPhiCode c : phiCodes){
-         System.out.println("Phi code: "+ c+"\n"+"phiCode reg: "+c.getDef()+"\ndependencies: "+c.dependenciesList());
-      }
       removeTrivialPhis(phiCodes);
-      sparseSimpleConstantPropagation();
+      // sparseSimpleConstantPropagation();
       markUsefulInstructionInBlock(blockList);
+
+      if (generateARM) {
+         for (LLVMPhiCode phiCode : phiCodes) {
+            phiCode.processPhiDefs();
+         }
+      }
       
       for (LLVMBlockType block : blockList) {
          if (block.getPredecessors().size() == 0 && !block.isEntry() && !block.getBlockId().equals(funcExitBlockId)) {
@@ -255,13 +296,29 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          globalBlockList.add(block);
          printStringToFile(block.getBlockId() + ": \n");
          List<LLVMCode> llvmCode = block.getLLVMCode();
-         for (LLVMCode code : llvmCode) {
-            //if (code.isMarked() && (!code.isRemoved())) {
+         if (generateARM) {
+            for (LLVMCode code : llvmCode) {
+               if (code.isMarked() && (!code.isRemoved())) {
+                  block.addARMCode(code.generateArmCode());
+               }
+            }
+            for (ARMCode code : block.getARMCode()) {
                printStringToFile("\t" + code);
-            //}
+            }
+         } else {
+            for (LLVMCode code : llvmCode) {
+               if (code.isMarked() && (!code.isRemoved())) {
+                  printStringToFile("\t" + code);
+               }
+            }
          }
+         
          if (!block.isClosed() && !block.getBlockId().equals(funcExitBlockId)) {
-            printStringToFile("\tbr label %" + funcExitBlockId + "\n");
+            if (generateARM) {
+               printStringToFile("\tb ." + funcExitBlockId + "\n");
+            } else {
+               printStringToFile("\tbr label %" + funcExitBlockId + "\n");
+            }
          }
       }
 

@@ -20,9 +20,9 @@ public class LLVMReadCode extends LLVMCode
    {
       return opnd;
    }
+   
    public List<ARMCode> generateArmCode()
    {
-      this.armCode = new ArrayList<ARMCode>();
       armCode.add(new ARMMoveCode(ARMCode.r1, new LLVMPrimitiveType("i32", ":lower16:.read_scratch"), ARMMoveCode.Operator.MOVW));
       armCode.add(new ARMMoveCode(ARMCode.r1, new LLVMPrimitiveType("i32", ":upper16:.read_scratch"), ARMMoveCode.Operator.MOVT));
       armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ":lower16:.READ_FMT"), ARMMoveCode.Operator.MOVW));

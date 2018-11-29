@@ -19,7 +19,9 @@ public class ARMLoadStoreCode extends ARMCode
    {
       LDR, STR
    }
-   public String operatorToString(Operator op){
+
+   public String operatorToString(Operator op)
+   {
       switch (op){
          case LDR:
             return "ldr";
@@ -29,7 +31,9 @@ public class ARMLoadStoreCode extends ARMCode
             return "";
       }
    }
-   public String toString(){
+
+   public String toString()
+   {
       return operatorToString(operator) + " " + reg +", [" + address + "]\n";
    }
 }

@@ -22,6 +22,7 @@ public class LLVMCode
       this.removed = false;
       this.typeConversions = new ArrayList<String>();
       this.block = null;
+      this.armCode = new ArrayList<ARMCode>();
    }
 
    protected LLVMType getOperand(LLVMType t, String expectedType)
@@ -143,7 +144,7 @@ public class LLVMCode
    protected LLVMType getOperand(LLVMType t)
    {
       if (t instanceof LLVMRegisterType) return (LLVMRegisterType)t ;
-      if (t instanceof LLVMPrimitiveType){
+      if (t instanceof LLVMPrimitiveType) {
          LLVMPrimitiveType p = (LLVMPrimitiveType)t;
          String v = p.getValueRep();
          if (v.equals("null"))
@@ -151,14 +152,14 @@ public class LLVMCode
             System.out.println("null in binary operation");
          }
          int i = 0;
-         try{
+         try {
             i = Integer.parseInt(v);
-         }catch (Exception e){
+         } catch (Exception e) {
             System.out.println("primitive can't be cast to int");
          }
-         if (i<9999)
+         if (i<9999) {
             return p;
-         else{
+         } else {
             LLVMRegisterType resReg = SSAVisitor.createNewRegister("i32");
             armCode.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":lower16:"+v.substring(0,4)), ARMMoveCode.Operator.MOVW));
             armCode.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":upper16:"+v.substring(4,8)), ARMMoveCode.Operator.MOVT));
@@ -168,37 +169,37 @@ public class LLVMCode
       System.out.println(t+" is not a valid type");
       return null;
    }
+
    public LLVMRegisterType getReg(LLVMType t)
    {
-      if (t instanceof LLVMRegisterType) return (LLVMRegisterType)t ;
+      if (t instanceof LLVMRegisterType) return (LLVMRegisterType)t;
       LLVMRegisterType resReg = SSAVisitor.createNewRegister("i32");
-      if (t instanceof LLVMPrimitiveType){
+      if (t instanceof LLVMPrimitiveType) {
          LLVMPrimitiveType p = (LLVMPrimitiveType)t;
          String v = p.getValueRep();
-         if (v.equals("null"))
-         {
+         if (v.equals("null")) {
             System.out.println("null in binary operation");
          }
          int i = 0;
-         try{
+         try {
             i = Integer.parseInt(v);
-         }catch (Exception e){
+         } catch (Exception e) {
             System.out.println("primitive can't be cast to int");
          }
-         if (i<9999){
+         if (i < 9999) {
             armCode.add(new ARMMoveCode(resReg, t, ARMMoveCode.Operator.MOV));
             return resReg;
-         }
-         else{
+         } else {
             armCode.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":lower16:"+v.substring(0,4)), ARMMoveCode.Operator.MOVW));
             armCode.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":upper16:"+v.substring(4,8)), ARMMoveCode.Operator.MOVT));
             return resReg;
          }
       }
-      System.out.println(t+" is not a valid type");
+      System.out.println(t + " is not a valid type");
       return null;
    }
-   public List<ARMCode> getArmCode()
+
+   public List<ARMCode> generateArmCode()
    {
       return this.armCode;
    }

@@ -26,6 +26,7 @@ public class LLVMBlockType implements LLVMType
       this.varTable = new HashMap<>();
       this.phiTable = new HashMap<>();
       this.llvmCode = new ArrayList<LLVMCode>();
+      this.armCode = new ArrayList<ARMCode>();
       this.closed = false;
       this.sealed = false;
       this.returned = false;
@@ -40,6 +41,7 @@ public class LLVMBlockType implements LLVMType
       this.varTable = new HashMap<>();
       this.phiTable = new HashMap<>();
       this.llvmCode = new ArrayList<LLVMCode>();
+      this.armCode = new ArrayList<ARMCode>();
       this.closed = false;
       this.sealed = sealed;
       this.returned = false;
@@ -54,6 +56,7 @@ public class LLVMBlockType implements LLVMType
       this.varTable = new HashMap<>();
       this.phiTable = new HashMap<>();
       this.llvmCode = llvmCode;
+      this.armCode = new ArrayList<ARMCode>();
       this.closed = closed;
       this.sealed = false;
       this.returned = false;
@@ -74,10 +77,12 @@ public class LLVMBlockType implements LLVMType
    {
       this.successors = list;
    }
+
    public void addPredecessor(LLVMBlockType block)
    {
       this.predecessors.add(block);
    }
+
    public void setPredecessors(ArrayList<LLVMBlockType> list)
    {
       this.predecessors = list;
@@ -87,8 +92,12 @@ public class LLVMBlockType implements LLVMType
    {
       return predecessors;
    }
+
    public String getBlockId()
    {
+      if (SSAVisitor.generateARM) {
+         return "." + blockId;
+      }
       return blockId;
    }
 
@@ -111,10 +120,12 @@ public class LLVMBlockType implements LLVMType
    {
       closed = true;
    }
+
    public boolean isSealed()
    {
       return sealed;
    }
+
    public void seal()
    {
       sealed = true;
@@ -124,6 +135,7 @@ public class LLVMBlockType implements LLVMType
    {
       return this.varTable;
    }
+
    public HashMap<String, LLVMPhiType> getPhiTable()
    {
       return this.phiTable;
@@ -141,6 +153,35 @@ public class LLVMBlockType implements LLVMType
    public void addARMCode(ARMCode code)
    {
       this.armCode.add(code);
+   }
+
+   public void addARMCode(List<ARMCode> codeList)
+   {
+      for (ARMCode code : codeList) {
+         this.armCode.add(code);
+      }
+   }
+
+   public LLVMCode addPhiRegisterDef(LLVMRegisterType phiDefRegister, LLVMType target)
+   {
+      LLVMCode code = new LLVMPhiDefCode(phiDefRegister, target);
+      code.mark();
+      if (target instanceof LLVMRegisterType) {
+         ((LLVMRegisterType)target).addUse(code);
+         for (int i=0; i<llvmCode.size(); i++) {
+            if (llvmCode.get(i).getDef() != null && llvmCode.get(i).getDef().equals(target)) {
+               llvmCode.add(i + 1, code);
+            }
+         }
+      } else if (target instanceof LLVMPrimitiveType) {
+         this.llvmCode.add(0, code);
+      }
+      return code;
+   }
+
+   public List<ARMCode> getARMCode()
+   {
+      return this.armCode;
    }
 
    public void addToFront(LLVMCode code)
