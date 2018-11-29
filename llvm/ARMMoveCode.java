@@ -43,8 +43,6 @@ public class ARMMoveCode extends ARMCode
          return "movle";
       case CMP:
          return "cmp";
-      case TMP:
-         return "mov-tmp";
       default:
          return "";
       }

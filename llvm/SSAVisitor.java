@@ -45,7 +45,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
     * if set to be true, the visitor will generate ARM code
     * otherwise the visitor will generate LLVM code
     */
-   public static boolean generateARM = false;
+   public static boolean generateARM = true;
 
    public SSAVisitor(File output)
    {
@@ -550,7 +550,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          addToUsesList(expType, c);
          block.add(c);
          LLVMType opnd = c.getConvertedResultReg();
-         if (opnd instanceof LLVMRegisterType) ((LLVMRegisterType)opnd).setDef(c);
+         if ((opnd instanceof LLVMRegisterType) && (!opnd.equals(expType)) && (opnd != expType)) {
+            ((LLVMRegisterType)opnd).setDef(c);
+         }
          writeVariable("_retval_", block, opnd);
          block.add(new LLVMBranchCode(funcExitBlock));
       }
