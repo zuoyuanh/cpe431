@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.ArrayList;
 import ast.BinaryExpression;
 
+
 public class LLVMBinaryOperationCode extends LLVMCode
 {
    private BinaryExpression.Operator operator;
@@ -150,4 +151,151 @@ public class LLVMBinaryOperationCode extends LLVMCode
    {
       return resultReg;
    }
+
+   public List<ARMCode> generateArmCode()
+   {
+      this.armCode = new ArrayList<ARMCode>();
+      switch (operator) {
+         case TIMES:
+            LLVMRegisterType lftOp1 = getReg(leftType);
+            LLVMType rtOp1 = getReg(rightType);
+            armCode.add(new ARMBinaryOperationCode(lftOp1, rtOp1, (LLVMRegisterType)resultReg, ARMBinaryOperationCode.Operator.MUL));
+            break;
+         case DIVIDE:
+            LLVMType lftOp12 = getOperand(leftType);
+            LLVMType rtOp12 = getOperand(rightType);
+            armCode.add(new ARMMoveCode(ARMCode.r0, lftOp12, ARMMoveCode.Operator.MOV));
+            armCode.add(new ARMMoveCode(ARMCode.r1, rtOp12, ARMMoveCode.Operator.MOV));
+            armCode.add(new ARMBranchCode("__aeabi_idiv", ARMBranchCode.Operator.BL));
+            armCode.add(new ARMMoveCode((LLVMRegisterType)resultReg, ARMCode.r0, ARMMoveCode.Operator.MOV));
+
+            break;
+         case PLUS:
+            LLVMRegisterType lftOp2 = getReg(leftType);
+            LLVMType rtOp2 = getOperand(rightType);
+            armCode.add(new ARMBinaryOperationCode(lftOp2, rtOp2, (LLVMRegisterType)resultReg, ARMBinaryOperationCode.Operator.ADD));
+            break;
+         case MINUS:
+            LLVMRegisterType lftOp3 = getReg(leftType);
+            LLVMType rtOp3 = getOperand(rightType);
+            armCode.add(new ARMBinaryOperationCode(lftOp3, rtOp3, (LLVMRegisterType)resultReg, ARMBinaryOperationCode.Operator.SUB));
+            break;
+         case LT:
+            armCode.add(new ARMMoveCode((LLVMRegisterType)resultReg, new LLVMPrimitiveType("i32","0"), ARMMoveCode.Operator.MOV));
+            LLVMRegisterType lftOp6 = getReg(leftType);
+            LLVMType rtOp6 = getReg(rightType);
+            armCode.add(new ARMMoveCode(lftOp6, rtOp6, ARMMoveCode.Operator.CMP));
+            armCode.add(new ARMMoveCode((LLVMRegisterType)resultReg, new LLVMPrimitiveType("i32","1"), ARMMoveCode.Operator.MOVLT));  
+            break;
+         case GT:
+            armCode.add(new ARMMoveCode((LLVMRegisterType)resultReg, new LLVMPrimitiveType("i32","0"), ARMMoveCode.Operator.MOV));
+            LLVMRegisterType lftOp7 = getReg(leftType);
+            LLVMType rtOp7 = getReg(rightType);
+            armCode.add(new ARMMoveCode(lftOp7, rtOp7, ARMMoveCode.Operator.CMP));
+            armCode.add(new ARMMoveCode((LLVMRegisterType)resultReg, new LLVMPrimitiveType("i32","1"), ARMMoveCode.Operator.MOVGT));  
+            break;
+         case LE:
+            armCode.add(new ARMMoveCode((LLVMRegisterType)resultReg, new LLVMPrimitiveType("i32","0"), ARMMoveCode.Operator.MOV));
+            LLVMRegisterType lftOp9 = getReg(leftType);
+            LLVMType rtOp9 = getReg(rightType);
+            armCode.add(new ARMMoveCode(lftOp9, rtOp9, ARMMoveCode.Operator.CMP));
+            armCode.add(new ARMMoveCode((LLVMRegisterType)resultReg, new LLVMPrimitiveType("i32","1"), ARMMoveCode.Operator.MOVLE));  
+            break;
+         case GE:
+            armCode.add(new ARMMoveCode((LLVMRegisterType)resultReg, new LLVMPrimitiveType("i32","0"), ARMMoveCode.Operator.MOV));
+            LLVMRegisterType lftOp8 = getReg(leftType);
+            LLVMType rtOp8 = getReg(rightType);
+            armCode.add(new ARMMoveCode(lftOp8, rtOp8, ARMMoveCode.Operator.CMP));
+            armCode.add(new ARMMoveCode((LLVMRegisterType)resultReg, new LLVMPrimitiveType("i32","1"), ARMMoveCode.Operator.MOVGE));  
+            break;
+         case EQ:
+            armCode.add(new ARMMoveCode((LLVMRegisterType)resultReg, new LLVMPrimitiveType("i32","0"), ARMMoveCode.Operator.MOV));
+            LLVMRegisterType lftOp10 = getReg(leftType);
+            LLVMType rtOp10 = getReg(rightType);
+            armCode.add(new ARMMoveCode(lftOp10, rtOp10, ARMMoveCode.Operator.CMP));
+            armCode.add(new ARMMoveCode((LLVMRegisterType)resultReg, new LLVMPrimitiveType("i32","1"), ARMMoveCode.Operator.MOVEQ));  
+            break;
+         case NE:
+            armCode.add(new ARMMoveCode((LLVMRegisterType)resultReg, new LLVMPrimitiveType("i32","0"), ARMMoveCode.Operator.MOV));
+            LLVMRegisterType lftOp11 = getReg(leftType);
+            LLVMType rtOp11 = getReg(rightType);
+            armCode.add(new ARMMoveCode(lftOp11, rtOp11, ARMMoveCode.Operator.CMP));
+            armCode.add(new ARMMoveCode((LLVMRegisterType)resultReg, new LLVMPrimitiveType("i32","1"), ARMMoveCode.Operator.MOVNE));  
+            break;
+         case AND:
+            LLVMRegisterType lftOp4 = getReg(leftType);
+            LLVMType rtOp4 = getOperand(rightType);
+            armCode.add(new ARMBinaryOperationCode(lftOp4, rtOp4, (LLVMRegisterType)resultReg, ARMBinaryOperationCode.Operator.AND));
+            break;
+         case OR:
+            LLVMRegisterType lftOp5 = getReg(leftType);
+            LLVMType rtOp5 = getOperand(rightType);
+            armCode.add(new ARMBinaryOperationCode(lftOp5, rtOp5, (LLVMRegisterType)resultReg, ARMBinaryOperationCode.Operator.ORR));
+            break;
+         default:
+            break;
+      }
+      return armCode;
+   }
+   /*
+   public LLVMRegisterType getReg(LLVMType t, List<ARMCode> armCodeList)
+   {
+      if (t instanceof LLVMRegisterType) return (LLVMRegisterType)t ;
+      LLVMRegisterType resReg = SSAVisitor.createNewRegister("i32");
+      if (t instanceof LLVMPrimitiveType){
+         LLVMPrimitiveType p = (LLVMPrimitiveType)t;
+         String v = p.getValueRep();
+         if (v.equals("null"))
+         {
+            System.out.println("null in binary operation");
+         }
+         int i = 0;
+         try{
+            i = Integer.parseInt(v);
+         }catch (Exception e){
+            System.out.println("primitive can't be cast to int");
+         }
+         if (i<9999){
+            armCodeList.add(new ARMMoveCode(resReg, t, ARMMoveCode.Operator.MOV));
+            return resReg;
+         }
+         else{
+            armCodeList.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":lower16:"+v.substring(0,4)), ARMMoveCode.Operator.MOVW));
+            armCodeList.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":upper16:"+v.substring(4,8)), ARMMoveCode.Operator.MOVT));
+            return resReg;
+         }
+      }
+      System.out.println(t+" is not a valid type");
+      return null;
+   }
+
+   public LLVMType getOperand(LLVMType t, List<ARMCode> armCodeList)
+   {
+      if (t instanceof LLVMRegisterType) return (LLVMRegisterType)t ;
+      if (t instanceof LLVMPrimitiveType){
+         LLVMPrimitiveType p = (LLVMPrimitiveType)t;
+         String v = p.getValueRep();
+         if (v.equals("null"))
+         {
+            System.out.println("null in binary operation");
+         }
+         int i = 0;
+         try{
+            i = Integer.parseInt(v);
+         }catch (Exception e){
+            System.out.println("primitive can't be cast to int");
+         }
+         if (i<9999)
+            return p;
+         else{
+            LLVMRegisterType resReg = SSAVisitor.createNewRegister("i32");
+            armCodeList.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":lower16:"+v.substring(0,4)), ARMMoveCode.Operator.MOVW));
+            armCodeList.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":upper16:"+v.substring(4,8)), ARMMoveCode.Operator.MOVT));
+            return resReg;
+         }
+      }
+      System.out.println(t+" is not a valid type");
+      return null;
+   }
+   */
 }

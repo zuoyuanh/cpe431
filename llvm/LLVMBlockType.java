@@ -135,8 +135,13 @@ public class LLVMBlockType implements LLVMType
          this.closed = true;
       }
       llvmCode.add(code);
+      code.setBlock(this);
    }
-
+   
+   public void addARMCode(ARMCode code)
+   {
+      this.armCode.add(code);
+   }
 
    public void addToFront(LLVMCode code)
    {
