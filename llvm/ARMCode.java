@@ -2,6 +2,7 @@ package llvm;
 
 public class ARMCode
 {
+   // System specified registers
    public static LLVMRegisterType r0 = new LLVMRegisterType("i32", "r0"); 
    public static LLVMRegisterType r1 = new LLVMRegisterType("i32", "r1"); 
    public static LLVMRegisterType r2 = new LLVMRegisterType("i32", "r2"); 
@@ -13,4 +14,7 @@ public class ARMCode
    public static LLVMRegisterType sp = new LLVMRegisterType("i32", "sp");
 
    public static LLVMRegisterType[] argRegs = {r0, r1, r2, r3};
+
+   // User defined convenience registers
+   public static LLVMRegisterType ut = new LLVMRegisterType("i32", "ut");
 }

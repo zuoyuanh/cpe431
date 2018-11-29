@@ -34,7 +34,7 @@ add:
 	push {%fp, %lr}
 	add %fp, %sp, #4
 	mov %x, %r0
-	mov %y, %r1
+	mov %y, %r2
 	add %u5, %x, %y
 	b .LU5
 .LU5: 
@@ -52,6 +52,7 @@ domath:
 	mov %r0, #24
 	bl malloc
 	mov %u8, %r0
+	mov %u66, %u9
 	mov %u63, %u9
 	add %u10, %u9, #8
 	mov %u12, %u11
@@ -63,6 +64,7 @@ domath:
 	mov %r0, #24
 	bl malloc
 	mov %u13, %r0
+	mov %u67, %u14
 	mov %u64, %u14
 	add %u15, %u14, #8
 	mov %u17, %u16
@@ -97,8 +99,10 @@ domath:
 .LU9: 
 	mov %u58, %u65
 	mov %u34, %u64
+	mov %u67, %u34
 	mov %u64, %u34
 	mov %u31, %u63
+	mov %u66, %u31
 	mov %u63, %u31
 	add %u46, %u34, #8
 	ldr %u47, [%u46]
@@ -120,7 +124,15 @@ domath:
 	beq .LU9
 	b .LU10
 .LU10: 
+	mov %u62, %u67
+	mov %u61, %u66
+	mov %r0, %u61
+	bl free
+	mov %r0, %u62
+	bl free
 	b .LU7
+.LU7: 
+	pop {%fp, %pc}
 	.size domath, .-domath
 	.align 2
 	.global objinstantiation
@@ -138,6 +150,12 @@ objinstantiation:
 	b .LU14
 .LU13: 
 	mov %u74, %u77
+	mov %u73, %u72
+	mov %r0, #24
+	bl malloc
+	mov %u72, %r0
+	mov %r0, %u73
+	bl free
 	sub %u75, %u74, #1
 	mov %u77, %u75
 	mov %u76, #0
@@ -149,6 +167,8 @@ objinstantiation:
 	b .LU14
 .LU14: 
 	b .LU11
+.LU11: 
+	pop {%fp, %pc}
 	.size objinstantiation, .-objinstantiation
 	.align 2
 	.global ackermann
@@ -157,7 +177,7 @@ ackermann:
 	push {%fp, %lr}
 	add %fp, %sp, #4
 	mov %m, %r0
-	mov %n, %r1
+	mov %n, %r2
 	mov %u80, #0
 	mov %u91, #0
 	cmp %m, %u91

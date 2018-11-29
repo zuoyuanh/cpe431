@@ -220,6 +220,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
       // Declare params
       int paramCnt = 0;
+      List<LLVMRegisterType> overedRegisterList = new ArrayList<LLVMRegisterType>();
       for (Declaration param : params) {
          LLVMType t = this.visit(param);
          if (t instanceof LLVMDeclType) {
@@ -228,9 +229,20 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             paramsRep += tTypeRep + " %" + ((LLVMDeclType)t).getName() + ", ";
             LLVMRegisterType reg = new LLVMRegisterType(tTypeRep, "%" + originalName);
             writeVariable(originalName, startBlock, reg);
-            // TODO: more args?
-            functionSetup.add(new ARMMoveCode(reg, new LLVMRegisterType("i32", ("r" + Integer.toString(paramCnt++))), ARMMoveCode.Operator.MOV));
+            if (paramCnt < PARAM_REG_NUMS) {
+               functionSetup.add(new ARMMoveCode(reg, new LLVMRegisterType("i32", ("r" + Integer.toString(paramCnt++))), ARMMoveCode.Operator.MOV));
+            } else {
+               overedRegisterList.add(0, reg);
+            }
+            paramCnt++;
          }
+      }
+
+      List<LLVMRegisterType> popList = new ArrayList<LLVMRegisterType>();
+      popList.add(ARMCode.ut);
+      for (LLVMRegisterType reg : overedRegisterList) {
+         functionSetup.add(new ARMPushPopCode(popList, ARMPushPopCode.Operator.POP));
+         functionSetup.add(new ARMMoveCode(reg, ARMCode.ut, ARMMoveCode.Operator.MOV));
       }
 
       startBlock.addToARMFront(functionSetup);
@@ -309,7 +321,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       markUsefulInstructionInBlock(blockList);
       
       for (LLVMBlockType block : blockList) {
-         if (block.getPredecessors().size() == 0 && !block.isEntry() && !block.getBlockId().equals(funcExitBlockId)) {
+         if (block.getPredecessors().size() == 0 && !block.isEntry() 
+           && !block.getBlockId().equals(funcExitBlockId) 
+           && !block.getBlockId().equals("." + funcExitBlockId)) {
             continue;
          }
          globalBlockList.add(block);
@@ -1269,7 +1283,8 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          for (LLVMCode code : block.getLLVMCode()) {
             if ((code instanceof LLVMReturnCode) || (code instanceof LLVMBranchCode)
             || (code instanceof LLVMCallCode) || (code instanceof LLVMStoreCode)
-            || (code instanceof LLVMPrintCode) || (code instanceof LLVMReadCode)) {
+            || (code instanceof LLVMPrintCode) || (code instanceof LLVMReadCode)
+            || (code instanceof LLVMFreeCode)) {
                markUsefulInstruction(code);
             }
          }
