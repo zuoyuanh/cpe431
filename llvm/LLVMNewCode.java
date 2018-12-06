@@ -1,5 +1,6 @@
 package llvm;
-
+import java.util.ArrayList;
+import java.util.List;
 public class LLVMNewCode extends LLVMCode
 {
    private int size;
@@ -29,5 +30,21 @@ public class LLVMNewCode extends LLVMCode
    public LLVMType getDef()
    {
       return resultReg;
+   }
+
+   public List<ARMCode> generateArmCode()
+   {
+      if (size > 65535) {       
+         armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ":lower16:"+size), ARMMoveCode.Operator.MOVW));
+         armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ":upper16:"+size), ARMMoveCode.Operator.MOVT));
+      }
+      else{
+         armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ""+size), ARMMoveCode.Operator.MOVW));
+      }
+      armCode.add(new ARMBranchCode("malloc", ARMBranchCode.Operator.BL));
+      LLVMRegisterType iReg = getReg(intermediatorReg);
+      armCode.add(new ARMMoveCode(iReg, ARMCode.r0, ARMMoveCode.Operator.MOV));
+      mergeARMConversions();
+      return armCode;
    }
 }

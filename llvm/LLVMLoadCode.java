@@ -43,4 +43,12 @@ public class LLVMLoadCode extends LLVMCode
    {
       return resultReg;
    }
+
+   public List<ARMCode> generateArmCode()
+   {
+      LLVMRegisterType addr = getReg(ptrReg);
+      LLVMRegisterType resReg = getReg(resultReg);
+      armCode.add(new ARMLoadStoreCode(resReg, addr, ARMLoadStoreCode.Operator.LDR));
+      return armCode;
+   }
 }

@@ -50,4 +50,16 @@ public class LLVMReturnCode extends LLVMCode
       }
       return result;
    }
+
+   public List<ARMCode> generateArmCode()
+   {
+      if (!isVoid) {
+         armCode.add(new ARMMoveCode(ARMCode.r0, value, ARMMoveCode.Operator.MOV));
+      }
+      List<LLVMRegisterType> popList = new ArrayList<LLVMRegisterType>();
+      popList.add(ARMCode.fp);
+      popList.add(ARMCode.pc);
+      armCode.add(new ARMPushPopCode(popList, ARMPushPopCode.Operator.POP));
+      return armCode;
+   }
 }

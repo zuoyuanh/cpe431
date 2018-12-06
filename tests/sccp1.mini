@@ -1,0 +1,25 @@
+int y;
+
+
+fun bar(int x, int y) int
+{
+   int a, b;
+
+   a = 2;
+
+   if (x > y)
+   {
+      b = 3;
+   }
+   else
+   {
+      b = 3;
+   }
+
+   return a + b;
+}
+
+fun main() int
+{
+   return 0;
+}

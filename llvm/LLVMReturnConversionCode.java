@@ -24,14 +24,14 @@ public class LLVMReturnConversionCode extends LLVMCode
          if (!expectedType.equals("any") && !tTypeRep.equals(expectedType)) {
             return typeConverter(tTypeRep, expectedType, t);
          }
-         return new LLVMRegisterType(expectedType, regId);
+         return t;
       } else if (t instanceof LLVMPrimitiveType) {
          String tTypeRep = ((LLVMPrimitiveType)t).getTypeRep();
          String valueRep = ((LLVMPrimitiveType)t).getValueRep();
          if (!tTypeRep.equals(expectedType) && !tTypeRep.equals("null") && !expectedType.equals("any")) {
             return typeConverter(tTypeRep, expectedType, t);
          }
-         return new LLVMPrimitiveType(tTypeRep, valueRep);
+         return t;
       }
       return new LLVMVoidType();
    }
