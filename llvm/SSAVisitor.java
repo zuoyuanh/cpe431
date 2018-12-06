@@ -46,7 +46,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
     * if set to be true, the visitor will generate ARM code
     * otherwise the visitor will generate LLVM code
     */
-   public static boolean generateARM = false;
+   public static boolean generateARM = true;
 
    public SSAVisitor(File output)
    {
@@ -329,7 +329,113 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       
       markUsefulInstructionInBlock(blockList);
       localVariableNumbering(startBlock);
-      
+      if (generateARM){
+         for (LLVMBlockType block : blockList) {
+            Set<LLVMRegisterType> armGenSet = block.newArmGenSet(); 
+            Set<LLVMRegisterType> armKillSet = block.newArmKillSet();
+            block.newLiveOutSet();
+            List<LLVMCode> llvmCode = block.getLLVMCode();
+            for (LLVMCode code : llvmCode) {
+               if (code.isMarked() && (!code.isRemoved())) {
+                  block.addARMCode(code.generateArmCode());
+               }
+            }
+            //live registers analysis 
+            for (ARMCode code : block.getARMCode()) {
+               List<LLVMRegisterType> uses = code.getUses();
+               LLVMRegisterType def = code.getDef();
+               if (def != null) {
+                  armKillSet.add(def);
+               }
+               if (uses != null){
+                  for (LLVMRegisterType u : uses){
+                     if (!armKillSet.contains(u)){
+                        armGenSet.add(u);
+                     }
+                  }
+               }
+               //System.out.println("def: "+code.getDef());
+               //System.out.println("uses: "+code.getUses());
+               //System.out.println("gen set: "+block.getArmGenSet());
+               //System.out.println("kill set: "+block.getArmKillSet());
+            }
+         }
+         //live registers analysis, already initialize liveOut as empty sets
+         boolean changed = true;
+         while (changed){
+            changed = false;
+            for (int i = blockList.size()-1; i>=0; i--){ 
+               changed = changed || calculateLiveOutSet(blockList.get(i));
+            }
+         }
+
+         for (LLVMBlockType block : blockList) {
+            Set<LLVMRegisterType> liveOut = block.getLiveOutSet();
+            for (ARMCode code : block.getARMCode()){
+               LLVMRegisterType target = code.getDef();
+               if (target != null){
+                  for (LLVMRegisterType element : liveOut){
+                   // add edge target --> element //TODO
+                  }
+               }
+               liveOut.remove(target);
+               List<LLVMRegisterType> sources = code.getUses();
+               if (sources != null){
+                  liveOut.addAll(sources);
+               }
+            }
+         }
+         for (LLVMBlockType block : blockList) {
+            if (block.getPredecessors().size() == 0 && !block.isEntry() 
+            && !block.getBlockId().equals(funcExitBlockId) 
+            && !block.getBlockId().equals("." + funcExitBlockId)) {
+               continue;
+            }
+            globalBlockList.add(block);
+            printStringToFile(block.getBlockId() + ": \n");
+            /*
+            List<LLVMCode> llvmCode = block.getLLVMCode();
+            for (LLVMCode code : llvmCode) {
+               if (code.isMarked() && (!code.isRemoved())) {
+                  block.addARMCode(code.generateArmCode());
+               }
+            }*/
+            for (ARMCode code : block.getARMCode()) {
+
+               printStringToFile("\t" + code);
+
+            }
+            if (!block.isClosed() && !block.getBlockId().equals(funcExitBlockId))
+            {
+               printStringToFile("\tb ." + funcExitBlockId + "\n");
+            }
+
+         }
+         printStringToFile("\t.size " + func.getName() + ", .-" + func.getName() + "\n");
+      }
+      else
+      {
+         for (LLVMBlockType block : blockList) {
+            if (block.getPredecessors().size() == 0 && !block.isEntry() 
+               && !block.getBlockId().equals(funcExitBlockId) 
+               && !block.getBlockId().equals("." + funcExitBlockId)) {
+               continue;
+            }
+            globalBlockList.add(block);
+            printStringToFile(block.getBlockId() + ": \n");
+            List<LLVMCode> llvmCode = block.getLLVMCode();
+            for (LLVMCode code : llvmCode) {
+               if (code.isMarked() && (!code.isRemoved())) {
+                  printStringToFile("\t" + code);
+               }
+            }
+            if (!block.isClosed() && !block.getBlockId().equals(funcExitBlockId)) {
+               printStringToFile("\tbr label %" + funcExitBlockId + "\n");
+            }
+         }
+         printStringToFile("}\n\n");
+      }
+      /*
       for (LLVMBlockType block : blockList) {
          if (block.getPredecessors().size() == 0 && !block.isEntry() 
            && !block.getBlockId().equals(funcExitBlockId) 
@@ -346,7 +452,12 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                }
             }
             for (ARMCode code : block.getARMCode()) {
+               ArrayList<LLVMRegisterType> uses = code.getUses();
+               LLVMRegisterType def = code.getDef();
+
                printStringToFile("\t" + code);
+               System.out.println(code.getDef());
+               System.out.println(code.getUses());
             }
          } else {
             for (LLVMCode code : llvmCode) {
@@ -370,7 +481,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       } else {
          printStringToFile("}\n\n");
       }
-
+*/
       return startBlock;
    }
 
@@ -1459,5 +1570,26 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       for (LLVMBlockType b : block.getSuccessors()) {
          this.getLocalVariableNumberingSets(b, table);
       }
+   }
+
+   private boolean calculateLiveOutSet(LLVMBlockType block){
+      ArrayList<LLVMBlockType> successors = block.getSuccessors();
+      if (successors.size() == 0) {
+         return false;
+      }
+      HashSet<LLVMRegisterType> newLiveOutSet = new HashSet<LLVMRegisterType>();
+      Set<LLVMRegisterType> oldLiveOutSet = block.getLiveOutSet();
+      for (LLVMBlockType b : successors){
+         HashSet<LLVMRegisterType> temp = new HashSet<LLVMRegisterType>();
+         temp.addAll(b.getLiveOutSet());
+         temp.removeAll(b.getArmKillSet());
+         temp.addAll(b.getArmGenSet());
+         newLiveOutSet.addAll(temp);
+      }
+      if ( !(newLiveOutSet.containsAll(oldLiveOutSet)) ||  !(oldLiveOutSet.containsAll(newLiveOutSet))) { //not the same
+         block.setLiveOutSet(newLiveOutSet);
+         return true; //changed
+      }
+      return false;
    }
 }

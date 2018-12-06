@@ -64,6 +64,7 @@ public class LLVMRegisterType implements LLVMType
       this.dependenciesMarked = marked;
    }
 
+   @Override
    public String toString()
    {
       if (id.charAt(0) != '@' && id.charAt(0) != '%') {
@@ -78,6 +79,7 @@ public class LLVMRegisterType implements LLVMType
       return id;
    }
 
+   @Override
    public boolean equals(Object other)
    {
       if ((other == null) || (getClass() != other.getClass())) {
@@ -86,6 +88,7 @@ public class LLVMRegisterType implements LLVMType
          return id.equals(((LLVMRegisterType)other).getId());
       }
    }
+   @Override
    public int hashCode() {
       int hash = 7;
       hash = 31 * hash + id.hashCode();

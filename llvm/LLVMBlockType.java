@@ -22,6 +22,9 @@ public class LLVMBlockType implements LLVMType
    private Set<LocalNumberingExpression> genSet;
    private Set<LocalNumberingExpression> killSet;
    private Set<LocalNumberingExpression> availSet;
+   private Set<LLVMRegisterType> armGenSet;
+   private Set<LLVMRegisterType> armKillSet;
+   private Set<LLVMRegisterType> liveOutSet;
 
    public LLVMBlockType(String blockId, Label l)
    {
@@ -39,6 +42,9 @@ public class LLVMBlockType implements LLVMType
       this.genSet = null;
       this.killSet = null;
       this.availSet = null;
+      this.armGenSet = null;
+      this.armKillSet = null;
+      this.liveOutSet = null;
    }
 
    public LLVMBlockType(String blockId, boolean sealed, Label l)
@@ -57,6 +63,9 @@ public class LLVMBlockType implements LLVMType
       this.genSet = null;
       this.killSet = null;
       this.availSet = null;
+      this.armGenSet = null;
+      this.armKillSet = null;
+      this.liveOutSet = null;
    }
 
    public LLVMBlockType(String blockId, List<LLVMCode> llvmCode, boolean closed, Label l)
@@ -75,6 +84,9 @@ public class LLVMBlockType implements LLVMType
       this.genSet = null;
       this.killSet = null;
       this.availSet = null;
+      this.armGenSet = null;
+      this.armKillSet = null;
+      this.liveOutSet = null;
    }
 
    public static enum Label
@@ -348,5 +360,69 @@ public class LLVMBlockType implements LLVMType
       if (this.availSet != null) {
          this.availSet.add(exp);
       }
+   }
+
+
+
+
+   public Set<LLVMRegisterType> getArmGenSet()
+   {
+      return this.armGenSet;
+   }
+
+   public Set<LLVMRegisterType> newArmGenSet()
+   {
+      this.armGenSet = new HashSet<LLVMRegisterType>();
+      return armGenSet;
+   }
+
+   public void addToArmGenSet(LLVMRegisterType reg)
+   {
+      if (this.armGenSet == null) {
+         this.armGenSet = new HashSet<LLVMRegisterType>();   
+      }
+      this.armGenSet.add(reg);
+   }
+
+   public Set<LLVMRegisterType> getArmKillSet()
+   {
+      return this.armKillSet;
+   }
+
+   public Set<LLVMRegisterType> newArmKillSet()
+   {
+      this.armKillSet = new HashSet<LLVMRegisterType>();
+      return armKillSet;
+   }
+
+   public void addToArmKillSet(LLVMRegisterType reg)
+   {
+      if (this.armKillSet == null) {
+         this.armKillSet = new HashSet<LLVMRegisterType>();
+      }
+      this.armKillSet.add(reg);
+   }
+
+   public Set<LLVMRegisterType> getLiveOutSet()
+   {
+      return this.liveOutSet;
+   }
+
+   public void newLiveOutSet()
+   {
+      this.liveOutSet = new HashSet<LLVMRegisterType>();
+   }
+
+   public void setLiveOutSet(HashSet<LLVMRegisterType> value)
+   {
+      this.liveOutSet = value;
+   }
+
+   public void addToLiveOutSet(LLVMRegisterType reg)
+   {
+      if (this.liveOutSet == null) {
+         this.liveOutSet = new HashSet<LLVMRegisterType>();
+      }
+      this.liveOutSet.add(reg);
    }
 }

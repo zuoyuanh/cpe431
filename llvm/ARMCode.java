@@ -1,6 +1,7 @@
 package llvm;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 public class ARMCode
 {
    // System specified registers
@@ -15,7 +16,7 @@ public class ARMCode
    public static LLVMRegisterType sp = new LLVMRegisterType("i32", "sp");
 
    public static LLVMRegisterType[] argRegs = {r0, r1, r2, r3};
-
+   public static ArrayList<LLVMRegisterType> systemRegs = new ArrayList<LLVMRegisterType>(Arrays.asList(new LLVMRegisterType[]{pc, fp, lr, sp}));
    // User defined convenience registers
    public static LLVMRegisterType ut = new LLVMRegisterType("i32", "ut");
 
@@ -23,7 +24,9 @@ public class ARMCode
    private List<LLVMRegisterType> uses;
 
    public void setDef (LLVMRegisterType r){
-      this.def = r;
+      if (!systemRegs.contains(r)){
+         this.def = r;
+      }
    }
    public LLVMRegisterType getDef(){
       return this.def;
@@ -38,6 +41,8 @@ public class ARMCode
       if (uses == null) {
          uses = new ArrayList<LLVMRegisterType>();
       }
-      uses.add(u);
+      if (!systemRegs.contains(u)){
+         uses.add(u);
+      }
    }
 }
