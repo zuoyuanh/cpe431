@@ -431,12 +431,12 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             LLVMCode readCode = ((LLVMReadExpressionType)sourceType).getSSAReadInstruction(tmpReg);
             ((LLVMRegisterType)tmpReg).setDef(readCode);
             block.add(readCode);
-            LLVMCode storeCode = new LLVMStoreCode(tmpReg, targetType);
+            LLVMStoreCode storeCode = new LLVMStoreCode(tmpReg, targetType);
             addToUsesList(tmpReg, storeCode);
             block.add(storeCode);
             return new LLVMVoidType();
          }
-         LLVMCode storeCode = new LLVMStoreCode(sourceType, targetType);
+         LLVMStoreCode storeCode = new LLVMStoreCode(sourceType, targetType);
          addToUsesList(sourceType, storeCode);
          block.add(storeCode);
       }
