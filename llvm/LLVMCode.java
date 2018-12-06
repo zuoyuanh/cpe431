@@ -195,7 +195,7 @@ public class LLVMCode
          } catch (Exception e) {
             System.out.println("primitive can't be cast to int");
          }
-         if (i < 9999) {
+         if (i < 65535) {
             armCode.add(new ARMMoveCode(resReg, t, ARMMoveCode.Operator.MOV));
             return resReg;
          } else {

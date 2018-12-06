@@ -1,5 +1,5 @@
 package llvm;
-
+import java.util.ArrayList;
 public class ARMMoveCode extends ARMCode
 {
    private Operator operator;
@@ -12,11 +12,22 @@ public class ARMMoveCode extends ARMCode
       this.operator = operator;
       this.operand = op;
       this.resultReg = resReg;
+      if (operator==Operator.CMP){
+         addUse(resReg);
+         if (op instanceof LLVMRegisterType) {
+            addUse((LLVMRegisterType)op);
+         }
+      }
+      else{
+         setDef(resReg);
+         if (op instanceof LLVMRegisterType) {
+            addUse((LLVMRegisterType)op);
+         }
+      }
    }
-
    public static enum Operator
    {
-      MOV, MOVW, MOVT, MOVEQ, MOVLT, MOVGT, MOVNE, MOVLE, MOVGE, CMP, TMP
+      MOV, MOVW, MOVT, MOVEQ, MOVLT, MOVGT, MOVNE, MOVLE, MOVGE, CMP
    }
 
    public String operatorToString(Operator op)

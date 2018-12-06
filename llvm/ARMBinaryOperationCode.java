@@ -15,6 +15,11 @@ public class ARMBinaryOperationCode extends ARMCode
       this.leftType = leftType;
       this.rightType = rightType;
       this.resultReg = resReg;
+      setDef(resReg);
+      addUse(leftType);
+      if (rightType instanceof LLVMRegisterType) {
+         addUse((LLVMRegisterType)rightType);
+      }
    }
 
    public static enum Operator
