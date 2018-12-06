@@ -329,7 +329,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       
       markUsefulInstructionInBlock(blockList);
       localVariableNumbering(startBlock);
-      if (generateARM){
+      if (generateARM) {
          for (LLVMBlockType block : blockList) {
             Set<LLVMRegisterType> armGenSet = block.newArmGenSet(); 
             Set<LLVMRegisterType> armKillSet = block.newArmKillSet();
@@ -340,6 +340,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                   block.addARMCode(code.generateArmCode());
                }
             }
+
             //live registers analysis 
             for (ARMCode code : block.getARMCode()) {
                List<LLVMRegisterType> uses = code.getUses();
@@ -354,12 +355,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                      }
                   }
                }
-               //System.out.println("def: "+code.getDef());
-               //System.out.println("uses: "+code.getUses());
-               //System.out.println("gen set: "+block.getArmGenSet());
-               //System.out.println("kill set: "+block.getArmKillSet());
             }
          }
+
          //live registers analysis, already initialize liveOut as empty sets
          boolean changed = true;
          while (changed){
@@ -369,22 +367,25 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             }
          }
 
+         InterferenceGraph g = new InterferenceGraph();
          for (LLVMBlockType block : blockList) {
             Set<LLVMRegisterType> liveOut = block.getLiveOutSet();
-            for (ARMCode code : block.getARMCode()){
+            for (ARMCode code : block.getARMCode()) {
                LLVMRegisterType target = code.getDef();
-               if (target != null){
+               if (target != null) {
                   for (LLVMRegisterType element : liveOut){
-                   // add edge target --> element //TODO
+                     g.addEdge(target, element);
                   }
                }
                liveOut.remove(target);
                List<LLVMRegisterType> sources = code.getUses();
-               if (sources != null){
+               if (sources != null) {
                   liveOut.addAll(sources);
                }
             }
          }
+         g.allocateRegister();
+
          for (LLVMBlockType block : blockList) {
             if (block.getPredecessors().size() == 0 && !block.isEntry() 
             && !block.getBlockId().equals(funcExitBlockId) 
@@ -401,9 +402,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                }
             }*/
             for (ARMCode code : block.getARMCode()) {
-
                printStringToFile("\t" + code);
-
             }
             if (!block.isClosed() && !block.getBlockId().equals(funcExitBlockId))
             {
@@ -412,9 +411,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
          }
          printStringToFile("\t.size " + func.getName() + ", .-" + func.getName() + "\n");
-      }
-      else
-      {
+      } else {
          for (LLVMBlockType block : blockList) {
             if (block.getPredecessors().size() == 0 && !block.isEntry() 
                && !block.getBlockId().equals(funcExitBlockId) 

@@ -2,11 +2,12 @@ package llvm;
 import java.util.ArrayList;
 public class LLVMRegisterType implements LLVMType
 {
-   private String id;
+   protected String id;
    private String typeRep;
    private LLVMCode def;
    private boolean dependenciesMarked;
    private ArrayList<LLVMCode> uses;
+   private ARMRegister allocatedARMRegister;
 
    public LLVMRegisterType(String typeRep, String id)
    {
@@ -14,6 +15,7 @@ public class LLVMRegisterType implements LLVMType
       this.typeRep = typeRep;
       this.uses = new ArrayList<LLVMCode>();
       this.dependenciesMarked = false;
+      this.allocatedARMRegister = null;
    }
 
    public String getId()
@@ -64,9 +66,26 @@ public class LLVMRegisterType implements LLVMType
       this.dependenciesMarked = marked;
    }
 
+   public void allocateARMRegister(ARMRegister register)
+   {
+      this.allocatedARMRegister = register;
+   }
+
+   public ARMRegister getAllocatedARMRegister()
+   {
+      return this.allocatedARMRegister;
+   }
+
    @Override
    public String toString()
    {
+      if (SSAVisitor.generateARM) {
+         if (allocatedARMRegister != null) {
+            return allocatedARMRegister.toString();
+         } else {
+            return "SPILL(" + id + ")";
+         }
+      }
       if (id.charAt(0) != '@' && id.charAt(0) != '%') {
          return "%" + id;
       }
@@ -88,6 +107,7 @@ public class LLVMRegisterType implements LLVMType
          return id.equals(((LLVMRegisterType)other).getId());
       }
    }
+
    @Override
    public int hashCode() {
       int hash = 7;

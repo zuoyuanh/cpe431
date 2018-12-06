@@ -12,13 +12,12 @@ public class ARMMoveCode extends ARMCode
       this.operator = operator;
       this.operand = op;
       this.resultReg = resReg;
-      if (operator==Operator.CMP){
+      if (operator==Operator.CMP) {
          addUse(resReg);
          if (op instanceof LLVMRegisterType) {
             addUse((LLVMRegisterType)op);
          }
-      }
-      else{
+      } else {
          setDef(resReg);
          if (op instanceof LLVMRegisterType) {
             addUse((LLVMRegisterType)op);
