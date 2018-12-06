@@ -13,6 +13,14 @@ public class ARMLoadStoreCode extends ARMCode
       this.address = address;
       this.reg = reg;
       this.operator = operator;
+      if (operator==Operator.LDR){
+         addUse(address);
+         setDef(reg);
+      }
+      else{
+         addUse(reg);
+         addUse(address); 
+      }
    }
 
    public static enum Operator

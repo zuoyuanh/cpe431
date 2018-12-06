@@ -50,26 +50,26 @@ domath:
 	add %fp, %sp, #4
 	mov %num, %r0
 	mov %u65, %num
-	mov %r0, #12
+	movw %r0, #12
 	bl malloc
 	mov %u8, %r0
 	mov %u9, %u8
 	mov %u66, %u9
 	mov %u63, %u9
 	add %u10, %u9, #8
-	mov %r0, #4
+	movw %r0, #4
 	bl malloc
 	mov %u11, %r0
 	mov %u12, %u11
 	str %u12, [%u10]
-	mov %r0, #12
+	movw %r0, #12
 	bl malloc
 	mov %u13, %r0
 	mov %u14, %u13
 	mov %u67, %u14
 	mov %u64, %u14
 	add %u15, %u14, #8
-	mov %r0, #4
+	movw %r0, #4
 	bl malloc
 	mov %u16, %r0
 	mov %u17, %u16
@@ -153,7 +153,7 @@ objinstantiation:
 	b .LU14
 .LU13: 
 	mov %u74, %u77
-	mov %r0, #12
+	movw %r0, #12
 	bl malloc
 	mov %u72, %r0
 	mov %u73, %u72

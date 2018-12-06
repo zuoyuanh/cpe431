@@ -45,7 +45,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
     * if set to be true, the visitor will generate ARM code
     * otherwise the visitor will generate LLVM code
     */
-   public static boolean generateARM = true;
+   public static boolean generateARM = false;
 
    public SSAVisitor(File output)
    {
@@ -317,8 +317,8 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
       }
       
-      removeTrivialPhis(phiCodes);
-      // sparseSimpleConstantPropagation();
+      //removeTrivialPhis(phiCodes);
+      sparseSimpleConstantPropagation();
 
       if (generateARM) {
          for (LLVMPhiCode phiCode : phiCodes) {
@@ -1092,21 +1092,23 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    
       while (!workList.isEmpty()) {
          LLVMRegisterType reg = workList.remove(0);
-         System.out.println("remove: " +reg);
+
+         System.out.println("------------------\nremove: " +reg);
          List<LLVMCode> uses = reg.getUses();
+
+         System.out.println(uses.size());
          for (LLVMCode use : uses) {
-         System.out.println("use "+use);
+            System.out.println("use "+use);
             LLVMType def = use.getDef(); //for a code, need to find the reg it defined
-         System.out.println("def "+def);
+            System.out.println("def "+def);
             if (def!=null && def instanceof LLVMRegisterType && !(valueTable.get((LLVMRegisterType)def) instanceof SSCPBottom)) {
                LLVMRegisterType m = (LLVMRegisterType)def;
                SSCPValue val = valueTable.get(m);
                SSCPValue resVal = evaluate(use, valueTable);
-               if (resVal instanceof SSCPConstant) System.out.println("constant: "+  m + val + resVal);
+               if (resVal instanceof SSCPConstant) System.out.println("constant: "+  m +" "+ val +" "+ resVal);
                if (resVal instanceof SSCPBottom) System.out.println("bottom: "+  m);
                if ((resVal != null)  && !(resVal.equals(val))) {
-               if (resVal instanceof SSCPConstant) System.out.println("constant: "+  m);
-
+                  if (resVal instanceof SSCPConstant) System.out.println("put in worklist constant: "+  m);
                   valueTable.put(m, resVal);
                   if (!workList.contains(m)) {
                      workList.add(m);

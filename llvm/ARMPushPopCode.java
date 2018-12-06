@@ -1,5 +1,6 @@
 package llvm;
 import java.util.List;
+import java.util.ArrayList;
 public class ARMPushPopCode extends ARMCode
 {
    
@@ -11,6 +12,7 @@ public class ARMPushPopCode extends ARMCode
       super();
       this.regList = regList;
       this.operator = operator;
+      setUses(regList);
    }
 
    public static enum Operator
