@@ -8,7 +8,7 @@ public class LLVMPhiType implements LLVMType {
    public LLVMPhiType(LLVMBlockType b)
    {
       block = b;
-      phiOperands =  new ArrayList<LLVMPhiEntryType>();
+      phiOperands = new ArrayList<LLVMPhiEntryType>();
    }
 
    public ArrayList<LLVMPhiEntryType> getPhiOperands()

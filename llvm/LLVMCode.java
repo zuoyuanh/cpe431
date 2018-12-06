@@ -145,6 +145,11 @@ public class LLVMCode
       return getConversions();
    }
 
+   public LocalNumberingExpression getExpressionForLocalNumbering()
+   {
+      return null;
+   }
+
    public void setBlock(LLVMBlockType b)
    {
       this.block = b;

@@ -7,6 +7,7 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.HashMap;
 import java.util.Set;
 import java.util.Map;
@@ -325,8 +326,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             phiCode.processPhiDefs();
          }
       }
-
+      
       markUsefulInstructionInBlock(blockList);
+      localVariableNumbering(startBlock);
       
       for (LLVMBlockType block : blockList) {
          if (block.getPredecessors().size() == 0 && !block.isEntry() 
@@ -1361,6 +1363,101 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             removeTrivialPhi(phiCode);
          }
          trivialList = splitPhiCodes(workList);
+      }
+   }
+
+   private void localVariableNumbering(LLVMBlockType block)
+   {
+      Map<LocalNumberingExpression, LLVMType> table = new HashMap<LocalNumberingExpression, LLVMType>();
+      getLocalVariableNumberingSets(block, table);
+   }
+
+   private void getLocalVariableNumberingSets(LLVMBlockType block, 
+                                Map<LocalNumberingExpression, LLVMType> table)
+   {
+      if (block.getGenSet() != null || block.getLabel() == LLVMBlockType.Label.PROGRAM) {
+         return;
+      }
+      block.newGenSet();
+      block.newKillSet();
+      block.newAvailSet();
+      Set<LLVMType> modifiedTargets = new HashSet<LLVMType>();
+
+      // generate avail set
+      HashSet<LocalNumberingExpression> avail = null;
+
+      for (LLVMBlockType b : block.getPredecessors()) {
+         if (b.getAvailSet() == null) {
+            this.getLocalVariableNumberingSets(b, table);
+         }
+         if (b.getGenSet() == null || b.getAvailSet() == null) {
+            break;
+         }
+         HashSet<LocalNumberingExpression> blockGen = new HashSet<LocalNumberingExpression>(b.getGenSet());
+         HashSet<LocalNumberingExpression> blockAvail = new HashSet<LocalNumberingExpression>(b.getAvailSet());
+         blockAvail.removeAll(b.getKillSet());
+         blockGen.addAll(blockAvail);
+
+         if (avail == null) {
+            avail = blockGen;
+         } else {
+            avail.retainAll(blockGen);
+         }
+      }
+      if (avail != null) {
+         block.setAvailSet(avail);
+      }
+
+      HashSet<LocalNumberingExpression> availSet;
+
+      if (avail != null) {
+         availSet = new HashSet<LocalNumberingExpression>(avail);
+      } else {
+         availSet = new HashSet<LocalNumberingExpression>();
+      }
+
+      // generate gen set
+      for (LLVMCode code : block.getLLVMCode()) {
+         if (!code.isRemoved() && code.isMarked()) {
+            LocalNumberingExpression exp = code.getExpressionForLocalNumbering();
+            if (exp != null) {
+               if (code instanceof LLVMBinaryOperationCode) {
+                  LLVMType resultReg = ((LLVMBinaryOperationCode)code).getResultReg();
+                  if (availSet.contains(exp)) {
+                     if (resultReg instanceof LLVMRegisterType) {
+                        for (LLVMCode use : ((LLVMRegisterType)resultReg).getUses()) {
+                           use.replaceRegister(resultReg, table.get(exp));
+                        }
+                     }
+                     code.remove();
+                  } else {
+                     availSet.add(exp);
+                     table.put(exp, resultReg);
+                  }
+                  modifiedTargets.add(resultReg);
+               }
+               block.addToGenSet(exp);
+            }
+         }   
+      }
+
+      // generate kill set
+      for (LLVMType t : modifiedTargets) {
+         if (t instanceof LLVMRegisterType) {
+            ArrayList<LLVMCode> uses = ((LLVMRegisterType)t).getUses();
+            for (LLVMCode use : uses) {
+               if (!use.isRemoved() && use.isMarked()) {
+                  LocalNumberingExpression exp = use.getExpressionForLocalNumbering();
+                  if (exp != null) {
+                     block.addToKillSet(exp);
+                  }
+               }
+            }
+         }
+      }
+
+      for (LLVMBlockType b : block.getSuccessors()) {
+         this.getLocalVariableNumberingSets(b, table);
       }
    }
 }

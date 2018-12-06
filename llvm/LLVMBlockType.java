@@ -3,6 +3,8 @@ package llvm;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Set;
+import java.util.HashSet;
 
 public class LLVMBlockType implements LLVMType
 {
@@ -17,6 +19,9 @@ public class LLVMBlockType implements LLVMType
    private HashMap<String, LLVMPhiType> phiTable;
    private boolean sealed;
    private boolean returned;
+   private Set<LocalNumberingExpression> genSet;
+   private Set<LocalNumberingExpression> killSet;
+   private Set<LocalNumberingExpression> availSet;
 
    public LLVMBlockType(String blockId, Label l)
    {
@@ -31,6 +36,9 @@ public class LLVMBlockType implements LLVMType
       this.sealed = false;
       this.returned = false;
       this.label = l;
+      this.genSet = null;
+      this.killSet = null;
+      this.availSet = null;
    }
 
    public LLVMBlockType(String blockId, boolean sealed, Label l)
@@ -46,6 +54,9 @@ public class LLVMBlockType implements LLVMType
       this.sealed = sealed;
       this.returned = false;
       this.label = l;
+      this.genSet = null;
+      this.killSet = null;
+      this.availSet = null;
    }
 
    public LLVMBlockType(String blockId, List<LLVMCode> llvmCode, boolean closed, Label l)
@@ -61,11 +72,19 @@ public class LLVMBlockType implements LLVMType
       this.sealed = false;
       this.returned = false;
       this.label = l;
+      this.genSet = null;
+      this.killSet = null;
+      this.availSet = null;
    }
 
    public static enum Label
    {
       THEN, ELSE, WHILE_LOOP, RETURN, ENTRY, EXIT, JOIN, WHILE_EXIT, PROGRAM
+   }
+
+   public Label getLabel()
+   {
+      return this.label;
    }
 
    public void addSuccessor(LLVMBlockType block)
@@ -273,5 +292,61 @@ public class LLVMBlockType implements LLVMType
    public String getTypeRep()
    {
       return "";
+   }
+
+   public Set<LocalNumberingExpression> getGenSet()
+   {
+      return this.genSet;
+   }
+
+   public void newGenSet()
+   {
+      this.genSet = new HashSet<LocalNumberingExpression>();
+   }
+
+   public void addToGenSet(LocalNumberingExpression exp)
+   {
+      if (this.genSet != null) {
+         this.genSet.add(exp);
+      }
+   }
+
+   public Set<LocalNumberingExpression> getKillSet()
+   {
+      return this.killSet;
+   }
+
+   public void newKillSet()
+   {
+      this.killSet = new HashSet<LocalNumberingExpression>();
+   }
+
+   public void addToKillSet(LocalNumberingExpression exp)
+   {
+      if (this.killSet != null) {
+         this.killSet.add(exp);
+      }
+   }
+
+   public Set<LocalNumberingExpression> getAvailSet()
+   {
+      return this.availSet;
+   }
+
+   public void newAvailSet()
+   {
+      this.availSet = new HashSet<LocalNumberingExpression>();
+   }
+
+   public void setAvailSet(HashSet<LocalNumberingExpression> value)
+   {
+      this.availSet = value;
+   }
+
+   public void addToAvailSet(LocalNumberingExpression exp)
+   {
+      if (this.availSet != null) {
+         this.availSet.add(exp);
+      }
    }
 }

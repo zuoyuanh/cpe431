@@ -1,0 +1,45 @@
+fun foo(int a, int b, int c, int d, int e, int f) void
+{
+    int m, f, p, r, s, u, t, v, w, x, y, z;
+    m = a + b;
+    f = c + d;
+    if (f > 0) {
+       p = c + d;
+       r = c + d;
+    } else {
+       c = a + b;
+       r = c + d;
+       u = e + f;
+       if (u > 0) {
+          e = b + 18;
+          s = a + b;
+          c = a + b;
+       } else {
+          e = a + 17;
+          t = c + d;
+          u = e + f;
+       }
+       v = a + b;
+       w = c + d;
+       x = e + f;
+    }
+    y = a + b;
+    z = c + d;
+    print a;
+    print b;
+    print c;
+    print d;
+    print e;
+    print f;
+    print m;
+    print p;
+    print r;
+    print s;
+    print t;
+    print u;
+    print v;
+    print w;
+    print x;
+    print y;
+    print z;
+}

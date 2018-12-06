@@ -152,6 +152,11 @@ public class LLVMBinaryOperationCode extends LLVMCode
       return resultReg;
    }
 
+   public LocalNumberingExpression getExpressionForLocalNumbering()
+   {
+      return new LocalNumberingBinaryExpression(operator, leftType, rightType);
+   }
+
    public List<ARMCode> generateArmCode()
    {
       switch (operator) {
