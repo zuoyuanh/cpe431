@@ -317,7 +317,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
       }
       
-      //removeTrivialPhis(phiCodes);
+      removeTrivialPhis(phiCodes);
       sparseSimpleConstantPropagation();
 
       if (generateARM) {
@@ -569,8 +569,10 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       LLVMType expType = this.visit(exp, block);
       if (expType instanceof LLVMRegisterType || expType instanceof LLVMPrimitiveType) {
          LLVMReturnConversionCode c = new LLVMReturnConversionCode(expType, funcRetValueTypeRep);
-         addToUsesList(expType, c);
-         block.add(c);
+         if (c.toString().length() != 0) {
+            addToUsesList(expType, c);
+            block.add(c);
+         }
          LLVMType opnd = c.getConvertedResultReg();
          if ((opnd instanceof LLVMRegisterType) && (!opnd.equals(expType)) && (opnd != expType)) {
             ((LLVMRegisterType)opnd).setDef(c);
@@ -1074,13 +1076,10 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       HashMap<LLVMRegisterType, SSCPValue> valueTable = new HashMap<LLVMRegisterType, SSCPValue>();
       
       for (LLVMRegisterType r : regList) {
-         System.out.println(r+" "+ r.getDef());
          initialize(r, valueTable);
       }
-      System.out.println(valueTable);
       for (LLVMRegisterType r : regList){
          SSCPValue orig = valueTable.get(r);
-         System.out.println(r+" "+ r.getDef());
          SSCPValue v = evaluate(r.getDef(), valueTable);
          if (! orig.equals(v))
             valueTable.put(r, v);
@@ -1088,27 +1087,19 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             workList.add(r);
          }
       }
-      System.out.println(valueTable);
    
       while (!workList.isEmpty()) {
          LLVMRegisterType reg = workList.remove(0);
 
-         System.out.println("------------------\nremove: " +reg);
          List<LLVMCode> uses = reg.getUses();
 
-         System.out.println(uses.size());
          for (LLVMCode use : uses) {
-            System.out.println("use "+use);
             LLVMType def = use.getDef(); //for a code, need to find the reg it defined
-            System.out.println("def "+def);
             if (def!=null && def instanceof LLVMRegisterType && !(valueTable.get((LLVMRegisterType)def) instanceof SSCPBottom)) {
                LLVMRegisterType m = (LLVMRegisterType)def;
                SSCPValue val = valueTable.get(m);
                SSCPValue resVal = evaluate(use, valueTable);
-               if (resVal instanceof SSCPConstant) System.out.println("constant: "+  m +" "+ val +" "+ resVal);
-               if (resVal instanceof SSCPBottom) System.out.println("bottom: "+  m);
                if ((resVal != null)  && !(resVal.equals(val))) {
-                  if (resVal instanceof SSCPConstant) System.out.println("put in worklist constant: "+  m);
                   valueTable.put(m, resVal);
                   if (!workList.contains(m)) {
                      workList.add(m);
@@ -1117,7 +1108,6 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             }
          }
       }
-      System.out.println(valueTable);
       
       for (LLVMRegisterType key : valueTable.keySet()) {
          SSCPValue val = valueTable.get(key);
@@ -1244,7 +1234,6 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       case PLUS:
          int lf2 = ((SSCPIntConstant)lfVal).getValue();
          int rt2 = ((SSCPIntConstant)rtVal).getValue();
-         System.out.println(lf2 +"+"+rt2); 
          return new SSCPIntConstant(lf2+rt2);
       case MINUS:
          int lf3 = ((SSCPIntConstant)lfVal).getValue();
