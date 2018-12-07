@@ -42,6 +42,12 @@ public class ARMLoadStoreCode extends ARMCode
 
    public String toString()
    {
-      return operatorToString(operator) + " " + reg +", [" + address + "]\n";
+      String res = "";
+      if ((reg).getAllocatedARMRegister() == null){
+            System.out.println("not allocated: "+reg);
+            //res += (new ARMLoadStoreCode(ARMCode.r9, reg, ARMLoadStoreCode.Operator.LDR)).toString();  
+      }
+      res += operatorToString(operator) + " " + reg +", [" + address + "]\n";
+      return res;
    }
 }

@@ -16,6 +16,9 @@ public class LLVMRegisterType implements LLVMType
       this.uses = new ArrayList<LLVMCode>();
       this.dependenciesMarked = false;
       this.allocatedARMRegister = null;
+      if (this instanceof ARMRegister){
+         this.allocatedARMRegister = (ARMRegister)this;
+      }
    }
 
    public String getId()

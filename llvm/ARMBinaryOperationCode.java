@@ -48,11 +48,36 @@ public class ARMBinaryOperationCode extends ARMCode
    }
 
    public String toString()
-   {
+   {  
+      String res = ""; 
       String lf = leftType.toString();
+      if (leftType.getAllocatedARMRegister() == null){
+         res += (new ARMLoadStoreCode(ARMCode.r9, leftType, ARMLoadStoreCode.Operator.LDR)).toString();
+         lf = ARMCode.r9.toString();
+      }
       String rt = "";
-      if (rightType instanceof LLVMRegisterType) rt = ((LLVMRegisterType)rightType).toString();
-      else if (rightType instanceof LLVMPrimitiveType)  rt = "#"+ ((LLVMPrimitiveType)rightType).getValueRep();
-      return operatorToString(operator) + " " + resultReg.toString() + ", " + lf + ", " + rt + "\n";
+      if (rightType instanceof LLVMRegisterType) {
+         if (((LLVMRegisterType)rightType).getAllocatedARMRegister() == null){
+            res += (new ARMLoadStoreCode(ARMCode.r10, (LLVMRegisterType)rightType, ARMLoadStoreCode.Operator.LDR)).toString();
+            rt = ARMCode.r10.toString();
+         }
+         else{
+            rt = ((LLVMRegisterType)rightType).toString();
+         }
+      }
+      else if (rightType instanceof LLVMPrimitiveType){
+         rt = "#"+ ((LLVMPrimitiveType)rightType).getValueRep();
+      }
+      
+      String resReg = resultReg.toString();
+      if ((resultReg).getAllocatedARMRegister() == null){
+            res += (new ARMLoadStoreCode(ARMCode.r10, resultReg, ARMLoadStoreCode.Operator.LDR)).toString();  
+            resReg = ARMCode.r10.toString();
+      }
+      res+=operatorToString(operator) + " " + resReg + ", " + lf + ", " + rt + "\n";
+      if ((resultReg).getAllocatedARMRegister() == null){
+            res += (new ARMLoadStoreCode(ARMCode.r10, resultReg, ARMLoadStoreCode.Operator.STR)).toString();  
+      }
+      return res;
    }
 }
