@@ -21,8 +21,10 @@ tailrecursive:
 .LU3: 
 	b .LU4
 .LU4: 
-	sub SPILL(u3), r1, #1
-	mov r0, SPILL(u3)
+	sub r10, r1, #1
+ldr r10, [SPILL(u3)]
+		ldr r9, [SPILL(u3)]
+	mov r0, r9
 	bl tailrecursive
 	b .LU0
 .LU0: 
@@ -48,15 +50,24 @@ domath:
 .LU8: 
 	push {fp, lr}
 	add fp, sp, #4
-	mov SPILL(%num), SPILL(r0)
-	mov r5, SPILL(%num)
+	ldr r9, [SPILL(r0)]
+	mov r10, r9
+	str r10, [SPILL(%num)]
+	ldr r9, [SPILL(%num)]
+	mov r5, r9
 	movw r0, #12
 	bl malloc
-	mov SPILL(u8), r0
-	mov SPILL(u9), SPILL(u8)
-	mov r1, SPILL(u9)
-	mov r2, SPILL(u9)
-	add r7, SPILL(u9), #8
+	mov r10, r0
+	str r10, [SPILL(u8)]
+	ldr r9, [SPILL(u8)]
+	mov r10, r9
+	str r10, [SPILL(u9)]
+	ldr r9, [SPILL(u9)]
+	mov r1, r9
+	ldr r9, [SPILL(u9)]
+	mov r2, r9
+	ldr r9, [SPILL(u9)]
+	add r7, r9, #8
 	movw r0, #4
 	bl malloc
 	mov r7, r0
@@ -64,36 +75,52 @@ domath:
 	str r7, [r7]
 	movw r0, #12
 	bl malloc
-	mov SPILL(u13), r0
-	mov SPILL(u14), SPILL(u13)
-	mov r4, SPILL(u14)
-	mov r3, SPILL(u14)
-	add r0, SPILL(u14), #8
+	mov r10, r0
+	str r10, [SPILL(u13)]
+	ldr r9, [SPILL(u13)]
+	mov r10, r9
+	str r10, [SPILL(u14)]
+	ldr r9, [SPILL(u14)]
+	mov r4, r9
+	ldr r9, [SPILL(u14)]
+	mov r3, r9
+	ldr r9, [SPILL(u14)]
+	add r0, r9, #8
 	movw r0, #4
 	bl malloc
 	mov r0, r0
 	mov r0, r0
 	str r0, [r0]
-	add r6, SPILL(u9), #0
-	str SPILL(%num), [r6]
-	add r5, SPILL(u14), #0
+	ldr r9, [SPILL(u9)]
+	add r6, r9, #0
+	ldr r9, [SPILL(%num)]
+	str r9, [r6]
+	ldr r9, [SPILL(u14)]
+	add r5, r9, #0
 	mov r5, #3
 	str r5, [r5]
-	add r4, SPILL(u9), #8
+	ldr r9, [SPILL(u9)]
+	add r4, r9, #8
 	ldr r4, [r4]
 	add r2, r4, #0
-	add r2, SPILL(u9), #0
+	ldr r9, [SPILL(u9)]
+	add r2, r9, #0
 	ldr r2, [r2]
 	str r2, [r2]
-	add r3, SPILL(u14), #8
+	ldr r9, [SPILL(u14)]
+	add r3, r9, #8
 	ldr r3, [r3]
 	add r1, r3, #0
-	add r1, SPILL(u14), #0
+	ldr r9, [SPILL(u14)]
+	add r1, r9, #0
 	ldr r1, [r1]
 	str r1, [r1]
 	mov r8, #0
-	mov SPILL(u69), #0
-	cmp SPILL(%num), SPILL(u69)
+	mov r10, #0
+	str r10, [SPILL(u69)]
+	ldr r9, [SPILL(u69)]
+	ldr r10, [SPILL(u69)]
+	cmp r10, r9
 	movgt r8, #1
 	cmp r8, #1
 	beq .LU9
@@ -126,11 +153,13 @@ domath:
 	beq .LU9
 	b .LU10
 .LU10: 
-	mov SPILL(u62), r4
+	mov r10, r4
+	str r10, [SPILL(u62)]
 	mov r0, r1
 	mov r0, r0
 	bl free
-	mov r0, SPILL(u62)
+	ldr r9, [SPILL(u62)]
+	mov r0, r9
 	bl free
 	b .LU7
 .LU7: 
@@ -224,8 +253,10 @@ ackermann:
 	mov r4, r1
 	b .LU15
 .LU15: 
-	mov SPILL(u89), r4
-	mov r0, SPILL(u89)
+	mov r10, r4
+	str r10, [SPILL(u89)]
+	ldr r9, [SPILL(u89)]
+	mov r0, r9
 	pop {fp, pc}
 	.size ackermann, .-ackermann
 	.align 2

@@ -70,4 +70,16 @@ public class ARMCode
          uses.add(u);
       }
    }
+//TODO look up location on the stack
+   public String loadSpill(String res, ARMRegister r, LLVMRegisterType spillReg){
+      res += (new ARMLoadStoreCode(r, (LLVMRegisterType)spillReg, ARMLoadStoreCode.Operator.LDR)).toString();
+      res += "\t";
+      return res;
+   }
+   public String storeSpill(String res, ARMRegister r, LLVMRegisterType spillReg){
+      res += "\t";
+      res += (new ARMLoadStoreCode(r, (LLVMRegisterType)spillReg, ARMLoadStoreCode.Operator.STR)).toString();
+      return res;
+   }
+   
 }

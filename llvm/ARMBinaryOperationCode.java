@@ -52,13 +52,13 @@ public class ARMBinaryOperationCode extends ARMCode
       String res = ""; 
       String lf = leftType.toString();
       if (leftType.getAllocatedARMRegister() == null){
-         res += (new ARMLoadStoreCode(ARMCode.r9, leftType, ARMLoadStoreCode.Operator.LDR)).toString();
+         res  = loadSpill(res, ARMCode.r9, leftType);
          lf = ARMCode.r9.toString();
       }
       String rt = "";
       if (rightType instanceof LLVMRegisterType) {
          if (((LLVMRegisterType)rightType).getAllocatedARMRegister() == null){
-            res += (new ARMLoadStoreCode(ARMCode.r10, (LLVMRegisterType)rightType, ARMLoadStoreCode.Operator.LDR)).toString();
+            res = loadSpill(res, ARMCode.r10, (LLVMRegisterType)rightType);
             rt = ARMCode.r10.toString();
          }
          else{
@@ -71,12 +71,11 @@ public class ARMBinaryOperationCode extends ARMCode
       
       String resReg = resultReg.toString();
       if ((resultReg).getAllocatedARMRegister() == null){
-            res += (new ARMLoadStoreCode(ARMCode.r10, resultReg, ARMLoadStoreCode.Operator.LDR)).toString();  
             resReg = ARMCode.r10.toString();
       }
       res+=operatorToString(operator) + " " + resReg + ", " + lf + ", " + rt + "\n";
       if ((resultReg).getAllocatedARMRegister() == null){
-            res += (new ARMLoadStoreCode(ARMCode.r10, resultReg, ARMLoadStoreCode.Operator.STR)).toString();  
+            res = loadSpill(res, ARMCode.r10, resultReg);
       }
       return res;
    }
