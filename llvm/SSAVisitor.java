@@ -391,6 +391,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                }
             }
          }
+         System.out.println(g);
          g.allocateRegister();
 
          List<LLVMRegisterType> calleeSavedRegisters = Compiler.getCalleeSavedRegisters();
@@ -399,10 +400,12 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
          int spillsStackSize = Compiler.getLocalVariableStackSize();
          if (spillsStackSize != 0) {
-            functionSetup.add(new ARMBinaryOperationCode(ARMCode.sp, 
-                             new LLVMPrimitiveType("i32", spillsStackSize + ""), 
+            LLVMType sizeType = new LLVMPrimitiveType("i32", spillsStackSize + "");
+            functionSetup.add(new ARMBinaryOperationCode(ARMCode.sp, sizeType, 
                              ARMCode.sp, ARMBinaryOperationCode.Operator.SUB));
-            Compiler.getResetStackPointerCode().enable();
+            Compiler.getResetStackPointerToFpCode().enable();
+            Compiler.getResetStackPointerToSavedRegsCode().setRightType(sizeType);
+            Compiler.getResetStackPointerToSavedRegsCode().enable();
          }
          startBlock.addToARMFront(functionSetup);
 

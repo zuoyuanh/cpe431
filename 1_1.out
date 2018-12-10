@@ -1,0 +1,761 @@
+{"types":[],"declarations":[],"functions":[{"line":1,"id":"wait","parameters":[{"line":1,"type":"int","id":"waitTime"}],"return_type":"int","declarations":[],"body":[{"line":3,"stmt":"while","guard":{"line":3,"exp":"binary","operator":">","lft":{"line":3,"exp":"id","id":"waitTime"},"rht":{"line":3,"exp":"num","value":"0"}},"body":{"stmt":"block","list":[{"line":5,"stmt":"assign","source":{"line":5,"exp":"binary","operator":"-","lft":{"line":5,"exp":"id","id":"waitTime"},"rht":{"line":5,"exp":"num","value":"1"}},"target":{"line":5,"id":"waitTime"}}]}},{"line":8,"stmt":"return","exp":{"line":8,"exp":"num","value":"0"}}]},{"line":11,"id":"power","parameters":[{"line":11,"type":"int","id":"base"},{"line":11,"type":"int","id":"exponent"}],"return_type":"int","declarations":[{"line":13,"type":"int","id":"product"}],"body":[{"line":15,"stmt":"assign","source":{"line":15,"exp":"num","value":"1"},"target":{"line":15,"id":"product"}},{"line":16,"stmt":"while","guard":{"line":16,"exp":"binary","operator":">","lft":{"line":16,"exp":"id","id":"exponent"},"rht":{"line":16,"exp":"num","value":"0"}},"body":{"stmt":"block","list":[{"line":18,"stmt":"assign","source":{"line":18,"exp":"binary","operator":"*","lft":{"line":18,"exp":"id","id":"product"},"rht":{"line":18,"exp":"id","id":"base"}},"target":{"line":18,"id":"product"}},{"line":19,"stmt":"assign","source":{"line":19,"exp":"binary","operator":"-","lft":{"line":19,"exp":"id","id":"exponent"},"rht":{"line":19,"exp":"num","value":"1"}},"target":{"line":19,"id":"exponent"}}]}},{"line":22,"stmt":"return","exp":{"line":22,"exp":"id","id":"product"}}]},{"line":25,"id":"recursiveDecimalSum","parameters":[{"line":25,"type":"int","id":"binaryNum"},{"line":25,"type":"int","id":"decimalSum"},{"line":25,"type":"int","id":"recursiveDepth"}],"return_type":"int","declarations":[{"line":27,"type":"int","id":"tempNum"},{"line":27,"type":"int","id":"base"},{"line":27,"type":"int","id":"remainder"}],"body":[{"line":29,"stmt":"if","guard":{"line":29,"exp":"binary","operator":">","lft":{"line":29,"exp":"id","id":"binaryNum"},"rht":{"line":29,"exp":"num","value":"0"}},"then":{"stmt":"block","list":[{"line":31,"stmt":"assign","source":{"line":31,"exp":"num","value":"2"},"target":{"line":31,"id":"base"}},{"line":33,"stmt":"assign","source":{"line":33,"exp":"binary","operator":"/","lft":{"line":33,"exp":"id","id":"binaryNum"},"rht":{"line":33,"exp":"num","value":"10"}},"target":{"line":33,"id":"tempNum"}},{"line":34,"stmt":"assign","source":{"line":34,"exp":"binary","operator":"*","lft":{"line":34,"exp":"id","id":"tempNum"},"rht":{"line":34,"exp":"num","value":"10"}},"target":{"line":34,"id":"tempNum"}},{"line":35,"stmt":"assign","source":{"line":35,"exp":"binary","operator":"-","lft":{"line":35,"exp":"id","id":"binaryNum"},"rht":{"line":35,"exp":"id","id":"tempNum"}},"target":{"line":35,"id":"tempNum"}},{"line":37,"stmt":"if","guard":{"line":37,"exp":"binary","operator":"==","lft":{"line":37,"exp":"id","id":"tempNum"},"rht":{"line":37,"exp":"num","value":"1"}},"then":{"stmt":"block","list":[{"line":39,"stmt":"print","exp":{"line":39,"exp":"num","value":"23"},"endl":false},{"line":40,"stmt":"print","exp":{"line":40,"exp":"id","id":"tempNum"},"endl":false},{"line":41,"stmt":"print","exp":{"line":41,"exp":"id","id":"binaryNum"},"endl":false},{"line":42,"stmt":"print","exp":{"line":42,"exp":"id","id":"base"},"endl":false},{"line":43,"stmt":"print","exp":{"line":43,"exp":"num","value":"24"},"endl":false},{"line":44,"stmt":"assign","source":{"line":44,"exp":"binary","operator":"+","lft":{"line":44,"exp":"id","id":"decimalSum"},"rht":{"line":44,"exp":"invocation","id":"power","args":[{"line":44,"exp":"id","id":"base"},{"line":44,"exp":"id","id":"recursiveDepth"}]}},"target":{"line":44,"id":"decimalSum"}},{"line":45,"stmt":"print","exp":{"line":45,"exp":"num","value":"33"},"endl":false},{"line":46,"stmt":"print","exp":{"line":46,"exp":"id","id":"tempNum"},"endl":false},{"line":47,"stmt":"print","exp":{"line":47,"exp":"id","id":"binaryNum"},"endl":false},{"line":48,"stmt":"print","exp":{"line":48,"exp":"id","id":"base"},"endl":false},{"line":49,"stmt":"print","exp":{"line":49,"exp":"num","value":"34"},"endl":false}]}},{"line":52,"stmt":"return","exp":{"line":52,"exp":"invocation","id":"recursiveDecimalSum","args":[{"line":52,"exp":"binary","operator":"/","lft":{"line":52,"exp":"id","id":"binaryNum"},"rht":{"line":52,"exp":"num","value":"10"}},{"line":52,"exp":"id","id":"decimalSum"},{"line":52,"exp":"binary","operator":"+","lft":{"line":52,"exp":"id","id":"recursiveDepth"},"rht":{"line":52,"exp":"num","value":"1"}}]}}]}},{"line":55,"stmt":"return","exp":{"line":55,"exp":"id","id":"decimalSum"}}]},{"line":58,"id":"convertToDecimal","parameters":[{"line":58,"type":"int","id":"binaryNum"}],"return_type":"int","declarations":[{"line":60,"type":"int","id":"recursiveDepth"},{"line":60,"type":"int","id":"decimalSum"}],"body":[{"line":62,"stmt":"assign","source":{"line":62,"exp":"num","value":"0"},"target":{"line":62,"id":"recursiveDepth"}},{"line":63,"stmt":"assign","source":{"line":63,"exp":"num","value":"0"},"target":{"line":63,"id":"decimalSum"}},{"line":65,"stmt":"return","exp":{"line":65,"exp":"invocation","id":"recursiveDecimalSum","args":[{"line":65,"exp":"id","id":"binaryNum"},{"line":65,"exp":"id","id":"decimalSum"},{"line":65,"exp":"id","id":"recursiveDepth"}]}}]},{"line":68,"id":"main","parameters":[],"return_type":"int","declarations":[{"line":70,"type":"int","id":"number"},{"line":70,"type":"int","id":"waitTime"}],"body":[{"line":72,"stmt":"assign","source":{"line":72,"exp":"read"},"target":{"line":72,"id":"number"}},{"line":74,"stmt":"assign","source":{"line":74,"exp":"invocation","id":"convertToDecimal","args":[{"line":74,"exp":"id","id":"number"}]},"target":{"line":74,"id":"number"}},{"line":75,"stmt":"assign","source":{"line":75,"exp":"binary","operator":"*","lft":{"line":75,"exp":"id","id":"number"},"rht":{"line":75,"exp":"id","id":"number"}},"target":{"line":75,"id":"waitTime"}},{"line":77,"stmt":"while","guard":{"line":77,"exp":"binary","operator":">","lft":{"line":77,"exp":"id","id":"waitTime"},"rht":{"line":77,"exp":"num","value":"0"}},"body":{"stmt":"block","list":[{"line":79,"stmt":"invocation","id":"wait","args":[{"line":79,"exp":"id","id":"waitTime"}]},{"line":80,"stmt":"assign","source":{"line":80,"exp":"binary","operator":"-","lft":{"line":80,"exp":"id","id":"waitTime"},"rht":{"line":80,"exp":"num","value":"1"}},"target":{"line":80,"id":"waitTime"}}]}},{"line":83,"stmt":"print","exp":{"line":83,"exp":"id","id":"number"},"endl":true},{"line":85,"stmt":"return","exp":{"line":85,"exp":"num","value":"0"}}]}]}
+--- Generating LLVM Code ---
+	.arch armv7-a
+
+	.text
+	.align 2
+	.global wait
+wait:
+----------- Interference Graph -----------
+* SPILL(%waitTime): 
+     SPILL(%waitTime) -> SPILL(u0)
+     SPILL(%waitTime) -> SPILL(u5)
+     SPILL(%waitTime) -> SPILL(u7)
+
+* SPILL(u0): 
+     SPILL(u0) -> SPILL(u5)
+     SPILL(u0) -> SPILL(%waitTime)
+
+! SPILL(u1)
+* SPILL(u2): 
+     SPILL(u2) -> SPILL(u5)
+     SPILL(u2) -> SPILL(u8)
+     SPILL(u2) -> SPILL(u3)
+
+* SPILL(u3): 
+     SPILL(u3) -> SPILL(u2)
+     SPILL(u3) -> SPILL(u5)
+
+* SPILL(u5): 
+     SPILL(u5) -> SPILL(u3)
+     SPILL(u5) -> SPILL(u2)
+     SPILL(u5) -> SPILL(u0)
+     SPILL(u5) -> SPILL(%waitTime)
+     SPILL(u5) -> SPILL(u7)
+     SPILL(u5) -> SPILL(u8)
+
+* SPILL(u7): 
+     SPILL(u7) -> SPILL(%waitTime)
+     SPILL(u7) -> SPILL(u5)
+
+* SPILL(u8): 
+     SPILL(u8) -> SPILL(u5)
+     SPILL(u8) -> SPILL(u2)
+
+-------------- End of Record -------------
+.LU1: 
+	push {fp, lr}
+	add fp, sp, #4
+	push {r4, r5, r6}
+	mov r5(%waitTime), r0
+	mov r6(u5), r5(%waitTime)
+	mov r4(u0), #0
+	mov r4(u7), #0
+	cmp r5(%waitTime), r4(u7)
+	movgt r4(u0), #1
+	cmp r4(u0), #1
+	beq .LU2
+	b .LU3
+.LU2: 
+	mov r4(u1), r6(u5)
+	sub r5(u2), r4(u1), #1
+	mov r6(u5), r5(u2)
+	mov r4(u3), #0
+	mov r4(u8), #0
+	cmp r5(u2), r4(u8)
+	movgt r4(u3), #1
+	cmp r4(u3), #1
+	beq .LU2
+	b .LU3
+.LU3: 
+	b .LU0
+.LU0: 
+	mov r0, #0
+	pop {r4, r5, r6}
+	pop {fp, pc}
+	.size wait, .-wait
+	.align 2
+	.global power
+power:
+----------- Interference Graph -----------
+* SPILL(u21): 
+     SPILL(u21) -> SPILL(%exponent)
+     SPILL(u21) -> SPILL(%base)
+     SPILL(u21) -> SPILL(u20)
+     SPILL(u21) -> SPILL(u23)
+     SPILL(u21) -> SPILL(u12)
+     SPILL(u21) -> SPILL(u14)
+     SPILL(u21) -> SPILL(u24)
+     SPILL(u21) -> SPILL(u13)
+     SPILL(u21) -> SPILL(u9)
+     SPILL(u21) -> SPILL(u15)
+     SPILL(u21) -> SPILL(u18)
+     SPILL(u21) -> SPILL(u19)
+
+* SPILL(u10): 
+     SPILL(u10) -> SPILL(u11)
+     SPILL(u10) -> SPILL(u13)
+     SPILL(u10) -> SPILL(u19)
+
+* SPILL(u20): 
+     SPILL(u20) -> SPILL(u14)
+     SPILL(u20) -> SPILL(u24)
+     SPILL(u20) -> SPILL(u9)
+     SPILL(u20) -> SPILL(u15)
+     SPILL(u20) -> SPILL(u18)
+     SPILL(u20) -> SPILL(u19)
+     SPILL(u20) -> SPILL(%exponent)
+     SPILL(u20) -> SPILL(%base)
+     SPILL(u20) -> SPILL(u21)
+     SPILL(u20) -> SPILL(u23)
+
+* SPILL(u23): 
+     SPILL(u23) -> SPILL(%exponent)
+     SPILL(u23) -> SPILL(u21)
+     SPILL(u23) -> SPILL(u20)
+     SPILL(u23) -> SPILL(u18)
+     SPILL(u23) -> SPILL(u19)
+
+* SPILL(u12): 
+     SPILL(u12) -> SPILL(u21)
+     SPILL(u12) -> SPILL(u13)
+     SPILL(u12) -> SPILL(u19)
+
+* SPILL(u11): 
+     SPILL(u11) -> SPILL(u13)
+     SPILL(u11) -> SPILL(u18)
+     SPILL(u11) -> SPILL(u19)
+     SPILL(u11) -> SPILL(u10)
+
+* SPILL(u14): 
+     SPILL(u14) -> SPILL(u20)
+     SPILL(u14) -> SPILL(u21)
+     SPILL(u14) -> SPILL(u24)
+     SPILL(u14) -> SPILL(u15)
+     SPILL(u14) -> SPILL(u18)
+     SPILL(u14) -> SPILL(u19)
+
+* SPILL(u24): 
+     SPILL(u24) -> SPILL(u14)
+     SPILL(u24) -> SPILL(u18)
+     SPILL(u24) -> SPILL(u19)
+     SPILL(u24) -> SPILL(u21)
+     SPILL(u24) -> SPILL(u20)
+
+* SPILL(u13): 
+     SPILL(u13) -> SPILL(u18)
+     SPILL(u13) -> SPILL(u19)
+     SPILL(u13) -> SPILL(u21)
+     SPILL(u13) -> SPILL(u10)
+     SPILL(u13) -> SPILL(u11)
+     SPILL(u13) -> SPILL(u12)
+
+! SPILL(u16)
+* SPILL(u15): 
+     SPILL(u15) -> SPILL(u14)
+     SPILL(u15) -> SPILL(u18)
+     SPILL(u15) -> SPILL(u19)
+     SPILL(u15) -> SPILL(u20)
+     SPILL(u15) -> SPILL(u21)
+
+* SPILL(u18): 
+     SPILL(u18) -> SPILL(%exponent)
+     SPILL(u18) -> SPILL(u20)
+     SPILL(u18) -> SPILL(u21)
+     SPILL(u18) -> SPILL(u11)
+     SPILL(u18) -> SPILL(u23)
+     SPILL(u18) -> SPILL(u24)
+     SPILL(u18) -> SPILL(u13)
+     SPILL(u18) -> SPILL(u14)
+     SPILL(u18) -> SPILL(u9)
+     SPILL(u18) -> SPILL(u15)
+     SPILL(u18) -> SPILL(u19)
+
+* SPILL(u19): 
+     SPILL(u19) -> SPILL(u9)
+     SPILL(u19) -> SPILL(u20)
+     SPILL(u19) -> SPILL(u21)
+     SPILL(u19) -> SPILL(u10)
+     SPILL(u19) -> SPILL(u11)
+     SPILL(u19) -> SPILL(u23)
+     SPILL(u19) -> SPILL(u12)
+     SPILL(u19) -> SPILL(u24)
+     SPILL(u19) -> SPILL(u13)
+     SPILL(u19) -> SPILL(u14)
+     SPILL(u19) -> SPILL(u15)
+     SPILL(u19) -> SPILL(u18)
+     SPILL(u19) -> SPILL(%exponent)
+
+* SPILL(%exponent): 
+     SPILL(%exponent) -> SPILL(u23)
+     SPILL(%exponent) -> SPILL(u21)
+     SPILL(%exponent) -> SPILL(u9)
+     SPILL(%exponent) -> SPILL(u20)
+     SPILL(%exponent) -> SPILL(u19)
+     SPILL(%exponent) -> SPILL(u18)
+     SPILL(%exponent) -> SPILL(%base)
+
+* SPILL(%base): 
+     SPILL(%base) -> SPILL(u20)
+     SPILL(%base) -> SPILL(u21)
+     SPILL(%base) -> r1
+     SPILL(%base) -> SPILL(%exponent)
+
+* r1: 
+     r1 -> SPILL(%base)
+
+* SPILL(u9): 
+     SPILL(u9) -> SPILL(u18)
+     SPILL(u9) -> SPILL(u19)
+     SPILL(u9) -> SPILL(%exponent)
+     SPILL(u9) -> SPILL(u21)
+     SPILL(u9) -> SPILL(u20)
+
+-------------- End of Record -------------
+.LU5: 
+	push {fp, lr}
+	add fp, sp, #4
+	push {r4, r5, r6, r7, r8}
+	sub sp, sp, #8
+	mov r4(%base), r0
+	mov r5(%exponent), r1
+	mov r8(u21), #1
+	mov r6(u20), r5(%exponent)
+	mov r10, r4(%base)
+	str r10, [sp, #-8]
+	mov r7(u18), #1
+	mov r4(u9), #0
+	mov r4(u23), #0
+	cmp r5(%exponent), r4(u23)
+	movgt r4(u9), #1
+	cmp r4(u9), #1
+	beq .LU6
+	b .LU7
+.LU6: 
+	ldr r9, [sp, #-8]
+	mov r5(u11), r9
+	mov r10, r5(u11)
+	str r10, [sp, #-8]
+	mov r4(u10), r7(u18)
+	mul r4(u12), r4(u10), r5(u11)
+	mov r8(u21), r4(u12)
+	mov r7(u18), r4(u12)
+	sub r5(u14), r6(u13), #1
+	mov r6(u20), r5(u14)
+	mov r4(u15), #0
+	mov r4(u24), #0
+	cmp r5(u14), r4(u24)
+	movgt r4(u15), #1
+	cmp r4(u15), #1
+	beq .LU6
+	b .LU7
+.LU7: 
+	mov r4(u16), r8(u21)
+	b .LU4
+.LU4: 
+	mov r0, r4(u16)
+	add sp, sp, #8
+	pop {r4, r5, r6, r7, r8}
+	sub sp, fp, #4
+	pop {fp, pc}
+	.size power, .-power
+	.align 2
+	.global recursiveDecimalSum
+recursiveDecimalSum:
+----------- Interference Graph -----------
+* SPILL(%binaryNum): 
+     SPILL(%binaryNum) -> SPILL(u45)
+     SPILL(%binaryNum) -> SPILL(u34)
+     SPILL(%binaryNum) -> SPILL(u44)
+     SPILL(%binaryNum) -> SPILL(u43)
+     SPILL(%binaryNum) -> SPILL(u31)
+     SPILL(%binaryNum) -> SPILL(u41)
+     SPILL(%binaryNum) -> SPILL(u30)
+     SPILL(%binaryNum) -> SPILL(u29)
+     SPILL(%binaryNum) -> r0
+     SPILL(%binaryNum) -> SPILL(u28)
+     SPILL(%binaryNum) -> SPILL(u27)
+     SPILL(%binaryNum) -> SPILL(u26)
+     SPILL(%binaryNum) -> SPILL(u25)
+     SPILL(%binaryNum) -> r2
+     SPILL(%binaryNum) -> r1
+     SPILL(%binaryNum) -> SPILL(%recursiveDepth)
+     SPILL(%binaryNum) -> SPILL(%decimalSum)
+
+* SPILL(u41): 
+     SPILL(u41) -> r1
+     SPILL(u41) -> SPILL(%binaryNum)
+     SPILL(u41) -> SPILL(u28)
+     SPILL(u41) -> r0
+     SPILL(u41) -> SPILL(%recursiveDepth)
+
+* SPILL(u30): 
+     SPILL(u30) -> SPILL(%decimalSum)
+     SPILL(u30) -> SPILL(%binaryNum)
+     SPILL(u30) -> SPILL(u28)
+     SPILL(u30) -> SPILL(%recursiveDepth)
+
+* SPILL(u43): 
+     SPILL(u43) -> SPILL(%decimalSum)
+     SPILL(u43) -> SPILL(%binaryNum)
+     SPILL(u43) -> SPILL(%recursiveDepth)
+
+* SPILL(u31): 
+     SPILL(u31) -> SPILL(%binaryNum)
+     SPILL(u31) -> SPILL(u28)
+     SPILL(u31) -> SPILL(%recursiveDepth)
+
+! SPILL(u42)
+* SPILL(u45): 
+     SPILL(u45) -> SPILL(%decimalSum)
+     SPILL(u45) -> SPILL(%binaryNum)
+     SPILL(u45) -> SPILL(u28)
+     SPILL(u45) -> SPILL(%recursiveDepth)
+     SPILL(u45) -> SPILL(u29)
+
+* SPILL(u34): 
+     SPILL(u34) -> r0
+     SPILL(u34) -> SPILL(u33)
+     SPILL(u34) -> SPILL(u36)
+     SPILL(u34) -> SPILL(%binaryNum)
+     SPILL(u34) -> r2
+     SPILL(u34) -> r1
+     SPILL(u34) -> SPILL(%recursiveDepth)
+
+* SPILL(u44): 
+     SPILL(u44) -> SPILL(u26)
+     SPILL(u44) -> SPILL(%decimalSum)
+     SPILL(u44) -> SPILL(%binaryNum)
+     SPILL(u44) -> SPILL(%recursiveDepth)
+
+* SPILL(u33): 
+     SPILL(u33) -> SPILL(u36)
+     SPILL(u33) -> r2
+     SPILL(u33) -> r1
+     SPILL(u33) -> SPILL(%recursiveDepth)
+     SPILL(u33) -> SPILL(u34)
+
+* SPILL(u25): 
+     SPILL(u25) -> SPILL(%decimalSum)
+     SPILL(u25) -> SPILL(%binaryNum)
+     SPILL(u25) -> SPILL(%recursiveDepth)
+
+* SPILL(u36): 
+     SPILL(u36) -> SPILL(u34)
+     SPILL(u36) -> SPILL(u33)
+
+* SPILL(%decimalSum): 
+     SPILL(%decimalSum) -> SPILL(%binaryNum)
+     SPILL(%decimalSum) -> SPILL(u30)
+     SPILL(%decimalSum) -> SPILL(u43)
+     SPILL(%decimalSum) -> SPILL(u45)
+     SPILL(%decimalSum) -> SPILL(u44)
+     SPILL(%decimalSum) -> SPILL(u25)
+     SPILL(%decimalSum) -> SPILL(u27)
+     SPILL(%decimalSum) -> SPILL(u26)
+     SPILL(%decimalSum) -> SPILL(u29)
+     SPILL(%decimalSum) -> SPILL(u28)
+     SPILL(%decimalSum) -> SPILL(%recursiveDepth)
+     SPILL(%decimalSum) -> r0
+     SPILL(%decimalSum) -> r1
+     SPILL(%decimalSum) -> r2
+
+* SPILL(u27): 
+     SPILL(u27) -> SPILL(%decimalSum)
+     SPILL(u27) -> SPILL(%binaryNum)
+     SPILL(u27) -> SPILL(%recursiveDepth)
+
+! SPILL(u38)
+* SPILL(u26): 
+     SPILL(u26) -> SPILL(%decimalSum)
+     SPILL(u26) -> SPILL(%binaryNum)
+     SPILL(u26) -> SPILL(%recursiveDepth)
+     SPILL(u26) -> SPILL(u44)
+
+! SPILL(u37)
+* SPILL(u29): 
+     SPILL(u29) -> SPILL(u45)
+     SPILL(u29) -> SPILL(%decimalSum)
+     SPILL(u29) -> SPILL(%binaryNum)
+     SPILL(u29) -> SPILL(u28)
+     SPILL(u29) -> SPILL(%recursiveDepth)
+
+* SPILL(u28): 
+     SPILL(u28) -> SPILL(%decimalSum)
+     SPILL(u28) -> SPILL(u29)
+     SPILL(u28) -> SPILL(%binaryNum)
+     SPILL(u28) -> SPILL(%recursiveDepth)
+     SPILL(u28) -> r1
+     SPILL(u28) -> r0
+     SPILL(u28) -> SPILL(u41)
+     SPILL(u28) -> SPILL(u30)
+     SPILL(u28) -> SPILL(u31)
+     SPILL(u28) -> SPILL(u45)
+
+* SPILL(%recursiveDepth): 
+     SPILL(%recursiveDepth) -> SPILL(%binaryNum)
+     SPILL(%recursiveDepth) -> r1
+     SPILL(%recursiveDepth) -> SPILL(u26)
+     SPILL(%recursiveDepth) -> SPILL(u27)
+     SPILL(%recursiveDepth) -> SPILL(%decimalSum)
+     SPILL(%recursiveDepth) -> SPILL(u25)
+     SPILL(%recursiveDepth) -> SPILL(u28)
+     SPILL(%recursiveDepth) -> SPILL(u29)
+     SPILL(%recursiveDepth) -> r0
+     SPILL(%recursiveDepth) -> SPILL(u41)
+     SPILL(%recursiveDepth) -> SPILL(u30)
+     SPILL(%recursiveDepth) -> SPILL(u44)
+     SPILL(%recursiveDepth) -> SPILL(u33)
+     SPILL(%recursiveDepth) -> SPILL(u45)
+     SPILL(%recursiveDepth) -> SPILL(u34)
+     SPILL(%recursiveDepth) -> SPILL(u31)
+     SPILL(%recursiveDepth) -> SPILL(u43)
+
+* r0: 
+     r0 -> SPILL(%decimalSum)
+     r0 -> SPILL(%recursiveDepth)
+     r0 -> SPILL(%binaryNum)
+     r0 -> SPILL(u28)
+     r0 -> SPILL(u41)
+     r0 -> r1
+     r0 -> SPILL(u34)
+
+* r1: 
+     r1 -> SPILL(u41)
+     r1 -> SPILL(u34)
+     r1 -> SPILL(u33)
+     r1 -> SPILL(%decimalSum)
+     r1 -> SPILL(%recursiveDepth)
+     r1 -> r0
+     r1 -> SPILL(%binaryNum)
+     r1 -> SPILL(u28)
+
+* r2: 
+     r2 -> SPILL(%decimalSum)
+     r2 -> SPILL(%binaryNum)
+     r2 -> SPILL(u34)
+     r2 -> SPILL(u33)
+
+-------------- End of Record -------------
+.LU9: 
+	push {fp, lr}
+	add fp, sp, #4
+	push {r4, r5, r6, r7, r8}
+	sub sp, sp, #8
+	mov r10, r0
+	str r10, [sp, #-8]
+	mov r7(%decimalSum), r1
+	mov r8(%recursiveDepth), r2
+	mov r4(u25), #0
+	mov r4(u43), #0
+	ldr r10, [r4(u43)]
+	cmp r10, r4(u43)
+	movgt r4(u25), #1
+	cmp r4(u25), #1
+	beq .LU10
+	b .LU11
+.LU10: 
+	ldr r9, [sp, #-8]
+	mov r0, r9
+	mov r1, #10
+	bl __aeabi_idiv
+	mov r4(u26), r0
+	mov r5(u44), #10
+	mul r4(u27), r4(u26), r5(u44)
+	ldr r9, [sp, #-8]
+	sub r6(u28), r9, r4(u27)
+	mov r4(u29), #0
+	mov r5(u45), #1
+	cmp r6(u28), r5(u45)
+	moveq r4(u29), #1
+	cmp r4(u29), #1
+	beq .LU13
+	b .LU14
+.LU11: 
+	b .LU12
+.LU13: 
+	mov r1, #23
+	movw r0, #:lower16:.PRINTLN_FMT
+	movt r0, #:upper16:.PRINTLN_FMT
+	bl printf
+	mov r1, r6(u28)
+	movw r0, #:lower16:.PRINTLN_FMT
+	movt r0, #:upper16:.PRINTLN_FMT
+	bl printf
+	ldr r9, [sp, #-8]
+	mov r1, r9
+	movw r0, #:lower16:.PRINTLN_FMT
+	movt r0, #:upper16:.PRINTLN_FMT
+	bl printf
+	mov r1, #2
+	movw r0, #:lower16:.PRINTLN_FMT
+	movt r0, #:upper16:.PRINTLN_FMT
+	bl printf
+	mov r1, #24
+	movw r0, #:lower16:.PRINTLN_FMT
+	movt r0, #:upper16:.PRINTLN_FMT
+	bl printf
+	mov r1, r8(%recursiveDepth)
+	mov r0, #2
+	bl power
+	mov r4(u30), r0
+	add r4(u31), r7(%decimalSum), r4(u30)
+	mov r1, #33
+	movw r0, #:lower16:.PRINTLN_FMT
+	movt r0, #:upper16:.PRINTLN_FMT
+	bl printf
+	mov r1, r6(u28)
+	movw r0, #:lower16:.PRINTLN_FMT
+	movt r0, #:upper16:.PRINTLN_FMT
+	bl printf
+	ldr r9, [sp, #-8]
+	mov r1, r9
+	movw r0, #:lower16:.PRINTLN_FMT
+	movt r0, #:upper16:.PRINTLN_FMT
+	bl printf
+	mov r1, #2
+	movw r0, #:lower16:.PRINTLN_FMT
+	movt r0, #:upper16:.PRINTLN_FMT
+	bl printf
+	mov r1, #34
+	movw r0, #:lower16:.PRINTLN_FMT
+	movt r0, #:upper16:.PRINTLN_FMT
+	bl printf
+	b .LU15
+.LU14: 
+	mov r4(u41), r7(%decimalSum)
+	b .LU15
+.LU15: 
+	mov r6(u34), r4(u41)
+	ldr r9, [sp, #-8]
+	mov r0, r9
+	mov r1, #10
+	bl __aeabi_idiv
+	mov r5(u33), r0
+	add r4(u36), r8(%recursiveDepth), #1
+	mov r2, r4(u36)
+	mov r1, r6(u34)
+	mov r0, r5(u33)
+	bl recursiveDecimalSum
+	mov r4(u37), r0
+	b .LU8
+.LU12: 
+	mov r4(u42), r7(%decimalSum)
+	b .LU8
+.LU8: 
+	mov r0, r4(u38)
+	add sp, sp, #8
+	pop {r4, r5, r6, r7, r8}
+	sub sp, fp, #4
+	pop {fp, pc}
+	.size recursiveDecimalSum, .-recursiveDecimalSum
+	.align 2
+	.global convertToDecimal
+convertToDecimal:
+----------- Interference Graph -----------
+! SPILL(u46)
+* SPILL(%binaryNum): 
+     SPILL(%binaryNum) -> r2
+     SPILL(%binaryNum) -> r1
+
+! r0
+* r1: 
+     r1 -> SPILL(%binaryNum)
+
+* r2: 
+     r2 -> SPILL(%binaryNum)
+
+-------------- End of Record -------------
+.LU17: 
+	push {fp, lr}
+	add fp, sp, #4
+	push {r4}
+	mov r4(%binaryNum), r0
+	mov r2, #0
+	mov r1, #0
+	mov r0, r4(%binaryNum)
+	bl recursiveDecimalSum
+	mov r4(u46), r0
+	b .LU16
+.LU16: 
+	mov r0, r4(u46)
+	pop {r4}
+	pop {fp, pc}
+	.size convertToDecimal, .-convertToDecimal
+	.align 2
+	.global main
+main:
+----------- Interference Graph -----------
+* SPILL(u61): 
+     SPILL(u61) -> SPILL(u62)
+     SPILL(u61) -> SPILL(u51)
+     SPILL(u61) -> SPILL(u52)
+     SPILL(u61) -> SPILL(u60)
+     SPILL(u61) -> SPILL(u55)
+     SPILL(u61) -> SPILL(u56)
+     SPILL(u61) -> SPILL(u64)
+     SPILL(u61) -> SPILL(u65)
+
+* SPILL(u50): 
+     SPILL(u50) -> SPILL(u62)
+     SPILL(u50) -> SPILL(u60)
+
+* SPILL(u60): 
+     SPILL(u60) -> r0
+     SPILL(u60) -> SPILL(u51)
+     SPILL(u60) -> SPILL(u62)
+     SPILL(u60) -> SPILL(u52)
+     SPILL(u60) -> SPILL(u61)
+     SPILL(u60) -> SPILL(u50)
+     SPILL(u60) -> SPILL(u55)
+     SPILL(u60) -> SPILL(u56)
+     SPILL(u60) -> SPILL(u64)
+     SPILL(u60) -> SPILL(u53)
+     SPILL(u60) -> SPILL(u65)
+     SPILL(u60) -> SPILL(u54)
+
+* SPILL(u52): 
+     SPILL(u52) -> SPILL(u62)
+     SPILL(u52) -> SPILL(u51)
+     SPILL(u52) -> SPILL(u60)
+     SPILL(u52) -> SPILL(u61)
+
+* SPILL(u62): 
+     SPILL(u62) -> SPILL(u52)
+     SPILL(u62) -> SPILL(u51)
+     SPILL(u62) -> SPILL(u61)
+     SPILL(u62) -> SPILL(u50)
+     SPILL(u62) -> SPILL(u60)
+     SPILL(u62) -> SPILL(u56)
+     SPILL(u62) -> SPILL(u55)
+     SPILL(u62) -> SPILL(u65)
+     SPILL(u62) -> SPILL(u54)
+     SPILL(u62) -> SPILL(u64)
+     SPILL(u62) -> SPILL(u53)
+     SPILL(u62) -> SPILL(u58)
+     SPILL(u62) -> r0
+
+* SPILL(u51): 
+     SPILL(u51) -> SPILL(u62)
+     SPILL(u51) -> SPILL(u52)
+     SPILL(u51) -> SPILL(u60)
+     SPILL(u51) -> SPILL(u61)
+     SPILL(u51) -> SPILL(u64)
+
+* SPILL(u65): 
+     SPILL(u65) -> SPILL(u62)
+     SPILL(u65) -> SPILL(u61)
+     SPILL(u65) -> SPILL(u60)
+     SPILL(u65) -> SPILL(u55)
+
+* SPILL(u54): 
+     SPILL(u54) -> SPILL(u62)
+     SPILL(u54) -> SPILL(u60)
+     SPILL(u54) -> SPILL(u53)
+
+* SPILL(u64): 
+     SPILL(u64) -> SPILL(u62)
+     SPILL(u64) -> SPILL(u51)
+     SPILL(u64) -> SPILL(u61)
+     SPILL(u64) -> SPILL(u60)
+
+* SPILL(u53): 
+     SPILL(u53) -> SPILL(u58)
+     SPILL(u53) -> r0
+     SPILL(u53) -> SPILL(u62)
+     SPILL(u53) -> SPILL(u60)
+     SPILL(u53) -> SPILL(u54)
+
+* SPILL(u56): 
+     SPILL(u56) -> SPILL(u62)
+     SPILL(u56) -> SPILL(u60)
+     SPILL(u56) -> SPILL(u61)
+     SPILL(u56) -> SPILL(u55)
+
+* SPILL(u55): 
+     SPILL(u55) -> SPILL(u62)
+     SPILL(u55) -> SPILL(u60)
+     SPILL(u55) -> SPILL(u61)
+     SPILL(u55) -> SPILL(u56)
+     SPILL(u55) -> SPILL(u65)
+
+* SPILL(u58): 
+     SPILL(u58) -> SPILL(u62)
+     SPILL(u58) -> SPILL(u53)
+
+! SPILL(u57)
+! SPILL(u49)
+* r0: 
+     r0 -> SPILL(u62)
+     r0 -> SPILL(u60)
+     r0 -> SPILL(u53)
+
+-------------- End of Record -------------
+.LU19: 
+	push {fp, lr}
+	add fp, sp, #4
+	push {r4, r5, r6, r7, r8}
+	movw r1, #:lower16:.read_scratch
+	movt r1, #:upper16:.read_scratch
+	movw r0, #:lower16:.READ_FMT
+	movt r0, #:upper16:.READ_FMT
+	bl scanf
+	movw r4(u49), #:lower16:.read_scratch
+	movt r4(u49), #:upper16:.read_scratch
+	ldr r4(u49), [r4(u49)]
+	mov r0, r4(u49)
+	bl convertToDecimal
+	mov r4(u50), r0
+	mov r8(u62), r4(u50)
+	mov r7(u60), r4(u50)
+	mul r5(u51), r4(u50), r4(u50)
+	mov r6(u61), r5(u51)
+	mov r4(u52), #0
+	mov r4(u64), #0
+	cmp r5(u51), r4(u64)
+	movgt r4(u52), #1
+	cmp r4(u52), #1
+	beq .LU20
+	b .LU21
+.LU20: 
+	mov r5(u53), r6(u61)
+	mov r4(u58), r7(u60)
+	mov r8(u62), r4(u58)
+	mov r7(u60), r4(u58)
+	mov r0, r5(u53)
+	bl wait
+	mov r4(u54), r0
+	sub r5(u55), r5(u53), #1
+	mov r6(u61), r5(u55)
+	mov r4(u56), #0
+	mov r4(u65), #0
+	cmp r5(u55), r4(u65)
+	movgt r4(u56), #1
+	cmp r4(u56), #1
+	beq .LU20
+	b .LU21
+.LU21: 
+	mov r4(u57), r8(u62)
+	mov r1, r4(u57)
+	movw r0, #:lower16:.PRINTLN_FMT
+	movt r0, #:upper16:.PRINTLN_FMT
+	bl printf
+	b .LU18
+.LU18: 
+	mov r0, #0
+	pop {r4, r5, r6, r7, r8}
+	pop {fp, pc}
+	.size main, .-main
+	.section	.rodata
+	.align	2
+.PRINTLN_FMT:
+	.asciz	"%ld\n"
+	.align	2
+.PRINT_FMT:
+	.asciz	"%ld "
+	.align	2
+.READ_FMT:
+	.asciz	"%ld"
+	.comm	.read_scratch,4,4
+	.global	__aeabi_idiv
+

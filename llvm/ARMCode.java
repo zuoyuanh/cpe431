@@ -64,7 +64,8 @@ public class ARMCode
       return this.uses;
    }
    
-   public void addUse(LLVMRegisterType u){
+   public void addUse(LLVMRegisterType u)
+   {
       if (uses == null) {
          uses = new ArrayList<LLVMRegisterType>();
       }
@@ -73,12 +74,21 @@ public class ARMCode
       }
    }
 
-   public String loadSpill(String res, ARMRegister r, LLVMRegisterType spillReg){
+   public void removeUse(LLVMRegisterType t) 
+   {
+      if (uses.contains(t)) {
+         uses.remove(t);
+      }
+   }
+
+   public String loadSpill(String res, ARMRegister r, LLVMRegisterType spillReg)
+   {
       res += (new ARMLoadStoreCode(r, (LLVMRegisterType)spillReg, ARMLoadStoreCode.Operator.LDR)).toString();
       res += "\t";
       return res;
    }
-   public String storeSpill(String res, ARMRegister r, LLVMRegisterType spillReg){
+   public String storeSpill(String res, ARMRegister r, LLVMRegisterType spillReg)
+   {
       res += "\t";
       res += (new ARMLoadStoreCode(r, (LLVMRegisterType)spillReg, ARMLoadStoreCode.Operator.STR)).toString();
       return res;

@@ -27,6 +27,14 @@ public class ARMBinaryOperationCode extends ARMCode
       ADD, SUB, MUL, AND, ORR, EOR
    }
 
+   public void setRightType(LLVMType t)
+   {
+      this.rightType = t;
+      if (rightType instanceof LLVMRegisterType) {
+         addUse((LLVMRegisterType)rightType);
+      }
+   }
+
    public String operatorToString(Operator op){
       switch (op)
       {

@@ -30,13 +30,27 @@ fun recursiveDecimalSum (int binaryNum, int decimalSum, int recursiveDepth) int
    {
       base = 2;
 
+      print binaryNum;
+
+
       tempNum = binaryNum / 10;
       tempNum = tempNum * 10;
       tempNum = binaryNum - tempNum;
 
+
       if (tempNum == 1)
       {
+         print 23;
+         print tempNum;
+         print binaryNum;
+         print base;
+         print 24;
          decimalSum = decimalSum + power(base, recursiveDepth);
+         print 33;
+         print tempNum;
+         print binaryNum;
+         print base;
+         print 34;
       }
 
       return recursiveDecimalSum(binaryNum / 10, decimalSum, recursiveDepth + 1);

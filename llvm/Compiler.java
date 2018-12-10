@@ -13,7 +13,8 @@ public class Compiler
    private static Set<ARMRegister> allocatedARMRegister;
    private static Map<String, Integer> localVariablesMap;
    private static ARMPushPopCode popCalleeSavedRegisterCode;
-   private static ARMBinaryOperationCode resetStackPointerCode;
+   private static ARMBinaryOperationCode resetStackPointerToFpCode;
+   private static ARMBinaryOperationCode resetStackPointerToSavedRegsCode;
    
    private static void initializeLocalVariableMap()
    {
@@ -31,7 +32,8 @@ public class Compiler
       initializeLocalVariableMap();
       initializeAllocatedARMRegister();
       popCalleeSavedRegisterCode = null;
-      resetStackPointerCode = null;
+      resetStackPointerToFpCode = null;
+      resetStackPointerToSavedRegsCode = null;
    }
 
    public static void putLocalVariable(String id)
@@ -80,15 +82,27 @@ public class Compiler
       return popCalleeSavedRegisterCode;
    }
 
-   public static ARMBinaryOperationCode createResetStackPointerCode()
+   public static ARMBinaryOperationCode createResetStackPointerToFpCode()
    {
-      resetStackPointerCode = new ARMBinaryOperationCode(ARMCode.fp, new LLVMPrimitiveType("i32", "4"), ARMCode.sp, ARMBinaryOperationCode.Operator.SUB);
-      resetStackPointerCode.disable();
-      return resetStackPointerCode;
+      resetStackPointerToFpCode = new ARMBinaryOperationCode(ARMCode.fp, new LLVMPrimitiveType("i32", "4"), ARMCode.sp, ARMBinaryOperationCode.Operator.SUB);
+      resetStackPointerToFpCode.disable();
+      return resetStackPointerToFpCode;
    }
 
-   public static ARMBinaryOperationCode getResetStackPointerCode()
+   public static ARMBinaryOperationCode getResetStackPointerToFpCode()
    {
-      return resetStackPointerCode;
+      return resetStackPointerToFpCode;
+   }
+
+   public static ARMBinaryOperationCode createResetStackPointerToSavedRegsCode()
+   {
+      resetStackPointerToSavedRegsCode = new ARMBinaryOperationCode(ARMCode.sp, new LLVMPrimitiveType("i32", "4"), ARMCode.sp, ARMBinaryOperationCode.Operator.ADD);
+      resetStackPointerToSavedRegsCode.disable();
+      return resetStackPointerToSavedRegsCode;
+   }
+
+   public static ARMBinaryOperationCode getResetStackPointerToSavedRegsCode()
+   {
+      return resetStackPointerToSavedRegsCode;
    }
 }
