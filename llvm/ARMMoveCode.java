@@ -23,6 +23,14 @@ public class ARMMoveCode extends ARMCode
             addUse((LLVMRegisterType)op);
          }
       }
+      if (operator == Operator.MOVEQ
+       || operator == Operator.MOVLT
+       || operator == Operator.MOVGT
+       || operator == Operator.MOVNE
+       || operator == Operator.MOVGE
+       || operator == Operator.MOVLE) {
+         addUse(resReg);
+      }
    }
    public static enum Operator
    {
@@ -65,8 +73,8 @@ public class ARMMoveCode extends ARMCode
          String opr = "";
          String resReg = "";
          if (operand instanceof LLVMRegisterType) {
-            if (((LLVMRegisterType)operand).getAllocatedARMRegister() == null){
-               res = loadSpill(res, ARMCode.r9, (LLVMRegisterType) operand);
+            if (((LLVMRegisterType)operand).getAllocatedARMRegister() == null) {
+               res = loadSpill(res, ARMCode.r9, (LLVMRegisterType)operand);
                opr = ARMCode.r9.toString();
             } else { 
                opr = ((LLVMRegisterType)operand).toString();
@@ -74,9 +82,9 @@ public class ARMMoveCode extends ARMCode
          } else if (operand instanceof LLVMPrimitiveType) {
             opr = "#" + ((LLVMPrimitiveType)operand).getValueRep();
          }
-         if ((resultReg).getAllocatedARMRegister() == null){
+         if ((resultReg).getAllocatedARMRegister() == null) {
             resReg = ARMCode.r10.toString();
-            res = loadSpill(res, ARMCode.r10, (LLVMRegisterType) operand);
+            res = loadSpill(res, ARMCode.r10, (LLVMRegisterType)resultReg);
             res += operatorToString(operator) + " " + resReg + ", " + opr + "\n";
          } else {
             resReg = resultReg.toString();

@@ -391,7 +391,6 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                }
             }
          }
-         System.out.println(g);
          g.allocateRegister();
 
          List<LLVMRegisterType> calleeSavedRegisters = Compiler.getCalleeSavedRegisters();

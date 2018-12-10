@@ -18,7 +18,7 @@ public class Compiler
    
    private static void initializeLocalVariableMap()
    {
-      currentOffset = -8;
+      currentOffset = 8;
       localVariablesMap = new HashMap<String, Integer>();
    }
 
@@ -39,7 +39,7 @@ public class Compiler
    public static void putLocalVariable(String id)
    {
       localVariablesMap.put(id, currentOffset);
-      currentOffset -= 8;
+      currentOffset += 8;
    }
 
    public static int getLocalVariableOffset(String id)
