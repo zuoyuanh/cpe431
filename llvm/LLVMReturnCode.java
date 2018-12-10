@@ -56,9 +56,11 @@ public class LLVMReturnCode extends LLVMCode
       if (!isVoid) {
          armCode.add(new ARMMoveCode(ARMCode.r0, value, ARMMoveCode.Operator.MOV));
       }
+      armCode.add(Compiler.createPopCalleeSavedRegisterCode());
       List<LLVMRegisterType> popList = new ArrayList<LLVMRegisterType>();
       popList.add(ARMCode.fp);
       popList.add(ARMCode.pc);
+      armCode.add(Compiler.createResetStackPointerCode());
       armCode.add(new ARMPushPopCode(popList, ARMPushPopCode.Operator.POP));
       return armCode;
    }

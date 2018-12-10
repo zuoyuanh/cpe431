@@ -20,6 +20,12 @@ public class ARMPushPopCode extends ARMCode
       PUSH, POP
    }
 
+   public void setRegList(List<LLVMRegisterType> regList)
+   {
+      this.regList = regList;
+      setUses(regList);
+   }
+
    public String operatorToString(Operator op)
    {
       switch (op){

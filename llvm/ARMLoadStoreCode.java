@@ -6,6 +6,7 @@ public class ARMLoadStoreCode extends ARMCode
    private Operator operator;
    private LLVMRegisterType reg;
    private LLVMRegisterType address;
+   private String offset;
 
    public ARMLoadStoreCode(LLVMRegisterType reg, LLVMRegisterType address,  Operator operator)
    {
@@ -13,11 +14,10 @@ public class ARMLoadStoreCode extends ARMCode
       this.address = address;
       this.reg = reg;
       this.operator = operator;
-      if (operator==Operator.LDR){
+      if (operator == Operator.LDR) {
          addUse(address);
          setDef(reg);
-      }
-      else{
+      } else {
          addUse(reg);
          addUse(address); 
       }
@@ -30,13 +30,13 @@ public class ARMLoadStoreCode extends ARMCode
 
    public String operatorToString(Operator op)
    {
-      switch (op){
-         case LDR:
-            return "ldr";
-         case STR:
-            return "str";
-         default:
-            return "";
+      switch (op) {
+      case LDR:
+         return "ldr";
+      case STR:
+         return "str";
+      default:
+         return "";
       }
    }
 
@@ -44,15 +44,19 @@ public class ARMLoadStoreCode extends ARMCode
    {
       String res = "";
       String regString = "";
-      if ((reg).getAllocatedARMRegister() == null){
-         System.out.println("not allocated: "+reg);
+      String addressRep = "";
+      if ((reg).getAllocatedARMRegister() == null) {
          res = loadSpill(res, ARMCode.r9, reg);
          regString = ARMCode.r9.toString();
-      }
-      else {
+      } else {
          regString = reg.toString();
       }
-      res += operatorToString(operator) + " " + regString +", [" + address + "]\n";
+      if (address instanceof ARMRegister || address.getAllocatedARMRegister() != null) {
+         addressRep = address.toString();
+      } else {
+         addressRep = "fp, #" + Compiler.getLocalVariableOffset(address.getId());
+      }
+      res += operatorToString(operator) + " " + regString + ", [" + addressRep + "]\n";
       return res;
    }
 }

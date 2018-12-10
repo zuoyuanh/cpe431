@@ -7,29 +7,15 @@
 	.align 2
 	.global tailrecursive
 tailrecursive:
------------ Interference Graph -----------* %u0: 
-     %u0 -> %num
-     %u0 -> %u4
-     %u0 -> %r0
-
-* %r0: 
-     %r0 -> %num
-
-* %u4: 
-     %u4 -> %r0
-
-* %num: 
-! %num
--------------- End of Record -------------
 .LU1: 
-	push {%fp, %lr}
-	add %fp, %sp, #4
-	mov %num, %r0
-	mov %u0, #0
-	mov %u4, #0
-	cmp %num, %u4
-	movle %u0, #1
-	cmp %u0, #1
+	push {fp, lr}
+	add fp, sp, #4
+	mov r1(%num), r0
+	mov r0(u0), #0
+	mov r0(u4), #0
+	cmp r1(%num), r0(u4)
+	movle r0(u0), #1
+	cmp r0(u0), #1
 	beq .LU2
 	b .LU3
 .LU2: 
@@ -37,1096 +23,265 @@ tailrecursive:
 .LU3: 
 	b .LU4
 .LU4: 
-	sub %u3, %num, #1
-	mov %r0, %u3
+	sub r0(u3), r1(%num), #1
 	bl tailrecursive
 	b .LU0
 .LU0: 
-	pop {%fp, %pc}
+	pop {fp, pc}
 	.size tailrecursive, .-tailrecursive
 	.align 2
 	.global add
 add:
------------ Interference Graph -----------* %x: 
-     %x -> %u5
-
-* %y: 
-     %y -> %r0
-     %y -> %u5
-
-* %r0: 
-! %r0
-* %u5: 
-     %u5 -> %r0
-     %u5 -> %r2
-
-* %r2: 
-! %r2
--------------- End of Record -------------
 .LU6: 
-	push {%fp, %lr}
-	add %fp, %sp, #4
-	mov %x, %r0
-	mov %y, %r2
-	add %u5, %x, %y
+	push {fp, lr}
+	add fp, sp, #4
+	mov r2(%x), r0
+	add r0(u5), r2(%x), r0(%y)
 	b .LU5
 .LU5: 
-	mov %r0, %u5
-	pop {%fp, %pc}
+	pop {fp, pc}
 	.size add, .-add
 	.align 2
 	.global domath
 domath:
------------ Interference Graph -----------* %u61: 
-     %u61 -> %u67
-
-* %u60: 
-     %u60 -> %u48
-     %u60 -> %u59
-     %u60 -> %u49
-     %u60 -> %u46
-     %u60 -> %u47
-     %u60 -> %u58
-     %u60 -> %u70
-     %u60 -> %r0
-     %u60 -> %u51
-     %u60 -> %u50
-     %u60 -> %u34
-     %u60 -> %u31
-
-* %u63: 
-     %u63 -> %u9
-     %u63 -> %u67
-     %u63 -> %u34
-     %u63 -> %u8
-     %u63 -> %num
-     %u63 -> %u65
-     %u63 -> %u64
-     %u63 -> %u31
-     %u63 -> %r0
-
-* %u65: 
-     %u65 -> %u63
-     %u65 -> %u51
-     %u65 -> %u50
-     %u65 -> %u67
-     %u65 -> %u34
-     %u65 -> %u66
-     %u65 -> %u64
-     %u65 -> %u31
-     %u65 -> %u49
-     %u65 -> %u48
-     %u65 -> %u47
-     %u65 -> %u58
-     %u65 -> %u46
-     %u65 -> %r0
-
-* %u21: 
-     %u21 -> %u10
-     %u21 -> %u12
-     %u21 -> %u11
-     %u21 -> %u14
-     %u21 -> %u13
-     %u21 -> %u68
-     %u21 -> %u16
-     %u21 -> %u9
-     %u21 -> %u15
-     %u21 -> %u8
-     %u21 -> %u18
-     %u21 -> %u17
-     %u21 -> %u19
-     %u21 -> %r0
-     %u21 -> %num
-
-* %u64: 
-     %u64 -> %u14
-     %u64 -> %u13
-     %u64 -> %r0
-     %u64 -> %u9
-     %u64 -> %u8
-     %u64 -> %num
-     %u64 -> %u63
-     %u64 -> %u12
-     %u64 -> %u34
-     %u64 -> %u11
-     %u64 -> %u66
-     %u64 -> %u10
-     %u64 -> %u65
-
-* %u20: 
-     %u20 -> %u14
-     %u20 -> %u13
-     %u20 -> %u68
-     %u20 -> %u16
-     %u20 -> %u15
-     %u20 -> %u18
-     %u20 -> %u17
-     %u20 -> %u19
-     %u20 -> %num
-     %u20 -> %u9
-     %u20 -> %u8
-     %u20 -> %r0
-     %u20 -> %u10
-     %u20 -> %u12
-     %u20 -> %u11
-
-* %u67: 
-     %u67 -> %u63
-     %u67 -> %u9
-     %u67 -> %num
-     %u67 -> %u12
-     %u67 -> %u8
-     %u67 -> %u11
-     %u67 -> %u66
-     %u67 -> %u10
-     %u67 -> %u65
-     %u67 -> %u64
-     %u67 -> %u13
-     %u67 -> %r0
-
-* %u23: 
-     %u23 -> %r0
-     %u23 -> %num
-     %u23 -> %u10
-     %u23 -> %u21
-     %u23 -> %u20
-     %u23 -> %u12
-     %u23 -> %u11
-     %u23 -> %u14
-     %u23 -> %u13
-     %u23 -> %u68
-     %u23 -> %u16
-     %u23 -> %u9
-     %u23 -> %u15
-     %u23 -> %u8
-     %u23 -> %u18
-     %u23 -> %u17
-     %u23 -> %u19
-
-* %u66: 
-     %u66 -> %r0
-     %u66 -> %u63
-     %u66 -> %u67
-     %u66 -> %num
-     %u66 -> %u34
-     %u66 -> %u8
-     %u66 -> %u65
-     %u66 -> %u64
-
-* %u22: 
-     %u22 -> %u9
-     %u22 -> %u8
-     %u22 -> %r0
-     %u22 -> %u10
-     %u22 -> %u20
-     %u22 -> %u12
-     %u22 -> %u11
-     %u22 -> %u14
-     %u22 -> %u13
-     %u22 -> %u68
-     %u22 -> %u16
-     %u22 -> %u15
-     %u22 -> %u18
-     %u22 -> %u17
-     %u22 -> %u19
-     %u22 -> %num
-
-* %u25: 
-     %u25 -> %u10
-     %u25 -> %u21
-     %u25 -> %u20
-     %u25 -> %u12
-     %u25 -> %u23
-     %u25 -> %u11
-     %u25 -> %u22
-     %u25 -> %u14
-     %u25 -> %u13
-     %u25 -> %u68
-     %u25 -> %u24
-     %u25 -> %u16
-     %u25 -> %u9
-     %u25 -> %u15
-     %u25 -> %u8
-     %u25 -> %u18
-     %u25 -> %u17
-     %u25 -> %u19
-     %u25 -> %r0
-     %u25 -> %num
-
-* %u69: 
-     %u69 -> %u12
-     %u69 -> %u11
-     %u69 -> %u10
-     %u69 -> %u16
-     %u69 -> %u15
-     %u69 -> %u14
-     %u69 -> %u13
-     %u69 -> %u19
-     %u69 -> %u18
-     %u69 -> %u17
-     %u69 -> %num
-     %u69 -> %u23
-     %u69 -> %u22
-     %u69 -> %u21
-     %u69 -> %u20
-     %u69 -> %u27
-     %u69 -> %u26
-     %u69 -> %u25
-     %u69 -> %u68
-     %u69 -> %u24
-     %u69 -> %u29
-     %u69 -> %r0
-     %u69 -> %u28
-     %u69 -> %u9
-     %u69 -> %u8
-
-* %u47: 
-     %u47 -> %u34
-     %u47 -> %u31
-     %u47 -> %u65
-
-* %u68: 
-     %u68 -> %u16
-     %u68 -> %u15
-     %u68 -> %u14
-     %u68 -> %u13
-     %u68 -> %u18
-     %u68 -> %r0
-     %u68 -> %u17
-     %u68 -> %u9
-     %u68 -> %num
-     %u68 -> %u8
-     %u68 -> %u12
-     %u68 -> %u11
-     %u68 -> %u10
-
-* %u24: 
-     %u24 -> %u14
-     %u24 -> %u13
-     %u24 -> %u68
-     %u24 -> %u16
-     %u24 -> %u15
-     %u24 -> %u18
-     %u24 -> %u17
-     %u24 -> %u19
-     %u24 -> %num
-     %u24 -> %u9
-     %u24 -> %u8
-     %u24 -> %r0
-     %u24 -> %u10
-     %u24 -> %u21
-     %u24 -> %u20
-     %u24 -> %u12
-     %u24 -> %u11
-
-* %u46: 
-     %u46 -> %u34
-     %u46 -> %u31
-     %u46 -> %u65
-
-* %u27: 
-     %u27 -> %r0
-     %u27 -> %num
-     %u27 -> %u10
-     %u27 -> %u21
-     %u27 -> %u20
-     %u27 -> %u12
-     %u27 -> %u23
-     %u27 -> %u11
-     %u27 -> %u22
-     %u27 -> %u14
-     %u27 -> %u25
-     %u27 -> %u13
-     %u27 -> %u68
-     %u27 -> %u24
-     %u27 -> %u16
-     %u27 -> %u9
-     %u27 -> %u15
-     %u27 -> %u8
-     %u27 -> %u18
-     %u27 -> %u17
-     %u27 -> %u19
-
-* %u49: 
-     %u49 -> %u34
-     %u49 -> %u31
-     %u49 -> %u65
-     %u49 -> %u46
-     %u49 -> %u47
-
-* %u26: 
-     %u26 -> %u9
-     %u26 -> %u8
-     %u26 -> %r0
-     %u26 -> %u10
-     %u26 -> %u21
-     %u26 -> %u20
-     %u26 -> %u12
-     %u26 -> %u23
-     %u26 -> %u11
-     %u26 -> %u22
-     %u26 -> %u14
-     %u26 -> %u13
-     %u26 -> %u68
-     %u26 -> %u24
-     %u26 -> %u16
-     %u26 -> %u15
-     %u26 -> %u18
-     %u26 -> %u17
-     %u26 -> %u19
-     %u26 -> %num
-
-* %u48: 
-     %u48 -> %u46
-     %u48 -> %u34
-     %u48 -> %u31
-     %u48 -> %u65
-
-* %u29: 
-     %u29 -> %u10
-     %u29 -> %u21
-     %u29 -> %u20
-     %u29 -> %u12
-     %u29 -> %u23
-     %u29 -> %u11
-     %u29 -> %u22
-     %u29 -> %u14
-     %u29 -> %u25
-     %u29 -> %u13
-     %u29 -> %u68
-     %u29 -> %u24
-     %u29 -> %u16
-     %u29 -> %u9
-     %u29 -> %u15
-     %u29 -> %u26
-     %u29 -> %u8
-     %u29 -> %u18
-     %u29 -> %u17
-     %u29 -> %u19
-     %u29 -> %r0
-     %u29 -> %num
-
-* %u28: 
-     %u28 -> %u14
-     %u28 -> %u25
-     %u28 -> %u13
-     %u28 -> %u68
-     %u28 -> %u24
-     %u28 -> %u16
-     %u28 -> %u15
-     %u28 -> %u26
-     %u28 -> %u18
-     %u28 -> %u17
-     %u28 -> %u19
-     %u28 -> %num
-     %u28 -> %u9
-     %u28 -> %u8
-     %u28 -> %r0
-     %u28 -> %u10
-     %u28 -> %u21
-     %u28 -> %u20
-     %u28 -> %u12
-     %u28 -> %u23
-     %u28 -> %u11
-     %u28 -> %u22
-
-* %r0: 
-     %r0 -> %num
-     %r0 -> %u8
-     %r0 -> %u9
-     %r0 -> %u48
-     %r0 -> %u14
-     %r0 -> %u47
-     %r0 -> %u13
-     %r0 -> %u46
-     %r0 -> %u63
-     %r0 -> %u51
-     %r0 -> %u50
-     %r0 -> %u61
-     %r0 -> %u67
-     %r0 -> %u12
-     %r0 -> %u34
-     %r0 -> %u66
-     %r0 -> %u11
-     %r0 -> %u10
-     %r0 -> %u65
-     %r0 -> %u64
-     %r0 -> %u31
-
-* %r1: 
-     %r1 -> %u50
-     %r1 -> %u34
-     %r1 -> %u65
-     %r1 -> %u31
-     %r1 -> %u48
-     %r1 -> %u47
-     %r1 -> %u46
-
-* %num: 
-     %num -> %u63
-     %num -> %u67
-     %num -> %u66
-     %num -> %u65
-     %num -> %u64
-
-* %u70: 
-     %u70 -> %u51
-     %u70 -> %u50
-     %u70 -> %u34
-     %u70 -> %u31
-     %u70 -> %u49
-     %u70 -> %u48
-     %u70 -> %u59
-     %u70 -> %u47
-     %u70 -> %u58
-     %u70 -> %u46
-     %u70 -> %r0
-
-* %u50: 
-     %u50 -> %u34
-     %u50 -> %u31
-     %u50 -> %u65
-     %u50 -> %u48
-     %u50 -> %u46
-     %u50 -> %u47
-
-* %u30: 
-     %u30 -> %r0
-     %u30 -> %num
-     %u30 -> %u21
-     %u30 -> %u20
-     %u30 -> %u23
-     %u30 -> %u22
-     %u30 -> %u25
-     %u30 -> %u69
-     %u30 -> %u68
-     %u30 -> %u24
-     %u30 -> %u27
-     %u30 -> %u26
-     %u30 -> %u29
-     %u30 -> %u28
-     %u30 -> %u10
-     %u30 -> %u12
-     %u30 -> %u11
-     %u30 -> %u14
-     %u30 -> %u13
-     %u30 -> %u16
-     %u30 -> %u9
-     %u30 -> %u15
-     %u30 -> %u8
-     %u30 -> %u18
-     %u30 -> %u17
-     %u30 -> %u19
-
-* %u52: 
-     %u52 -> %u51
-     %u52 -> %u50
-     %u52 -> %u34
-     %u52 -> %u31
-     %u52 -> %u65
-     %u52 -> %u48
-     %u52 -> %u49
-     %u52 -> %u46
-     %u52 -> %u47
-
-* %u51: 
-     %u51 -> %u48
-     %u51 -> %u46
-     %u51 -> %u47
-     %u51 -> %u34
-     %u51 -> %u31
-     %u51 -> %u65
-
-* %u10: 
-     %u10 -> %r0
-     %u10 -> %u64
-     %u10 -> %u67
-     %u10 -> %num
-     %u10 -> %u8
-     %u10 -> %u9
-
-* %u31: 
-     %u31 -> %u63
-     %u31 -> %u65
-     %u31 -> %u34
-     %u31 -> %u66
-
-* %u12: 
-     %u12 -> %r0
-     %u12 -> %u64
-     %u12 -> %u67
-     %u12 -> %num
-     %u12 -> %u8
-     %u12 -> %u9
-
-* %u34: 
-     %u34 -> %u63
-     %u34 -> %u65
-     %u34 -> %u64
-     %u34 -> %u67
-     %u34 -> %u66
-
-* %u11: 
-     %u11 -> %u8
-     %u11 -> %u9
-     %u11 -> %u64
-     %u11 -> %u67
-     %u11 -> %num
-
-* %u14: 
-     %u14 -> %r0
-     %u14 -> %u64
-     %u14 -> %u10
-     %u14 -> %u11
-     %u14 -> %u67
-     %u14 -> %num
-     %u14 -> %u12
-     %u14 -> %u8
-     %u14 -> %u9
-
-* %u58: 
-     %u58 -> %u63
-     %u58 -> %u66
-     %u58 -> %u67
-     %u58 -> %u64
-     %u58 -> %u65
-
-* %u13: 
-     %u13 -> %u8
-     %u13 -> %u9
-     %u13 -> %u64
-     %u13 -> %u10
-     %u13 -> %u11
-     %u13 -> %u67
-     %u13 -> %num
-     %u13 -> %u12
-
-* %u16: 
-     %u16 -> %u10
-     %u16 -> %u11
-     %u16 -> %num
-     %u16 -> %u12
-     %u16 -> %u13
-     %u16 -> %u14
-     %u16 -> %u9
-     %u16 -> %u8
-
-* %u15: 
-     %u15 -> %u13
-     %u15 -> %u14
-     %u15 -> %u9
-     %u15 -> %u8
-     %u15 -> %r0
-     %u15 -> %u10
-     %u15 -> %u11
-     %u15 -> %num
-     %u15 -> %u12
-
-* %u59: 
-     %u59 -> %u48
-     %u59 -> %u49
-     %u59 -> %u46
-     %u59 -> %u47
-     %u59 -> %r0
-     %u59 -> %u51
-     %u59 -> %u50
-     %u59 -> %u34
-     %u59 -> %u31
-     %u59 -> %u65
-
-* %u18: 
-     %u18 -> %r0
-     %u18 -> %u10
-     %u18 -> %u11
-     %u18 -> %u12
-     %u18 -> %num
-     %u18 -> %u13
-     %u18 -> %u14
-     %u18 -> %u15
-     %u18 -> %u9
-     %u18 -> %u16
-     %u18 -> %u8
-     %u18 -> %u17
-
-* %u17: 
-     %u17 -> %u13
-     %u17 -> %u14
-     %u17 -> %u9
-     %u17 -> %u8
-     %u17 -> %r0
-     %u17 -> %u10
-     %u17 -> %u11
-     %u17 -> %num
-     %u17 -> %u12
-
-* %u19: 
-     %u19 -> %u9
-     %u19 -> %u8
-     %u19 -> %r0
-     %u19 -> %u10
-     %u19 -> %u11
-     %u19 -> %u12
-     %u19 -> %u13
-     %u19 -> %u14
-     %u19 -> %u15
-     %u19 -> %u16
-     %u19 -> %u17
-     %u19 -> %u18
-     %u19 -> %num
-
-* %u8: 
-     %u8 -> %u64
-     %u8 -> %u67
-     %u8 -> %num
-     %u8 -> %u66
-     %u8 -> %u63
-
-* %u9: 
-     %u9 -> %r0
-     %u9 -> %u64
-     %u9 -> %u67
-     %u9 -> %num
-     %u9 -> %u66
-     %u9 -> %u63
-
--------------- End of Record -------------
 .LU8: 
-	push {%fp, %lr}
-	add %fp, %sp, #4
-	mov %num, %r0
-	mov %u65, %num
-	movw %r0, #12
+	push {fp, lr}
+	add fp, sp, #4
+	mov r4(%num), r0
+	mov r5(u65), r4(%num)
+	movw r0, #12
 	bl malloc
-	mov %u8, %r0
-	mov %u9, %u8
-	mov %u66, %u9
-	mov %u63, %u9
-	add %u10, %u9, #8
-	movw %r0, #4
+	mov r2(u9), r0(u8)
+	mov r10, r2(u9)
+	str r10, [SPILL(u66)]
+	mov r8(u63), r2(u9)
+	add r1(u10), r2(u9), #8
+	movw r0, #4
 	bl malloc
-	mov %u11, %r0
-	mov %u12, %u11
-	str %u12, [%u10]
-	movw %r0, #12
+	str r0(u12), [r1(u10)]
+	movw r0, #12
 	bl malloc
-	mov %u13, %r0
-	mov %u14, %u13
-	mov %u67, %u14
-	mov %u64, %u14
-	add %u15, %u14, #8
-	movw %r0, #4
+	mov r3(u14), r0(u13)
+	mov r6(u67), r3(u14)
+	mov r7(u64), r3(u14)
+	add r1(u15), r3(u14), #8
+	movw r0, #4
 	bl malloc
-	mov %u16, %r0
-	mov %u17, %u16
-	str %u17, [%u15]
-	add %u18, %u9, #0
-	str %num, [%u18]
-	add %u19, %u14, #0
-	mov %u68, #3
-	str %u68, [%u19]
-	add %u20, %u9, #8
-	ldr %u21, [%u20]
-	add %u22, %u21, #0
-	add %u23, %u9, #0
-	ldr %u24, [%u23]
-	str %u24, [%u22]
-	add %u25, %u14, #8
-	ldr %u26, [%u25]
-	add %u27, %u26, #0
-	add %u28, %u14, #0
-	ldr %u29, [%u28]
-	str %u29, [%u27]
-	mov %u30, #0
-	mov %u69, #0
-	cmp %num, %u69
-	movgt %u30, #1
-	cmp %u30, #1
+	str r0(u17), [r1(u15)]
+	add r0(u18), r2(u9), #0
+	str r4(%num), [r0(u18)]
+	add r0(u19), r3(u14), #0
+	mov r1(u68), #3
+	str r1(u68), [r0(u19)]
+	add r0(u20), r2(u9), #8
+	ldr r0(u21), [r0(u20)]
+	add r1(u22), r0(u21), #0
+	add r0(u23), r2(u9), #0
+	ldr r0(u24), [r0(u23)]
+	str r0(u24), [r1(u22)]
+	add r0(u25), r3(u14), #8
+	ldr r0(u26), [r0(u25)]
+	add r1(u27), r0(u26), #0
+	add r0(u28), r3(u14), #0
+	ldr r0(u29), [r0(u28)]
+	str r0(u29), [r1(u27)]
+	mov r0(u30), #0
+	mov r0(u69), #0
+	cmp r4(%num), r0(u69)
+	movgt r0(u30), #1
+	cmp r0(u30), #1
 	beq .LU9
 	b .LU10
 .LU9: 
-	mov %u58, %u65
-	mov %u34, %u64
-	mov %u67, %u34
-	mov %u64, %u34
-	mov %u31, %u63
-	mov %u66, %u31
-	mov %u63, %u31
-	add %u46, %u34, #8
-	ldr %u47, [%u46]
-	add %u48, %u47, #0
-	ldr %u49, [%u48]
-	add %u50, %u31, #0
-	ldr %u51, [%u50]
-	mov %r1, %u51
-	mov %r0, %u49
+	mov r3(u58), r5(u65)
+	mov r0(u34), r7(u64)
+	mov r6(u67), r0(u34)
+	mov r7(u64), r0(u34)
+	mov r1(u31), r8(u63)
+	mov r10, r1(u31)
+	str r10, [SPILL(u66)]
+	mov r8(u63), r1(u31)
+	add r0(u46), r0(u34), #8
+	ldr r0(u47), [r0(u46)]
+	add r0(u48), r0(u47), #0
+	ldr r2(u49), [r0(u48)]
+	add r0(u50), r1(u31), #0
+	ldr r0(u51), [r0(u50)]
+	mov r0, r2(u49)
 	bl add
-	mov %u52, %r0
-	sub %u59, %u58, #1
-	mov %u65, %u59
-	mov %u60, #0
-	mov %u70, #0
-	cmp %u59, %u70
-	movgt %u60, #1
-	cmp %u60, #1
+	sub r1(u59), r3(u58), #1
+	mov r5(u65), r1(u59)
+	mov r0(u60), #0
+	mov r0(u70), #0
+	cmp r1(u59), r0(u70)
+	movgt r0(u60), #1
+	cmp r0(u60), #1
 	beq .LU9
 	b .LU10
 .LU10: 
-	mov %u62, %u67
-	mov %u61, %u66
-	mov %r0, %u61
+	mov r1(u62), r6(u67)
+	ldr r9, [SPILL(u66)]
+	mov r0(u61), r9
 	bl free
-	mov %r0, %u62
+	mov r0, r1(u62)
 	bl free
 	b .LU7
 .LU7: 
-	pop {%fp, %pc}
+	pop {fp, pc}
 	.size domath, .-domath
 	.align 2
 	.global objinstantiation
 objinstantiation:
------------ Interference Graph -----------* %u79: 
-     %u79 -> %u74
-     %u79 -> %u73
-     %u79 -> %u72
-     %u79 -> %u75
-
-* %r0: 
-     %r0 -> %u72
-     %r0 -> %u77
-
-* %u72: 
-     %u72 -> %u77
-
-* %u71: 
-     %u71 -> %r0
-     %u71 -> %num
-     %u71 -> %u78
-
-* %u74: 
-     %u74 -> %u77
-
-* %u73: 
-     %u73 -> %r0
-     %u73 -> %u77
-
-* %u76: 
-     %u76 -> %u74
-     %u76 -> %u73
-     %u76 -> %u72
-     %u76 -> %u75
-     %u76 -> %u79
-
-* %u75: 
-     %u75 -> %u73
-     %u75 -> %u72
-     %u75 -> %u77
-
-* %num: 
-     %num -> %u77
-
-* %u78: 
-     %u78 -> %num
-     %u78 -> %r0
-
-* %u77: 
-     %u77 -> %r0
-     %u77 -> %u74
-     %u77 -> %u73
-     %u77 -> %u72
-
--------------- End of Record -------------
 .LU12: 
-	push {%fp, %lr}
-	add %fp, %sp, #4
-	mov %num, %r0
-	mov %u77, %num
-	mov %u71, #0
-	mov %u78, #0
-	cmp %num, %u78
-	movgt %u71, #1
-	cmp %u71, #1
+	push {fp, lr}
+	add fp, sp, #4
+	mov r1(%num), r0
+	mov r2(u77), r1(%num)
+	mov r0(u71), #0
+	mov r0(u78), #0
+	cmp r1(%num), r0(u78)
+	movgt r0(u71), #1
+	cmp r0(u71), #1
 	beq .LU13
 	b .LU14
 .LU13: 
-	mov %u74, %u77
-	movw %r0, #12
+	mov r1(u74), r2(u77)
+	movw r0, #12
 	bl malloc
-	mov %u72, %r0
-	mov %u73, %u72
-	mov %r0, %u73
 	bl free
-	sub %u75, %u74, #1
-	mov %u77, %u75
-	mov %u76, #0
-	mov %u79, #0
-	cmp %u75, %u79
-	movgt %u76, #1
-	cmp %u76, #1
+	sub r1(u75), r1(u74), #1
+	mov r2(u77), r1(u75)
+	mov r0(u76), #0
+	mov r0(u79), #0
+	cmp r1(u75), r0(u79)
+	movgt r0(u76), #1
+	cmp r0(u76), #1
 	beq .LU13
 	b .LU14
 .LU14: 
 	b .LU11
 .LU11: 
-	pop {%fp, %pc}
+	pop {fp, pc}
 	.size objinstantiation, .-objinstantiation
 	.align 2
 	.global ackermann
 ackermann:
------------ Interference Graph -----------* %u90: 
-     %u90 -> %u86
-     %u90 -> %u87
-     %u90 -> %u83
-     %u90 -> %u85
-     %u90 -> %m
-     %u90 -> %n
-     %u90 -> %r0
-
-* %m: 
-     %m -> %n
-
-* %u81: 
-     %u81 -> %u90
-
-* %u92: 
-     %u92 -> %m
-     %u92 -> %n
-
-* %n: 
-     %n -> %r0
-
-* %u80: 
-     %u80 -> %m
-     %u80 -> %r0
-     %u80 -> %u91
-     %u80 -> %r2
-
-* %u91: 
-     %u91 -> %r0
-     %u91 -> %r2
-
-* %u83: 
-     %u83 -> %u90
-
-* %u82: 
-     %u82 -> %m
-     %u82 -> %u92
-     %u82 -> %n
-
-* %u85: 
-     %u85 -> %u90
-
-* %u84: 
-     %u84 -> %m
-     %u84 -> %u90
-     %u84 -> %u83
-
-* %u87: 
-     %u87 -> %u86
-     %u87 -> %u90
-     %u87 -> %m
-     %u87 -> %n
-
-* %u86: 
-     %u86 -> %u90
-     %u86 -> %m
-
-* %u88: 
-     %u88 -> %u90
-     %u88 -> %m
-     %u88 -> %n
-     %u88 -> %u86
-     %u88 -> %u87
-     %u88 -> %u85
-
-* %r0: 
-     %r0 -> %u90
-     %r0 -> %n
-     %r0 -> %m
-     %r0 -> %u87
-     %r0 -> %u86
-
-* %r1: 
-     %r1 -> %u86
-     %r1 -> %r0
-     %r1 -> %u90
-     %r1 -> %n
-     %r1 -> %m
-
-* %r2: 
-! %r2
--------------- End of Record -------------
 .LU16: 
-	push {%fp, %lr}
-	add %fp, %sp, #4
-	mov %m, %r0
-	mov %n, %r2
-	mov %u80, #0
-	mov %u91, #0
-	cmp %m, %u91
-	moveq %u80, #1
-	cmp %u80, #1
+	push {fp, lr}
+	add fp, sp, #4
+	mov r3(%m), r0
+	mov r0(u80), #0
+	mov r0(u91), #0
+	cmp r3(%m), r0(u91)
+	moveq r0(u80), #1
+	cmp r0(u80), #1
 	beq .LU17
 	b .LU18
 .LU17: 
-	add %u81, %n, #1
-	mov %u90, %u81
+	add r0(u81), r1(%n), #1
 	b .LU15
 .LU18: 
 	b .LU19
 .LU19: 
-	mov %u82, #0
-	mov %u92, #0
-	cmp %n, %u92
-	moveq %u82, #1
-	cmp %u82, #1
+	mov r0(u82), #0
+	mov r0(u92), #0
+	cmp r1(%n), r0(u92)
+	moveq r0(u82), #1
+	cmp r0(u82), #1
 	beq .LU20
 	b .LU21
 .LU20: 
-	sub %u83, %m, #1
-	mov %r1, #1
-	mov %r0, %u83
+	sub r0(u83), r3(%m), #1
+	mov r1, #1
 	bl ackermann
-	mov %u84, %r0
-	mov %u90, %u84
 	b .LU15
 .LU21: 
-	sub %u85, %m, #1
-	sub %u86, %n, #1
-	mov %r1, %u86
-	mov %r0, %m
+	sub r2(u85), r3(%m), #1
+	sub r0(u86), r1(%n), #1
+	mov r1, r0(u86)
+	mov r0, r3(%m)
 	bl ackermann
-	mov %u87, %r0
-	mov %r1, %u87
-	mov %r0, %u85
+	mov r1, r0(u87)
+	mov r0, r2(u85)
 	bl ackermann
-	mov %u88, %r0
-	mov %u90, %u88
 	b .LU15
 .LU15: 
-	mov %u89, %u90
-	mov %r0, %u89
-	pop {%fp, %pc}
+	pop {fp, pc}
 	.size ackermann, .-ackermann
 	.align 2
 	.global main
 main:
------------ Interference Graph -----------* %r0: 
-     %r0 -> %u96
-     %r0 -> %u95
-     %r0 -> %u94
-     %r0 -> %u93
-     %r0 -> %u98
-     %r0 -> %u97
-
-* %r1: 
-     %r1 -> %u96
-     %r1 -> %u95
-     %r1 -> %u94
-     %r1 -> %u93
-     %r1 -> %u97
-     %r1 -> %r0
-
-* %u94: 
-     %u94 -> %u93
-
-* %u93: 
-! %u93
-* %u96: 
-     %u96 -> %u93
-     %u96 -> %u94
-     %u96 -> %u95
-
-* %u95: 
-     %u95 -> %u93
-     %u95 -> %u94
-
-* %u98: 
-     %u98 -> %u97
-     %u98 -> %u93
-     %u98 -> %u94
-     %u98 -> %u95
-     %u98 -> %u96
-
-* %u97: 
-     %u97 -> %u93
-     %u97 -> %u94
-     %u97 -> %u95
-     %u97 -> %u96
-
--------------- End of Record -------------
 .LU24: 
-	push {%fp, %lr}
-	add %fp, %sp, #4
-	movw %r1, #:lower16:.read_scratch
-	movt %r1, #:upper16:.read_scratch
-	movw %r0, #:lower16:.READ_FMT
-	movt %r0, #:upper16:.READ_FMT
+	push {fp, lr}
+	add fp, sp, #4
+	movw r1, #:lower16:.read_scratch
+	movt r1, #:upper16:.read_scratch
+	movw r0, #:lower16:.READ_FMT
+	movt r0, #:upper16:.READ_FMT
 	bl scanf
-	movw %u93, #:lower16:.read_scratch
-	movt %u93, #:upper16:.read_scratch
-	ldr %u93, [%u93]
-	movw %r1, #:lower16:.read_scratch
-	movt %r1, #:upper16:.read_scratch
-	movw %r0, #:lower16:.READ_FMT
-	movt %r0, #:upper16:.READ_FMT
+	movw r5(u93), #:lower16:.read_scratch
+	movt r5(u93), #:upper16:.read_scratch
+	ldr r5(u93), [r5(u93)]
+	movw r1, #:lower16:.read_scratch
+	movt r1, #:upper16:.read_scratch
+	movw r0, #:lower16:.READ_FMT
+	movt r0, #:upper16:.READ_FMT
 	bl scanf
-	movw %u94, #:lower16:.read_scratch
-	movt %u94, #:upper16:.read_scratch
-	ldr %u94, [%u94]
-	movw %r1, #:lower16:.read_scratch
-	movt %r1, #:upper16:.read_scratch
-	movw %r0, #:lower16:.READ_FMT
-	movt %r0, #:upper16:.READ_FMT
+	movw r6(u94), #:lower16:.read_scratch
+	movt r6(u94), #:upper16:.read_scratch
+	ldr r6(u94), [r6(u94)]
+	movw r1, #:lower16:.read_scratch
+	movt r1, #:upper16:.read_scratch
+	movw r0, #:lower16:.READ_FMT
+	movt r0, #:upper16:.READ_FMT
 	bl scanf
-	movw %u95, #:lower16:.read_scratch
-	movt %u95, #:upper16:.read_scratch
-	ldr %u95, [%u95]
-	movw %r1, #:lower16:.read_scratch
-	movt %r1, #:upper16:.read_scratch
-	movw %r0, #:lower16:.READ_FMT
-	movt %r0, #:upper16:.READ_FMT
+	movw r3(u95), #:lower16:.read_scratch
+	movt r3(u95), #:upper16:.read_scratch
+	ldr r3(u95), [r3(u95)]
+	movw r1, #:lower16:.read_scratch
+	movt r1, #:upper16:.read_scratch
+	movw r0, #:lower16:.READ_FMT
+	movt r0, #:upper16:.READ_FMT
 	bl scanf
-	movw %u96, #:lower16:.read_scratch
-	movt %u96, #:upper16:.read_scratch
-	ldr %u96, [%u96]
-	movw %r1, #:lower16:.read_scratch
-	movt %r1, #:upper16:.read_scratch
-	movw %r0, #:lower16:.READ_FMT
-	movt %r0, #:upper16:.READ_FMT
+	movw r4(u96), #:lower16:.read_scratch
+	movt r4(u96), #:upper16:.read_scratch
+	ldr r4(u96), [r4(u96)]
+	movw r1, #:lower16:.read_scratch
+	movt r1, #:upper16:.read_scratch
+	movw r0, #:lower16:.READ_FMT
+	movt r0, #:upper16:.READ_FMT
 	bl scanf
-	movw %u97, #:lower16:.read_scratch
-	movt %u97, #:upper16:.read_scratch
-	ldr %u97, [%u97]
-	mov %r0, %u93
+	movw r2(u97), #:lower16:.read_scratch
+	movt r2(u97), #:upper16:.read_scratch
+	ldr r2(u97), [r2(u97)]
+	mov r0, r5(u93)
 	bl tailrecursive
-	mov %r1, %u93
-	movw %r0, #:lower16:.PRINTLN_FMT
-	movt %r0, #:upper16:.PRINTLN_FMT
+	mov r1, r5(u93)
+	movw r0, #:lower16:.PRINTLN_FMT
+	movt r0, #:upper16:.PRINTLN_FMT
 	bl printf
-	mov %r0, %u94
+	mov r0, r6(u94)
 	bl domath
-	mov %r1, %u94
-	movw %r0, #:lower16:.PRINTLN_FMT
-	movt %r0, #:upper16:.PRINTLN_FMT
+	mov r1, r6(u94)
+	movw r0, #:lower16:.PRINTLN_FMT
+	movt r0, #:upper16:.PRINTLN_FMT
 	bl printf
-	mov %r0, %u95
+	mov r0, r3(u95)
 	bl objinstantiation
-	mov %r1, %u95
-	movw %r0, #:lower16:.PRINTLN_FMT
-	movt %r0, #:upper16:.PRINTLN_FMT
+	mov r1, r3(u95)
+	movw r0, #:lower16:.PRINTLN_FMT
+	movt r0, #:upper16:.PRINTLN_FMT
 	bl printf
-	mov %r1, %u97
-	mov %r0, %u96
+	mov r1, r2(u97)
+	mov r0, r4(u96)
 	bl ackermann
-	mov %u98, %r0
-	mov %r1, %u98
-	movw %r0, #:lower16:.PRINTLN_FMT
-	movt %r0, #:upper16:.PRINTLN_FMT
+	movw r0, #:lower16:.PRINTLN_FMT
+	movt r0, #:upper16:.PRINTLN_FMT
 	bl printf
 	b .LU23
 .LU23: 
-	mov %r0, #0
-	pop {%fp, %pc}
+	mov r0, #0
+	pop {fp, pc}
 	.size main, .-main
 	.section	.rodata
 	.align	2

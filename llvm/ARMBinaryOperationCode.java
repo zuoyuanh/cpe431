@@ -51,30 +51,28 @@ public class ARMBinaryOperationCode extends ARMCode
    {  
       String res = ""; 
       String lf = leftType.toString();
-      if (leftType.getAllocatedARMRegister() == null){
+      if (leftType.getAllocatedARMRegister() == null) {
          res  = loadSpill(res, ARMCode.r9, leftType);
          lf = ARMCode.r9.toString();
       }
       String rt = "";
       if (rightType instanceof LLVMRegisterType) {
-         if (((LLVMRegisterType)rightType).getAllocatedARMRegister() == null){
+         if (((LLVMRegisterType)rightType).getAllocatedARMRegister() == null) {
             res = loadSpill(res, ARMCode.r10, (LLVMRegisterType)rightType);
             rt = ARMCode.r10.toString();
-         }
-         else{
+         } else {
             rt = ((LLVMRegisterType)rightType).toString();
          }
-      }
-      else if (rightType instanceof LLVMPrimitiveType){
+      } else if (rightType instanceof LLVMPrimitiveType) {
          rt = "#"+ ((LLVMPrimitiveType)rightType).getValueRep();
       }
       
       String resReg = resultReg.toString();
-      if ((resultReg).getAllocatedARMRegister() == null){
+      if ((resultReg).getAllocatedARMRegister() == null) {
             resReg = ARMCode.r10.toString();
       }
-      res+=operatorToString(operator) + " " + resReg + ", " + lf + ", " + rt + "\n";
-      if ((resultReg).getAllocatedARMRegister() == null){
+      res += operatorToString(operator) + " " + resReg + ", " + lf + ", " + rt + "\n";
+      if ((resultReg).getAllocatedARMRegister() == null) {
             res = loadSpill(res, ARMCode.r10, resultReg);
       }
       return res;

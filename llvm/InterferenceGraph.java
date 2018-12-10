@@ -73,11 +73,13 @@ public class InterferenceGraph
       if (vertices.contains(v)) {
          vertices.remove(v);
          Set<InterferenceGraphEdge> adjList = adj.get(v);
-         for (InterferenceGraphEdge e : adjList) {
-            edges.remove(e);
-            LLVMRegisterType reversedSource = e.getTargetVertex();
-            adj.get(reversedSource).remove(e.getReverse());
-            edges.remove(e.getReverse());
+         if (adjList != null) {
+            for (InterferenceGraphEdge e : adjList) {
+               edges.remove(e);
+               LLVMRegisterType reversedSource = e.getTargetVertex();
+               adj.get(reversedSource).remove(e.getReverse());
+               edges.remove(e.getReverse());
+            }
          }
          adj.remove(v);
          return new InterferenceGraphVertexEdgesTuple(v, adjList);
@@ -109,13 +111,14 @@ public class InterferenceGraph
       return stack;
    }
 
-   private ARMRegister nextAvailableARMRegister(Set<ARMRegister> allocated)
+   private ARMRegister nextAvailableARMRegister(Set<ARMRegister> allocated, LLVMRegisterType v)
    {
       for (ARMRegister r : ARMCode.availableRegs) {
          if (!allocated.contains(r)) {
             return r;
          }
       }
+      Compiler.putLocalVariable(v.getId());
       return null;
    }
 
@@ -128,8 +131,15 @@ public class InterferenceGraph
          LLVMRegisterType vertex = tuple.getVertex();
          Set<ARMRegister> allocated = new HashSet<ARMRegister>();
          Set<InterferenceGraphEdge> edges = tuple.getEdges();
-         if (edges.size() == 0) {
-            vertex.allocateARMRegister(ARMCode.availableRegs.get(0));
+         if (edges == null || edges.size() == 0) {
+            if (vertex instanceof ARMRegister) {
+               vertex.allocateARMRegister((ARMRegister)vertex);
+               Compiler.addAllocatedARMRegister((ARMRegister)vertex);
+            } else {
+               ARMRegister r = ARMCode.availableRegs.get(0);
+               vertex.allocateARMRegister(r);
+               Compiler.addAllocatedARMRegister(r);
+            }
             continue;
          }
          for (InterferenceGraphEdge e : edges) {
@@ -143,8 +153,15 @@ public class InterferenceGraph
                allocated.add(targetAllocatedReg);
             }
          }
-         if (!(vertex instanceof ARMRegister)) {
-            vertex.allocateARMRegister(nextAvailableARMRegister(allocated));
+         ARMRegister allocation = null;
+         if (vertex instanceof ARMRegister) {
+            allocation = (ARMRegister)vertex;    
+         } else {
+            allocation = nextAvailableARMRegister(allocated, vertex);
+         }
+         if (allocation != null) {
+            vertex.allocateARMRegister(allocation);
+            Compiler.addAllocatedARMRegister(allocation);
          }
       }
    }
@@ -157,13 +174,13 @@ public class InterferenceGraph
    public String toString()
    {
       String result = "";
-      result += "----------- Interference Graph -----------";
+      result += "----------- Interference Graph -----------\n";
       for (LLVMRegisterType vertex : vertices) {
-         result += "* " + vertex.toString() + ": \n";
          if (adj.get(vertex) == null) {
             result += "! " + vertex.toString() + "\n";
             continue;
          }
+         result += "* " + vertex.toString() + ": \n";
          for (InterferenceGraphEdge e : adj.get(vertex)) {
             result += "     " + e.getSourceVertex().toString() + " -> " + e.getTargetVertex().toString() + "\n";
          }

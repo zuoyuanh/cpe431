@@ -27,18 +27,20 @@ public class ARMCode
    public static ARMRegister lr = new ARMRegister("lr");
    public static ARMRegister sp = new ARMRegister("sp");
 
-   public static LLVMRegisterType[] argRegs = {r0, r1, r2, r3};
+   public static ARMRegister[] argRegs = {r0, r1, r2, r3};
    public static ArrayList<ARMRegister> systemRegs = new ArrayList<ARMRegister>(Arrays.asList(new ARMRegister[]{pc, fp, lr, sp}));
-   public static ArrayList<ARMRegister> availableRegs = new ArrayList<ARMRegister>(Arrays.asList(new ARMRegister[]{r0, r1, r2, r3, r4, r5, r6, r7, r8}));
+   public static ArrayList<ARMRegister> availableRegs = new ArrayList<ARMRegister>(Arrays.asList(new ARMRegister[]{r4, r5, r6, r7, r8}));
    public static ArrayList<ARMRegister> spillRegs = new ArrayList<ARMRegister>(Arrays.asList(new ARMRegister[]{r9, r10}));
 
    public static Set<ARMRegister> systemRegsSet = new HashSet<ARMRegister>(systemRegs);
+   public static Set<ARMRegister> argRegsSet = new HashSet<ARMRegister>(new ArrayList<ARMRegister>(Arrays.asList(argRegs)));
 
    // User defined convenience registers (virtual)
    public static LLVMRegisterType ut = new LLVMRegisterType("i32", "ut");
 
    private LLVMRegisterType def;
    private List<LLVMRegisterType> uses;
+   private boolean enabled = true;
 
    public void setDef(LLVMRegisterType r)
    {
@@ -70,7 +72,7 @@ public class ARMCode
          uses.add(u);
       }
    }
-//TODO look up location on the stack
+
    public String loadSpill(String res, ARMRegister r, LLVMRegisterType spillReg){
       res += (new ARMLoadStoreCode(r, (LLVMRegisterType)spillReg, ARMLoadStoreCode.Operator.LDR)).toString();
       res += "\t";
@@ -82,4 +84,18 @@ public class ARMCode
       return res;
    }
    
+   public void disable()
+   {
+      this.enabled = false;
+   }
+
+   public void enable()
+   {
+      this.enabled = true;
+   }
+
+   public boolean isEnabled()
+   {
+      return this.enabled;
+   }
 }

@@ -61,46 +61,50 @@ public class ARMMoveCode extends ARMCode
    public String toString()
    {
       String res = "";
-      if (operator==Operator.CMP){ //cmp r1, operand
+      if (operator == Operator.CMP) { //cmp r1, operand
          String opr = "";
          String resReg = "";
          if (operand instanceof LLVMRegisterType) {
             if (((LLVMRegisterType)operand).getAllocatedARMRegister() == null){
                res = loadSpill(res, ARMCode.r9, (LLVMRegisterType) operand);
                opr = ARMCode.r9.toString();
+            } else { 
+               opr = ((LLVMRegisterType)operand).toString();
             }
-            else{ opr = ((LLVMRegisterType)operand).toString();}
          } else if (operand instanceof LLVMPrimitiveType) {
-            opr = "#"+ ((LLVMPrimitiveType)operand).getValueRep();
+            opr = "#" + ((LLVMPrimitiveType)operand).getValueRep();
          }
          if ((resultReg).getAllocatedARMRegister() == null){
             resReg = ARMCode.r10.toString();
             res = loadSpill(res, ARMCode.r10, (LLVMRegisterType) operand);
             res += operatorToString(operator) + " " + resReg + ", " + opr + "\n";
-         }
-         else{
+         } else {
             resReg = resultReg.toString();
             res += operatorToString(operator) + " " + resReg + ", " + opr + "\n";
          }
-      }
-      else { //mov r1, operand
+      } else { //mov r1, operand
          String opr = "";
          String resReg = "";
+         if (operand instanceof LLVMRegisterType
+          && ((LLVMRegisterType)operand).getAllocatedARMRegister() != null
+          && ((LLVMRegisterType)operand).getAllocatedARMRegister().equals(resultReg.getAllocatedARMRegister())) {
+            return "";
+         }
          if (operand instanceof LLVMRegisterType) {
-            if (((LLVMRegisterType)operand).getAllocatedARMRegister() == null){
-               res = loadSpill(res, ARMCode.r9, (LLVMRegisterType) operand);
+            if (((LLVMRegisterType)operand).getAllocatedARMRegister() == null) {
+               res = loadSpill(res, ARMCode.r9, (LLVMRegisterType)operand);
                opr = ARMCode.r9.toString();
+            } else { 
+               opr = ((LLVMRegisterType)operand).toString();
             }
-            else{ opr = ((LLVMRegisterType)operand).toString();}
          } else if (operand instanceof LLVMPrimitiveType) {
             opr = "#"+ ((LLVMPrimitiveType)operand).getValueRep();
          }
-         if ((resultReg).getAllocatedARMRegister() == null){
+         if ((resultReg).getAllocatedARMRegister() == null) {
             resReg = ARMCode.r10.toString();
             res += operatorToString(operator) + " " + resReg + ", " + opr + "\n";
             res = storeSpill(res, ARMCode.r10, resultReg);
-         }
-         else{
+         } else {
             resReg = resultReg.toString();
             res += operatorToString(operator) + " " + resReg + ", " + opr + "\n";
          }
