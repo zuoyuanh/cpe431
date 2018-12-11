@@ -46,7 +46,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
     * if set to be true, the visitor will generate ARM code
     * otherwise the visitor will generate LLVM code
     */
-   public static boolean generateARM = true;
+   public static boolean generateARM = false;
 
    public SSAVisitor(File output)
    {
@@ -290,10 +290,18 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       } else {
          LLVMType retValType = readVariable("_retval_", retBlock);
          if (retValType instanceof LLVMRegisterType) {
+            LLVMRegisterType retValRegisterType = (LLVMRegisterType)retValType;
+            if (retValRegisterType.getTypeRep() == null || retValRegisterType.getTypeRep().equals("null")) {
+               retValRegisterType.setTypeRep(funcRetValueTypeRep);
+            }
             LLVMReturnCode retCode = new LLVMReturnCode(retValType);
             retBlock.add(retCode);
             ((LLVMRegisterType)retValType).addUse(retCode);
          } else if (retValType instanceof LLVMPrimitiveType) {
+            LLVMPrimitiveType retValPrimitiveType = (LLVMPrimitiveType)retValType;
+            if (retValPrimitiveType.getValueRep().equals("null")) {
+               retValPrimitiveType.setTypeRep(funcRetValueTypeRep);
+            }
             retBlock.add(new LLVMReturnCode(retValType));
          }
       }
@@ -502,6 +510,13 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       Expression source = assignmentStatement.getSource();
       LLVMType targetType = this.visit(target, block);
       LLVMType sourceType = this.visit(source, block);
+      System.out.println("+++++++++ " + targetType + " " + targetType.getTypeRep());
+      if (sourceType instanceof LLVMPrimitiveType) {
+         LLVMPrimitiveType sourcePrimitiveType = (LLVMPrimitiveType)sourceType;
+         if (sourcePrimitiveType.getValueRep().equals("null")) {
+            sourcePrimitiveType.setTypeRep(targetType.getTypeRep());
+         }
+      }
       if (target instanceof LvalueId) {
          String id = ((LvalueId)target).getId();
          if (sourceType instanceof LLVMReadExpressionType) {
@@ -780,8 +795,11 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             structTypeRep = structTypeRep.substring(0, structTypeRep.length()-1);
          }
          try {
+            System.out.println("checkpoint - 0 " + structTypeRep + ((LLVMRegisterType)leftType).getId());
             Table<LLVMStructFieldEntry> fieldsTable = typesTable.get(structTypeRep);
+            System.out.println("checkpoint - 1");
             LLVMStructFieldEntry field = fieldsTable.get(id);
+            System.out.println("checkpoint - 2");
             String fieldPositionRep = field.getPositionRep();
             String fieldTypeRep = field.getTypeRep();
             LLVMRegisterType tempReg = new LLVMRegisterType(fieldTypeRep + "*", "u" + Integer.toString(registerCounter++));
@@ -959,7 +977,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
    public LLVMType visit(LvalueId lvalueId, LLVMBlockType block)
    {
-      return new LLVMVoidType();
+      return readVariable(lvalueId.getId(), block);
    }
 
    public List<LLVMBlockType> getGlobalBlockList()
@@ -1033,6 +1051,11 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    private void writeVariable(String variable, LLVMBlockType block, LLVMType value)
    {
       HashMap<String, LLVMType> m = block.getVarTable();
+      if (value instanceof LLVMRegisterType) {
+         System.out.println("** " + variable + " " + value.getTypeRep() + " " + ((LLVMRegisterType)value).getId());
+      } else if (value instanceof LLVMPrimitiveType) {
+         System.out.println("** " + variable + " " + value.getTypeRep() + " " + ((LLVMPrimitiveType)value).getValueRep());
+      }
       if (m.containsKey(variable)) {
          m.replace(variable, value);
       } else { 
@@ -1428,7 +1451,19 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       List<LLVMPhiEntryType> entries = phiCode.getEntries();
       if (entries.size() > 0) {
          for (LLVMCode code : ((LLVMRegisterType)(phiCode.getDef())).getUses()) {
-            code.replaceRegister(phiCode.getDef(), entries.get(0).getOperand());
+            LLVMType operand = entries.get(0).getOperand();
+            if (operand instanceof LLVMPrimitiveType) {
+               LLVMPrimitiveType operandPrimitiveType = (LLVMPrimitiveType)operand;
+               if (operandPrimitiveType.getValueRep().equals("null")) {
+                  operandPrimitiveType.setTypeRep(phiCode.getDef().getTypeRep());
+               }
+            } else {
+               LLVMRegisterType operandRegisterType = (LLVMRegisterType)operand;
+               if (operandRegisterType.getTypeRep() == null || operandRegisterType.getTypeRep().equals("null")) {
+                  operandRegisterType.setTypeRep(phiCode.getDef().getTypeRep());
+               }
+            }
+            code.replaceRegister(phiCode.getDef(), operand);
          }
       }
       phiCode.remove();

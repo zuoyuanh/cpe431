@@ -1,298 +1,382 @@
-{"types":[{"line":1,"id":"simple","fields":[{"line":3,"type":"int","id":"one"}]},{"line":6,"id":"foo","fields":[{"line":8,"type":"int","id":"bar"},{"line":9,"type":"bool","id":"cool"},{"line":10,"type":"simple","id":"simp"}]}],"declarations":[{"line":13,"type":"foo","id":"globalfoo"}],"functions":[{"line":15,"id":"tailrecursive","parameters":[{"line":15,"type":"int","id":"num"}],"return_type":"void","declarations":[{"line":17,"type":"foo","id":"unused"}],"body":[{"line":18,"stmt":"if","guard":{"line":18,"exp":"binary","operator":"<=","lft":{"line":18,"exp":"id","id":"num"},"rht":{"line":18,"exp":"num","value":"0"}},"then":{"stmt":"block","list":[{"line":20,"stmt":"return"}]}},{"line":22,"stmt":"assign","source":{"line":22,"exp":"new","id":"foo"},"target":{"line":22,"id":"unused"}},{"line":23,"stmt":"invocation","id":"tailrecursive","args":[{"line":23,"exp":"binary","operator":"-","lft":{"line":23,"exp":"id","id":"num"},"rht":{"line":23,"exp":"num","value":"1"}}]}]},{"line":26,"id":"add","parameters":[{"line":26,"type":"int","id":"x"},{"line":26,"type":"int","id":"y"}],"return_type":"int","declarations":[],"body":[{"line":28,"stmt":"return","exp":{"line":28,"exp":"binary","operator":"+","lft":{"line":28,"exp":"id","id":"x"},"rht":{"line":28,"exp":"id","id":"y"}}}]},{"line":31,"id":"domath","parameters":[{"line":31,"type":"int","id":"num"}],"return_type":"void","declarations":[{"line":33,"type":"foo","id":"math1"},{"line":34,"type":"foo","id":"math2"},{"line":35,"type":"int","id":"tmp"}],"body":[{"line":37,"stmt":"assign","source":{"line":37,"exp":"new","id":"foo"},"target":{"line":37,"id":"math1"}},{"line":38,"stmt":"assign","source":{"line":38,"exp":"new","id":"simple"},"target":{"line":38,"left":{"line":38,"id":"math1"},"id":"simp"}},{"line":39,"stmt":"assign","source":{"line":39,"exp":"new","id":"foo"},"target":{"line":39,"id":"math2"}},{"line":40,"stmt":"assign","source":{"line":40,"exp":"new","id":"simple"},"target":{"line":40,"left":{"line":40,"id":"math2"},"id":"simp"}},{"line":42,"stmt":"assign","source":{"line":42,"exp":"id","id":"num"},"target":{"line":42,"left":{"line":42,"id":"math1"},"id":"bar"}},{"line":43,"stmt":"assign","source":{"line":43,"exp":"num","value":"3"},"target":{"line":43,"left":{"line":43,"id":"math2"},"id":"bar"}},{"line":44,"stmt":"assign","source":{"line":44,"exp":"dot","left":{"line":44,"exp":"id","id":"math1"},"id":"bar"},"target":{"line":44,"left":{"line":44,"left":{"line":44,"id":"math1"},"id":"simp"},"id":"one"}},{"line":45,"stmt":"assign","source":{"line":45,"exp":"dot","left":{"line":45,"exp":"id","id":"math2"},"id":"bar"},"target":{"line":45,"left":{"line":45,"left":{"line":45,"id":"math2"},"id":"simp"},"id":"one"}},{"line":47,"stmt":"while","guard":{"line":47,"exp":"binary","operator":">","lft":{"line":47,"exp":"id","id":"num"},"rht":{"line":47,"exp":"num","value":"0"}},"body":{"stmt":"block","list":[{"line":49,"stmt":"assign","source":{"line":49,"exp":"binary","operator":"*","lft":{"line":49,"exp":"dot","left":{"line":49,"exp":"id","id":"math1"},"id":"bar"},"rht":{"line":49,"exp":"dot","left":{"line":49,"exp":"id","id":"math2"},"id":"bar"}},"target":{"line":49,"id":"tmp"}},{"line":50,"stmt":"assign","source":{"line":50,"exp":"binary","operator":"/","lft":{"line":50,"exp":"binary","operator":"*","lft":{"line":50,"exp":"id","id":"tmp"},"rht":{"line":50,"exp":"dot","left":{"line":50,"exp":"dot","left":{"line":50,"exp":"id","id":"math1"},"id":"simp"},"id":"one"}},"rht":{"line":50,"exp":"dot","left":{"line":50,"exp":"id","id":"math2"},"id":"bar"}},"target":{"line":50,"id":"tmp"}},{"line":51,"stmt":"assign","source":{"line":51,"exp":"invocation","id":"add","args":[{"line":51,"exp":"dot","left":{"line":51,"exp":"dot","left":{"line":51,"exp":"id","id":"math2"},"id":"simp"},"id":"one"},{"line":51,"exp":"dot","left":{"line":51,"exp":"id","id":"math1"},"id":"bar"}]},"target":{"line":51,"id":"tmp"}},{"line":52,"stmt":"assign","source":{"line":52,"exp":"binary","operator":"-","lft":{"line":52,"exp":"dot","left":{"line":52,"exp":"id","id":"math2"},"id":"bar"},"rht":{"line":52,"exp":"dot","left":{"line":52,"exp":"id","id":"math1"},"id":"bar"}},"target":{"line":52,"id":"tmp"}},{"line":53,"stmt":"assign","source":{"line":53,"exp":"binary","operator":"-","lft":{"line":53,"exp":"id","id":"num"},"rht":{"line":53,"exp":"num","value":"1"}},"target":{"line":53,"id":"num"}}]}},{"line":56,"stmt":"delete","exp":{"line":56,"exp":"id","id":"math1"}},{"line":57,"stmt":"delete","exp":{"line":57,"exp":"id","id":"math2"}}]},{"line":60,"id":"objinstantiation","parameters":[{"line":60,"type":"int","id":"num"}],"return_type":"void","declarations":[{"line":62,"type":"foo","id":"tmp"}],"body":[{"line":63,"stmt":"while","guard":{"line":63,"exp":"binary","operator":">","lft":{"line":63,"exp":"id","id":"num"},"rht":{"line":63,"exp":"num","value":"0"}},"body":{"stmt":"block","list":[{"line":65,"stmt":"assign","source":{"line":65,"exp":"new","id":"foo"},"target":{"line":65,"id":"tmp"}},{"line":66,"stmt":"delete","exp":{"line":66,"exp":"id","id":"tmp"}},{"line":67,"stmt":"assign","source":{"line":67,"exp":"binary","operator":"-","lft":{"line":67,"exp":"id","id":"num"},"rht":{"line":67,"exp":"num","value":"1"}},"target":{"line":67,"id":"num"}}]}}]},{"line":71,"id":"ackermann","parameters":[{"line":71,"type":"int","id":"m"},{"line":71,"type":"int","id":"n"}],"return_type":"int","declarations":[],"body":[{"line":73,"stmt":"if","guard":{"line":73,"exp":"binary","operator":"==","lft":{"line":73,"exp":"id","id":"m"},"rht":{"line":73,"exp":"num","value":"0"}},"then":{"stmt":"block","list":[{"line":75,"stmt":"return","exp":{"line":75,"exp":"binary","operator":"+","lft":{"line":75,"exp":"id","id":"n"},"rht":{"line":75,"exp":"num","value":"1"}}}]}},{"line":78,"stmt":"if","guard":{"line":78,"exp":"binary","operator":"==","lft":{"line":78,"exp":"id","id":"n"},"rht":{"line":78,"exp":"num","value":"0"}},"then":{"stmt":"block","list":[{"line":80,"stmt":"return","exp":{"line":80,"exp":"invocation","id":"ackermann","args":[{"line":80,"exp":"binary","operator":"-","lft":{"line":80,"exp":"id","id":"m"},"rht":{"line":80,"exp":"num","value":"1"}},{"line":80,"exp":"num","value":"1"}]}}]},"else":{"stmt":"block","list":[{"line":84,"stmt":"return","exp":{"line":84,"exp":"invocation","id":"ackermann","args":[{"line":84,"exp":"binary","operator":"-","lft":{"line":84,"exp":"id","id":"m"},"rht":{"line":84,"exp":"num","value":"1"}},{"line":84,"exp":"invocation","id":"ackermann","args":[{"line":84,"exp":"id","id":"m"},{"line":84,"exp":"binary","operator":"-","lft":{"line":84,"exp":"id","id":"n"},"rht":{"line":84,"exp":"num","value":"1"}}]}]}}]}}]},{"line":88,"id":"main","parameters":[],"return_type":"int","declarations":[{"line":90,"type":"int","id":"a"},{"line":90,"type":"int","id":"b"},{"line":90,"type":"int","id":"c"},{"line":90,"type":"int","id":"d"},{"line":90,"type":"int","id":"e"}],"body":[{"line":92,"stmt":"assign","source":{"line":92,"exp":"read"},"target":{"line":92,"id":"a"}},{"line":93,"stmt":"assign","source":{"line":93,"exp":"read"},"target":{"line":93,"id":"b"}},{"line":94,"stmt":"assign","source":{"line":94,"exp":"read"},"target":{"line":94,"id":"c"}},{"line":95,"stmt":"assign","source":{"line":95,"exp":"read"},"target":{"line":95,"id":"d"}},{"line":96,"stmt":"assign","source":{"line":96,"exp":"read"},"target":{"line":96,"id":"e"}},{"line":98,"stmt":"invocation","id":"tailrecursive","args":[{"line":98,"exp":"id","id":"a"}]},{"line":99,"stmt":"print","exp":{"line":99,"exp":"id","id":"a"},"endl":true},{"line":100,"stmt":"invocation","id":"domath","args":[{"line":100,"exp":"id","id":"b"}]},{"line":101,"stmt":"print","exp":{"line":101,"exp":"id","id":"b"},"endl":true},{"line":102,"stmt":"invocation","id":"objinstantiation","args":[{"line":102,"exp":"id","id":"c"}]},{"line":103,"stmt":"print","exp":{"line":103,"exp":"id","id":"c"},"endl":true},{"line":104,"stmt":"print","exp":{"line":104,"exp":"invocation","id":"ackermann","args":[{"line":104,"exp":"id","id":"d"},{"line":104,"exp":"id","id":"e"}]},"endl":true},{"line":106,"stmt":"return","exp":{"line":106,"exp":"num","value":"0"}}]}]}
+{"types":[{"line":3,"id":"plate","fields":[{"line":5,"type":"int","id":"size"},{"line":6,"type":"plate","id":"plateUnder"}]}],"declarations":[{"line":9,"type":"plate","id":"peg1"},{"line":10,"type":"plate","id":"peg2"},{"line":11,"type":"plate","id":"peg3"},{"line":12,"type":"int","id":"numMoves"}],"functions":[{"line":14,"id":"move","parameters":[{"line":14,"type":"int","id":"from"},{"line":14,"type":"int","id":"to"}],"return_type":"void","declarations":[{"line":16,"type":"plate","id":"plateToMove"}],"body":[{"line":18,"stmt":"if","guard":{"line":18,"exp":"binary","operator":"==","lft":{"line":18,"exp":"id","id":"from"},"rht":{"line":18,"exp":"num","value":"1"}},"then":{"stmt":"block","list":[{"line":19,"stmt":"assign","source":{"line":19,"exp":"id","id":"peg1"},"target":{"line":19,"id":"plateToMove"}},{"line":20,"stmt":"assign","source":{"line":20,"exp":"dot","left":{"line":20,"exp":"id","id":"peg1"},"id":"plateUnder"},"target":{"line":20,"id":"peg1"}}]},"else":{"stmt":"block","list":[{"line":24,"stmt":"if","guard":{"line":24,"exp":"binary","operator":"==","lft":{"line":24,"exp":"id","id":"from"},"rht":{"line":24,"exp":"num","value":"2"}},"then":{"stmt":"block","list":[{"line":25,"stmt":"assign","source":{"line":25,"exp":"id","id":"peg2"},"target":{"line":25,"id":"plateToMove"}},{"line":26,"stmt":"assign","source":{"line":26,"exp":"dot","left":{"line":26,"exp":"id","id":"peg2"},"id":"plateUnder"},"target":{"line":26,"id":"peg2"}}]},"else":{"stmt":"block","list":[{"line":29,"stmt":"assign","source":{"line":29,"exp":"id","id":"peg3"},"target":{"line":29,"id":"plateToMove"}},{"line":30,"stmt":"assign","source":{"line":30,"exp":"dot","left":{"line":30,"exp":"id","id":"peg3"},"id":"plateUnder"},"target":{"line":30,"id":"peg3"}}]}}]}},{"line":34,"stmt":"if","guard":{"line":34,"exp":"binary","operator":"==","lft":{"line":34,"exp":"id","id":"to"},"rht":{"line":34,"exp":"num","value":"1"}},"then":{"stmt":"block","list":[{"line":35,"stmt":"assign","source":{"line":35,"exp":"id","id":"peg1"},"target":{"line":35,"left":{"line":35,"id":"plateToMove"},"id":"plateUnder"}},{"line":36,"stmt":"assign","source":{"line":36,"exp":"id","id":"plateToMove"},"target":{"line":36,"id":"peg1"}}]},"else":{"stmt":"block","list":[{"line":40,"stmt":"if","guard":{"line":40,"exp":"binary","operator":"==","lft":{"line":40,"exp":"id","id":"to"},"rht":{"line":40,"exp":"num","value":"2"}},"then":{"stmt":"block","list":[{"line":41,"stmt":"assign","source":{"line":41,"exp":"id","id":"peg2"},"target":{"line":41,"left":{"line":41,"id":"plateToMove"},"id":"plateUnder"}},{"line":42,"stmt":"assign","source":{"line":42,"exp":"id","id":"plateToMove"},"target":{"line":42,"id":"peg2"}}]},"else":{"stmt":"block","list":[{"line":46,"stmt":"assign","source":{"line":46,"exp":"id","id":"peg3"},"target":{"line":46,"left":{"line":46,"id":"plateToMove"},"id":"plateUnder"}},{"line":47,"stmt":"assign","source":{"line":47,"exp":"id","id":"plateToMove"},"target":{"line":47,"id":"peg3"}}]}}]}},{"line":51,"stmt":"assign","source":{"line":51,"exp":"binary","operator":"+","lft":{"line":51,"exp":"id","id":"numMoves"},"rht":{"line":51,"exp":"num","value":"1"}},"target":{"line":51,"id":"numMoves"}}]},{"line":54,"id":"hanoi","parameters":[{"line":54,"type":"int","id":"n"},{"line":54,"type":"int","id":"from"},{"line":54,"type":"int","id":"to"},{"line":54,"type":"int","id":"other"}],"return_type":"void","declarations":[],"body":[{"line":56,"stmt":"if","guard":{"line":56,"exp":"binary","operator":"==","lft":{"line":56,"exp":"id","id":"n"},"rht":{"line":56,"exp":"num","value":"1"}},"then":{"stmt":"block","list":[{"line":57,"stmt":"invocation","id":"move","args":[{"line":57,"exp":"id","id":"from"},{"line":57,"exp":"id","id":"to"}]}]},"else":{"stmt":"block","list":[{"line":61,"stmt":"invocation","id":"hanoi","args":[{"line":61,"exp":"binary","operator":"-","lft":{"line":61,"exp":"id","id":"n"},"rht":{"line":61,"exp":"num","value":"1"}},{"line":61,"exp":"id","id":"from"},{"line":61,"exp":"id","id":"other"},{"line":61,"exp":"id","id":"to"}]},{"line":62,"stmt":"invocation","id":"move","args":[{"line":62,"exp":"id","id":"from"},{"line":62,"exp":"id","id":"to"}]},{"line":63,"stmt":"invocation","id":"hanoi","args":[{"line":63,"exp":"binary","operator":"-","lft":{"line":63,"exp":"id","id":"n"},"rht":{"line":63,"exp":"num","value":"1"}},{"line":63,"exp":"id","id":"other"},{"line":63,"exp":"id","id":"to"},{"line":63,"exp":"id","id":"from"}]}]}}]},{"line":67,"id":"printPeg","parameters":[{"line":67,"type":"plate","id":"peg"}],"return_type":"void","declarations":[{"line":69,"type":"plate","id":"aPlate"}],"body":[{"line":71,"stmt":"assign","source":{"line":71,"exp":"id","id":"peg"},"target":{"line":71,"id":"aPlate"}},{"line":73,"stmt":"while","guard":{"line":73,"exp":"binary","operator":"!=","lft":{"line":73,"exp":"id","id":"aPlate"},"rht":{"line":73,"exp":"null"}},"body":{"stmt":"block","list":[{"line":75,"stmt":"print","exp":{"line":75,"exp":"dot","left":{"line":75,"exp":"id","id":"aPlate"},"id":"size"},"endl":true},{"line":76,"stmt":"assign","source":{"line":76,"exp":"dot","left":{"line":76,"exp":"id","id":"aPlate"},"id":"plateUnder"},"target":{"line":76,"id":"aPlate"}}]}}]},{"line":80,"id":"main","parameters":[],"return_type":"int","declarations":[{"line":82,"type":"int","id":"count"},{"line":82,"type":"int","id":"numPlates"},{"line":83,"type":"plate","id":"aPlate"}],"body":[{"line":85,"stmt":"assign","source":{"line":85,"exp":"null"},"target":{"line":85,"id":"peg1"}},{"line":86,"stmt":"assign","source":{"line":86,"exp":"null"},"target":{"line":86,"id":"peg2"}},{"line":87,"stmt":"assign","source":{"line":87,"exp":"null"},"target":{"line":87,"id":"peg3"}},{"line":88,"stmt":"assign","source":{"line":88,"exp":"num","value":"0"},"target":{"line":88,"id":"numMoves"}},{"line":90,"stmt":"assign","source":{"line":90,"exp":"read"},"target":{"line":90,"id":"numPlates"}},{"line":92,"stmt":"if","guard":{"line":92,"exp":"binary","operator":">=","lft":{"line":92,"exp":"id","id":"numPlates"},"rht":{"line":92,"exp":"num","value":"1"}},"then":{"stmt":"block","list":[{"line":94,"stmt":"assign","source":{"line":94,"exp":"id","id":"numPlates"},"target":{"line":94,"id":"count"}},{"line":96,"stmt":"while","guard":{"line":96,"exp":"binary","operator":"!=","lft":{"line":96,"exp":"id","id":"count"},"rht":{"line":96,"exp":"num","value":"0"}},"body":{"stmt":"block","list":[{"line":98,"stmt":"assign","source":{"line":98,"exp":"new","id":"plate"},"target":{"line":98,"id":"aPlate"}},{"line":99,"stmt":"assign","source":{"line":99,"exp":"id","id":"count"},"target":{"line":99,"left":{"line":99,"id":"aPlate"},"id":"size"}},{"line":100,"stmt":"assign","source":{"line":100,"exp":"id","id":"peg1"},"target":{"line":100,"left":{"line":100,"id":"aPlate"},"id":"plateUnder"}},{"line":101,"stmt":"assign","source":{"line":101,"exp":"id","id":"aPlate"},"target":{"line":101,"id":"peg1"}},{"line":102,"stmt":"assign","source":{"line":102,"exp":"binary","operator":"-","lft":{"line":102,"exp":"id","id":"count"},"rht":{"line":102,"exp":"num","value":"1"}},"target":{"line":102,"id":"count"}}]}},{"line":109,"stmt":"print","exp":{"line":109,"exp":"num","value":"1"},"endl":true},{"line":110,"stmt":"invocation","id":"printPeg","args":[{"line":110,"exp":"id","id":"peg1"}]},{"line":111,"stmt":"print","exp":{"line":111,"exp":"num","value":"2"},"endl":true},{"line":112,"stmt":"invocation","id":"printPeg","args":[{"line":112,"exp":"id","id":"peg2"}]},{"line":113,"stmt":"print","exp":{"line":113,"exp":"num","value":"3"},"endl":true},{"line":114,"stmt":"invocation","id":"printPeg","args":[{"line":114,"exp":"id","id":"peg3"}]},{"line":116,"stmt":"invocation","id":"hanoi","args":[{"line":116,"exp":"id","id":"numPlates"},{"line":116,"exp":"num","value":"1"},{"line":116,"exp":"num","value":"3"},{"line":116,"exp":"num","value":"2"}]},{"line":120,"stmt":"print","exp":{"line":120,"exp":"num","value":"1"},"endl":true},{"line":121,"stmt":"invocation","id":"printPeg","args":[{"line":121,"exp":"id","id":"peg1"}]},{"line":122,"stmt":"print","exp":{"line":122,"exp":"num","value":"2"},"endl":true},{"line":123,"stmt":"invocation","id":"printPeg","args":[{"line":123,"exp":"id","id":"peg2"}]},{"line":124,"stmt":"print","exp":{"line":124,"exp":"num","value":"3"},"endl":true},{"line":125,"stmt":"invocation","id":"printPeg","args":[{"line":125,"exp":"id","id":"peg3"}]},{"line":128,"stmt":"print","exp":{"line":128,"exp":"id","id":"numMoves"},"endl":true},{"line":130,"stmt":"while","guard":{"line":130,"exp":"binary","operator":"!=","lft":{"line":130,"exp":"id","id":"peg3"},"rht":{"line":130,"exp":"null"}},"body":{"stmt":"block","list":[{"line":132,"stmt":"assign","source":{"line":132,"exp":"id","id":"peg3"},"target":{"line":132,"id":"aPlate"}},{"line":133,"stmt":"assign","source":{"line":133,"exp":"dot","left":{"line":133,"exp":"id","id":"peg3"},"id":"plateUnder"},"target":{"line":133,"id":"peg3"}},{"line":134,"stmt":"delete","exp":{"line":134,"exp":"id","id":"aPlate"}}]}}]}},{"line":138,"stmt":"return","exp":{"line":138,"exp":"num","value":"0"}}]}]}
 --- Generating LLVM Code ---
-	.arch armv7-a
-	.comm   globalfoo,4,4
+target triple="i686"
+%struct.plate = type {i32, %struct.plate*}
 
-	.text
-	.align 2
-	.global tailrecursive
-tailrecursive:
-.LU1: 
-	push {fp, lr}
-	add fp, sp, #4
-	mov r1(%num), r0
-	mov r0(u0), #0
-	mov r0(u4), #0
-	cmp r1(%num), r0(u4)
-	movle r0(u0), #1
-	cmp r0(u0), #1
-	beq .LU2
-	b .LU3
-.LU2: 
-	b .LU0
-.LU3: 
-	b .LU4
-.LU4: 
-	sub r0(u3), r1(%num), #1
-	bl tailrecursive
-	b .LU0
-.LU0: 
-	pop {fp, pc}
-	.size tailrecursive, .-tailrecursive
-	.align 2
-	.global add
-add:
-.LU6: 
-	push {fp, lr}
-	add fp, sp, #4
-	mov r2(%x), r0
-	add r0(u5), r2(%x), r0(%y)
-	b .LU5
-.LU5: 
-	pop {fp, pc}
-	.size add, .-add
-	.align 2
-	.global domath
-domath:
-.LU8: 
-	push {fp, lr}
-	add fp, sp, #4
-	mov r4(%num), r0
-	mov r5(u65), r4(%num)
-	movw r0, #12
-	bl malloc
-	mov r2(u9), r0(u8)
-	mov r10, r2(u9)
-	str r10, [SPILL(u66)]
-	mov r8(u63), r2(u9)
-	add r1(u10), r2(u9), #8
-	movw r0, #4
-	bl malloc
-	str r0(u12), [r1(u10)]
-	movw r0, #12
-	bl malloc
-	mov r3(u14), r0(u13)
-	mov r6(u67), r3(u14)
-	mov r7(u64), r3(u14)
-	add r1(u15), r3(u14), #8
-	movw r0, #4
-	bl malloc
-	str r0(u17), [r1(u15)]
-	add r0(u18), r2(u9), #0
-	str r4(%num), [r0(u18)]
-	add r0(u19), r3(u14), #0
-	mov r1(u68), #3
-	str r1(u68), [r0(u19)]
-	add r0(u20), r2(u9), #8
-	ldr r0(u21), [r0(u20)]
-	add r1(u22), r0(u21), #0
-	add r0(u23), r2(u9), #0
-	ldr r0(u24), [r0(u23)]
-	str r0(u24), [r1(u22)]
-	add r0(u25), r3(u14), #8
-	ldr r0(u26), [r0(u25)]
-	add r1(u27), r0(u26), #0
-	add r0(u28), r3(u14), #0
-	ldr r0(u29), [r0(u28)]
-	str r0(u29), [r1(u27)]
-	mov r0(u30), #0
-	mov r0(u69), #0
-	cmp r4(%num), r0(u69)
-	movgt r0(u30), #1
-	cmp r0(u30), #1
-	beq .LU9
-	b .LU10
-.LU9: 
-	mov r3(u58), r5(u65)
-	mov r0(u34), r7(u64)
-	mov r6(u67), r0(u34)
-	mov r7(u64), r0(u34)
-	mov r1(u31), r8(u63)
-	mov r10, r1(u31)
-	str r10, [SPILL(u66)]
-	mov r8(u63), r1(u31)
-	add r0(u46), r0(u34), #8
-	ldr r0(u47), [r0(u46)]
-	add r0(u48), r0(u47), #0
-	ldr r2(u49), [r0(u48)]
-	add r0(u50), r1(u31), #0
-	ldr r0(u51), [r0(u50)]
-	mov r0, r2(u49)
-	bl add
-	sub r1(u59), r3(u58), #1
-	mov r5(u65), r1(u59)
-	mov r0(u60), #0
-	mov r0(u70), #0
-	cmp r1(u59), r0(u70)
-	movgt r0(u60), #1
-	cmp r0(u60), #1
-	beq .LU9
-	b .LU10
-.LU10: 
-	mov r1(u62), r6(u67)
-	ldr r9, [SPILL(u66)]
-	mov r0(u61), r9
-	bl free
-	mov r0, r1(u62)
-	bl free
-	b .LU7
-.LU7: 
-	pop {fp, pc}
-	.size domath, .-domath
-	.align 2
-	.global objinstantiation
-objinstantiation:
-.LU12: 
-	push {fp, lr}
-	add fp, sp, #4
-	mov r1(%num), r0
-	mov r2(u77), r1(%num)
-	mov r0(u71), #0
-	mov r0(u78), #0
-	cmp r1(%num), r0(u78)
-	movgt r0(u71), #1
-	cmp r0(u71), #1
-	beq .LU13
-	b .LU14
-.LU13: 
-	mov r1(u74), r2(u77)
-	movw r0, #12
-	bl malloc
-	bl free
-	sub r1(u75), r1(u74), #1
-	mov r2(u77), r1(u75)
-	mov r0(u76), #0
-	mov r0(u79), #0
-	cmp r1(u75), r0(u79)
-	movgt r0(u76), #1
-	cmp r0(u76), #1
-	beq .LU13
-	b .LU14
-.LU14: 
-	b .LU11
-.LU11: 
-	pop {fp, pc}
-	.size objinstantiation, .-objinstantiation
-	.align 2
-	.global ackermann
-ackermann:
-.LU16: 
-	push {fp, lr}
-	add fp, sp, #4
-	mov r3(%m), r0
-	mov r0(u80), #0
-	mov r0(u91), #0
-	cmp r3(%m), r0(u91)
-	moveq r0(u80), #1
-	cmp r0(u80), #1
-	beq .LU17
-	b .LU18
-.LU17: 
-	add r0(u81), r1(%n), #1
-	b .LU15
-.LU18: 
-	b .LU19
-.LU19: 
-	mov r0(u82), #0
-	mov r0(u92), #0
-	cmp r1(%n), r0(u92)
-	moveq r0(u82), #1
-	cmp r0(u82), #1
-	beq .LU20
-	b .LU21
-.LU20: 
-	sub r0(u83), r3(%m), #1
-	mov r1, #1
-	bl ackermann
-	b .LU15
-.LU21: 
-	sub r2(u85), r3(%m), #1
-	sub r0(u86), r1(%n), #1
-	mov r1, r0(u86)
-	mov r0, r3(%m)
-	bl ackermann
-	mov r1, r0(u87)
-	mov r0, r2(u85)
-	bl ackermann
-	b .LU15
-.LU15: 
-	pop {fp, pc}
-	.size ackermann, .-ackermann
-	.align 2
-	.global main
-main:
-.LU24: 
-	push {fp, lr}
-	add fp, sp, #4
-	movw r1, #:lower16:.read_scratch
-	movt r1, #:upper16:.read_scratch
-	movw r0, #:lower16:.READ_FMT
-	movt r0, #:upper16:.READ_FMT
-	bl scanf
-	movw r5(u93), #:lower16:.read_scratch
-	movt r5(u93), #:upper16:.read_scratch
-	ldr r5(u93), [r5(u93)]
-	movw r1, #:lower16:.read_scratch
-	movt r1, #:upper16:.read_scratch
-	movw r0, #:lower16:.READ_FMT
-	movt r0, #:upper16:.READ_FMT
-	bl scanf
-	movw r6(u94), #:lower16:.read_scratch
-	movt r6(u94), #:upper16:.read_scratch
-	ldr r6(u94), [r6(u94)]
-	movw r1, #:lower16:.read_scratch
-	movt r1, #:upper16:.read_scratch
-	movw r0, #:lower16:.READ_FMT
-	movt r0, #:upper16:.READ_FMT
-	bl scanf
-	movw r3(u95), #:lower16:.read_scratch
-	movt r3(u95), #:upper16:.read_scratch
-	ldr r3(u95), [r3(u95)]
-	movw r1, #:lower16:.read_scratch
-	movt r1, #:upper16:.read_scratch
-	movw r0, #:lower16:.READ_FMT
-	movt r0, #:upper16:.READ_FMT
-	bl scanf
-	movw r4(u96), #:lower16:.read_scratch
-	movt r4(u96), #:upper16:.read_scratch
-	ldr r4(u96), [r4(u96)]
-	movw r1, #:lower16:.read_scratch
-	movt r1, #:upper16:.read_scratch
-	movw r0, #:lower16:.READ_FMT
-	movt r0, #:upper16:.READ_FMT
-	bl scanf
-	movw r2(u97), #:lower16:.read_scratch
-	movt r2(u97), #:upper16:.read_scratch
-	ldr r2(u97), [r2(u97)]
-	mov r0, r5(u93)
-	bl tailrecursive
-	mov r1, r5(u93)
-	movw r0, #:lower16:.PRINTLN_FMT
-	movt r0, #:upper16:.PRINTLN_FMT
-	bl printf
-	mov r0, r6(u94)
-	bl domath
-	mov r1, r6(u94)
-	movw r0, #:lower16:.PRINTLN_FMT
-	movt r0, #:upper16:.PRINTLN_FMT
-	bl printf
-	mov r0, r3(u95)
-	bl objinstantiation
-	mov r1, r3(u95)
-	movw r0, #:lower16:.PRINTLN_FMT
-	movt r0, #:upper16:.PRINTLN_FMT
-	bl printf
-	mov r1, r2(u97)
-	mov r0, r4(u96)
-	bl ackermann
-	movw r0, #:lower16:.PRINTLN_FMT
-	movt r0, #:upper16:.PRINTLN_FMT
-	bl printf
-	b .LU23
-.LU23: 
-	mov r0, #0
-	pop {fp, pc}
-	.size main, .-main
-	.section	.rodata
-	.align	2
-.PRINTLN_FMT:
-	.asciz	"%ld"
-	.align	2
-.PRINT_FMT:
-	.asciz	"%ld "
-	.align	2
-.READ_FMT:
-	.asciz	"%ld"
-	.comm	.read_scratch,4,4
-	.global	__aeabi_idiv
+@peg1 = common global %struct.plate* null, align 8** peg1 %struct.plate* @peg1
+
+@peg2 = common global %struct.plate* null, align 8** peg2 %struct.plate* @peg2
+
+@peg3 = common global %struct.plate* null, align 8** peg3 %struct.plate* @peg3
+
+@numMoves = common global i32 0, align 4** numMoves i32 @numMoves
+
+
+** from i32 %from
+** to i32 %to
+define void @move(i32 %from, i32 %to)
+{
+** plateToMove %struct.plate* %plateToMove
+** plateToMove %struct.plate* %plateToMove
+** peg1 %struct.plate* @peg1
+** peg1 %struct.plate* @peg1
++++++++++ %plateToMove %struct.plate*
+** plateToMove %struct.plate* @peg1
+checkpoint - 0 %struct.plate@peg1
+checkpoint - 1
+checkpoint - 2
++++++++++ @peg1 %struct.plate*
+** peg1 %struct.plate* u2
+** from i32 %from
+** plateToMove %struct.plate* plateToMove
+** plateToMove %struct.plate* plateToMove
+** peg2 %struct.plate* @peg2
+** peg2 %struct.plate* @peg2
+** peg2 %struct.plate* @peg2
++++++++++ %plateToMove %struct.plate*
+** plateToMove %struct.plate* @peg2
+checkpoint - 0 %struct.plate@peg2
+checkpoint - 1
+checkpoint - 2
++++++++++ @peg2 %struct.plate*
+** peg2 %struct.plate* u5
+** plateToMove %struct.plate* plateToMove
+** peg3 %struct.plate* @peg3
+** peg3 %struct.plate* @peg3
+** peg3 %struct.plate* @peg3
++++++++++ %plateToMove %struct.plate*
+** plateToMove %struct.plate* @peg3
+checkpoint - 0 %struct.plate@peg3
+checkpoint - 1
+checkpoint - 2
++++++++++ @peg3 %struct.plate*
+** peg3 %struct.plate* u7
+** to i32 u8
+** to i32 %to
+** to i32 u9
+** to i32 %to
+** to i32 %to
+** to i32 %to
+** to i32 u9
+** to i32 u8
+** plateToMove i32 u11
+** plateToMove i32 u12
+** plateToMove %struct.plate* u12
+** plateToMove %struct.plate* u11
+** plateToMove %struct.plate* u11
+** peg1 i32 u14
+** peg1 i32 u15
+** peg1 %struct.plate* @peg1
+** peg1 %struct.plate* @peg1
+** peg1 %struct.plate* @peg1
+** peg1 %struct.plate* u15
+** peg1 %struct.plate* u14
+** peg1 %struct.plate* u14
++++++++++ %u13 %struct.plate*
++++++++++ %u14 %struct.plate*
+** peg1 %struct.plate* u11
+** to i32 u8
+** plateToMove %struct.plate* u11
+** plateToMove %struct.plate* u11
+** peg2 i32 u18
+** peg2 %struct.plate* @peg2
+** peg2 i32 u19
+** peg2 %struct.plate* @peg2
+** peg2 %struct.plate* u19
+** peg2 %struct.plate* u18
+** peg2 %struct.plate* u18
+** peg2 %struct.plate* u18
++++++++++ %u17 %struct.plate*
++++++++++ %u18 %struct.plate*
+** peg2 %struct.plate* u11
+** plateToMove %struct.plate* u11
+** peg3 i32 u21
+** peg3 %struct.plate* @peg3
+** peg3 i32 u22
+** peg3 %struct.plate* @peg3
+** peg3 %struct.plate* u22
+** peg3 %struct.plate* u21
+** peg3 %struct.plate* u21
+** peg3 %struct.plate* u21
++++++++++ %u20 %struct.plate*
++++++++++ %u21 %struct.plate*
+** peg3 %struct.plate* u11
+** numMoves i32 u23
+** numMoves i32 u24
+** numMoves i32 @numMoves
+** numMoves i32 @numMoves
+** numMoves i32 u25
+** numMoves i32 @numMoves
+** numMoves i32 @numMoves
+** numMoves i32 @numMoves
+** numMoves i32 u25
+** numMoves i32 u24
+** numMoves i32 u24
+** numMoves i32 u26
+** numMoves i32 u24
+** numMoves i32 u24
+** numMoves i32 u24
+** numMoves i32 u26
+** numMoves i32 u23
++++++++++ %u23 i32
+** numMoves i32 u27
+LU1: 
+	%u0 = icmp eq i32 %from, 1
+	br i1 %u0, label %LU2, label %LU3
+LU2: 
+	%u1 = getelementptr %struct.plate* @peg1, i1 0, i32 1
+	%u2 = load %struct.plate** %u1
+	br label %LU4
+LU3: 
+	%u3 = icmp eq i32 %from, 2
+	br i1 %u3, label %LU5, label %LU6
+LU5: 
+	%u4 = getelementptr %struct.plate* @peg2, i1 0, i32 1
+	%u5 = load %struct.plate** %u4
+	br label %LU7
+LU6: 
+	%u6 = getelementptr %struct.plate* @peg3, i1 0, i32 1
+	%u7 = load %struct.plate** %u6
+	br label %LU7
+LU7: 
+	%u12 = phi %struct.plate* [@peg2, %LU5], [@peg3, %LU6]
+	%u22 = phi %struct.plate* [@peg3, %LU5], [%u7, %LU6]
+	%u19 = phi %struct.plate* [%u5, %LU5], [@peg2, %LU6]
+	br label %LU4
+LU4: 
+	%u11 = phi %struct.plate* [@peg1, %LU2], [%u12, %LU7]
+	%u14 = phi %struct.plate* [%u2, %LU2], [@peg1, %LU7]
+	%u21 = phi %struct.plate* [@peg3, %LU2], [%u22, %LU7]
+	%u18 = phi %struct.plate* [@peg2, %LU2], [%u19, %LU7]
+	%u10 = icmp eq i32 %to, 1
+	br i1 %u10, label %LU8, label %LU9
+LU8: 
+	%u13 = getelementptr %struct.plate* %u11, i1 0, i32 1
+	store %struct.plate* %u14, %struct.plate** %u13
+	br label %LU10
+LU9: 
+	%u16 = icmp eq i32 %to, 2
+	br i1 %u16, label %LU11, label %LU12
+LU11: 
+	%u17 = getelementptr %struct.plate* %u11, i1 0, i32 1
+	store %struct.plate* %u18, %struct.plate** %u17
+	br label %LU13
+LU12: 
+	%u20 = getelementptr %struct.plate* %u11, i1 0, i32 1
+	store %struct.plate* %u21, %struct.plate** %u20
+	br label %LU13
+LU13: 
+	br label %LU10
+LU10: 
+	br label %LU0
+LU0: 
+	ret void
+}
+
+** n i32 %n
+** from i32 %from
+** to i32 %to
+** other i32 %other
+define void @hanoi(i32 %n, i32 %from, i32 %to, i32 %other)
+{
+** from i32 %from
+** to i32 %to
+** n i32 %n
+** from i32 %from
+** other i32 %other
+** to i32 %to
+LU15: 
+	%u42 = icmp eq i32 %n, 1
+	br i1 %u42, label %LU16, label %LU17
+LU16: 
+		call void @move(i32 %from, i32 %to)
+	br label %LU18
+LU17: 
+	%u43 = sub i32 %n, 1
+		call void @hanoi(i32 %u43, i32 %from, i32 %other, i32 %to)
+		call void @move(i32 %from, i32 %to)
+	%u44 = sub i32 %n, 1
+		call void @hanoi(i32 %u44, i32 %other, i32 %to, i32 %from)
+	br label %LU18
+LU18: 
+	br label %LU14
+LU14: 
+	ret void
+}
+
+** peg %struct.plate* %peg
+define void @printPeg(%struct.plate* %peg)
+{
+** aPlate %struct.plate* %aPlate
++++++++++ %aPlate %struct.plate*
+** aPlate %struct.plate* %peg
+** aPlate %struct.plate* u46
+checkpoint - 0 %struct.plateu46
+checkpoint - 1
+checkpoint - 2
+checkpoint - 0 %struct.plateu46
+checkpoint - 1
+checkpoint - 2
++++++++++ %u46 %struct.plate*
+** aPlate %struct.plate* u50
+LU20: 
+	%u45 = icmp ne %struct.plate* %peg, null
+	br i1 %u45, label %LU21, label %LU22
+LU21: 
+	%u46 = phi %struct.plate* [%peg, %LU20], [%u50, %LU21]
+	%u47 = getelementptr %struct.plate* %u46, i1 0, i32 0
+	%u48 = load i32* %u47
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u48)
+	%u49 = getelementptr %struct.plate* %u46, i1 0, i32 1
+	%u50 = load %struct.plate** %u49
+	%u51 = icmp ne %struct.plate* %u50, null
+	br i1 %u51, label %LU21, label %LU22
+LU22: 
+	br label %LU19
+LU19: 
+	ret void
+}
+
+define i32 @main()
+{
+** count i32 %count
+** numPlates i32 %numPlates
+** aPlate %struct.plate* %aPlate
+** peg1 %struct.plate* @peg1
++++++++++ @peg1 %struct.plate*
+** peg1 %struct.plate* null
+** peg2 %struct.plate* @peg2
++++++++++ @peg2 %struct.plate*
+** peg2 %struct.plate* null
+** peg3 %struct.plate* @peg3
++++++++++ @peg3 %struct.plate*
+** peg3 %struct.plate* null
+** numMoves i32 @numMoves
++++++++++ @numMoves i32
+** numMoves i32 0
++++++++++ %numPlates i32
+** numPlates i32 u53
+** count i32 %count
+** numPlates i32 u53
++++++++++ %count i32
+** count i32 u53
+** aPlate %struct.plate* u56
++++++++++ %u56 %struct.plate*
+** aPlate %struct.plate* u58
+** count i32 u60
++++++++++ %u59 i32
+** peg1 %struct.plate* u62
++++++++++ %u61 %struct.plate*
++++++++++ %u62 %struct.plate*
+** peg1 %struct.plate* u58
++++++++++ %u60 i32
+** count i32 u63
+** aPlate %struct.plate* %aPlate
+** peg1 %struct.plate* null
+** peg1 i32 u65
+** peg1 %struct.plate* u65
+** peg2 i32 u66
+** peg2 %struct.plate* null
+** peg2 i32 u67
+** peg2 %struct.plate* u67
+** peg2 %struct.plate* u66
+** peg3 i32 u68
+** peg3 %struct.plate* null
+** peg3 i32 u69
+** peg3 %struct.plate* u69
+** peg3 %struct.plate* u68
+** numPlates i32 u70
+** numPlates i32 u71
+** numPlates i32 u71
+** numPlates i32 u70
+** numMoves i32 u72
+** numMoves i32 0
+** numMoves i32 u73
+** numMoves i32 u73
+** numMoves i32 u72
+** aPlate %struct.plate* u75
+** peg3 %struct.plate* u76
++++++++++ %u75 %struct.plate*
+** aPlate %struct.plate* u76
+checkpoint - 0 %struct.plateu76
+checkpoint - 1
+checkpoint - 2
++++++++++ %u76 %struct.plate*
+** peg3 %struct.plate* u78
+** aPlate i32 u80
+** aPlate %struct.plate* u80
+** _retval_ i32 0
+** _retval_ i32 u81
+LU24: 
+	call i32 (i8*, ...)* @scanf(i8* getelementptr inbounds ([4 x i8]* @.read, i32 0, i32 0), i32* @.read_scratch)
+	%u53 = load i32* @.read_scratch
+	%u54 = icmp sge i32 %u53, 1
+	br i1 %u54, label %LU25, label %LU26
+LU25: 
+	%u55 = icmp ne i32 %u53, 0
+	br i1 %u55, label %LU28, label %LU29
+LU26: 
+	br label %LU27
+LU28: 
+	%u62 = phi %struct.plate* [null, %LU25], [%u58, %LU28]
+	%u71 = phi i32 [%u53, %LU25], [%u71, %LU28]
+	%u60 = phi i32 [%u53, %LU25], [%u63, %LU28]
+	%u73 = phi i32 [0, %LU25], [%u73, %LU28]
+	%u69 = phi %struct.plate* [null, %LU25], [%u69, %LU28]
+	%u67 = phi %struct.plate* [null, %LU25], [%u67, %LU28]
+	%u57 = call i8* @malloc(i32 8)
+	%u58 = bitcast i8* %u57 to %struct.plate*
+	%u59 = getelementptr %struct.plate* %u58, i1 0, i32 0
+	store i32 %u60, i32* %u59
+	%u61 = getelementptr %struct.plate* %u58, i1 0, i32 1
+	store %struct.plate* %u62, %struct.plate** %u61
+	%u63 = sub i32 %u60, 1
+	%u64 = icmp ne i32 %u63, 0
+	br i1 %u64, label %LU28, label %LU29
+LU29: 
+	%u65 = phi %struct.plate* [null, %LU25], [%u58, %LU28]
+	%u70 = phi i32 [%u53, %LU25], [%u71, %LU28]
+	%u72 = phi i32 [0, %LU25], [%u73, %LU28]
+	%u68 = phi %struct.plate* [null, %LU25], [%u69, %LU28]
+	%u66 = phi %struct.plate* [null, %LU25], [%u67, %LU28]
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+		call void @printPeg(%struct.plate* %u65)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 2)
+		call void @printPeg(%struct.plate* %u66)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 3)
+		call void @printPeg(%struct.plate* %u68)
+		call void @hanoi(i32 %u70, i32 1, i32 3, i32 2)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+		call void @printPeg(%struct.plate* %u65)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 2)
+		call void @printPeg(%struct.plate* %u66)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 3)
+		call void @printPeg(%struct.plate* %u68)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u72)
+	%u74 = icmp ne %struct.plate* %u68, null
+	br i1 %u74, label %LU30, label %LU31
+LU30: 
+	%u76 = phi %struct.plate* [%u68, %LU29], [%u78, %LU30]
+	%u77 = getelementptr %struct.plate* %u76, i1 0, i32 1
+	%u78 = load %struct.plate** %u77
+		%u98 = bitcast %struct.plate* %u76 to i8*
+	call void @free(i8* %u98)
+	%u79 = icmp ne %struct.plate* %u78, null
+	br i1 %u79, label %LU30, label %LU31
+LU31: 
+	br label %LU27
+LU27: 
+	br label %LU23
+LU23: 
+	ret i32 0
+}
+
+declare i8* @malloc(i32)
+declare void @free(i8*)
+declare i32 @printf(i8*, ...)
+declare i32 @scanf(i8*, ...)
+@.println = private unnamed_addr constant [5 x i8] c"%ld\0A\00", align 1
+@.print = private unnamed_addr constant [5 x i8] c"%ld \00", align 1
+@.read = private unnamed_addr constant [4 x i8] c"%ld\00", align 1
+@.read_scratch = common global i32 0, align 8
 

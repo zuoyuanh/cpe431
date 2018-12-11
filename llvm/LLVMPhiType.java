@@ -19,6 +19,9 @@ public class LLVMPhiType implements LLVMType {
    public void addPhiOperand(LLVMPhiEntryType op)
    {
       phiOperands.add(op);
+      if (register != null && register.getTypeRep().equals("null")) {
+         register.setTypeRep(op.getOperand().getTypeRep());
+      }
    }
 
    public LLVMBlockType getBlock()
@@ -38,6 +41,12 @@ public class LLVMPhiType implements LLVMType {
 
    public void setRegisterType(String typeRep)
    {
+      if (register == null) {
+         return;
+      }
+      if ((register.getTypeRep() != null) && (!register.getTypeRep().equals("null")) && typeRep.equals("null")) {
+         return;
+      }
       this.register.setTypeRep(typeRep);
    }
 

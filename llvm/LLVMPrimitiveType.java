@@ -31,6 +31,11 @@ public class LLVMPrimitiveType implements LLVMType
       return valueRep;
    }
 
+   public void setTypeRep(String typeRep)
+   {
+      this.typeRep = typeRep;
+   }
+
    public String toString()
    {
       if (SSAVisitor.generateARM) {
