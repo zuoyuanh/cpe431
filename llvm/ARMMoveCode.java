@@ -5,13 +5,15 @@ public class ARMMoveCode extends ARMCode
    private Operator operator;
    private LLVMType operand;
    private LLVMRegisterType resultReg;
+   private String debugTag;
 
-   public ARMMoveCode(LLVMRegisterType resReg, LLVMType op, Operator operator)
+   public ARMMoveCode(LLVMRegisterType resReg, LLVMType op, Operator operator, int debugTag)
    {
       super();
       this.operator = operator;
       this.operand = op;
       this.resultReg = resReg;
+      this.debugTag = debugTag + " ";
       if (operator == Operator.CMP) {
          addUse(resReg);
          if (op instanceof LLVMRegisterType) {
@@ -32,6 +34,7 @@ public class ARMMoveCode extends ARMCode
          addUse(resReg);
       }
    }
+
    public static enum Operator
    {
       MOV, MOVW, MOVT, MOVEQ, MOVLT, MOVGT, MOVNE, MOVLE, MOVGE, CMP

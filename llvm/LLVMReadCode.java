@@ -23,14 +23,14 @@ public class LLVMReadCode extends LLVMCode
    
    public List<ARMCode> generateArmCode()
    {
-      armCode.add(new ARMMoveCode(ARMCode.r1, new LLVMPrimitiveType("i32", ":lower16:.read_scratch"), ARMMoveCode.Operator.MOVW));
-      armCode.add(new ARMMoveCode(ARMCode.r1, new LLVMPrimitiveType("i32", ":upper16:.read_scratch"), ARMMoveCode.Operator.MOVT));
-      armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ":lower16:.READ_FMT"), ARMMoveCode.Operator.MOVW));
-      armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ":upper16:.READ_FMT"), ARMMoveCode.Operator.MOVT));
+      armCode.add(new ARMMoveCode(ARMCode.r1, new LLVMPrimitiveType("i32", ":lower16:.read_scratch"), ARMMoveCode.Operator.MOVW, 42));
+      armCode.add(new ARMMoveCode(ARMCode.r1, new LLVMPrimitiveType("i32", ":upper16:.read_scratch"), ARMMoveCode.Operator.MOVT, 43));
+      armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ":lower16:.READ_FMT"), ARMMoveCode.Operator.MOVW, 44));
+      armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ":upper16:.READ_FMT"), ARMMoveCode.Operator.MOVT, 45));
       armCode.add(new ARMBranchCode("scanf", ARMBranchCode.Operator.BL));
       LLVMRegisterType opndReg = getReg(opnd);
-      armCode.add(new ARMMoveCode(opndReg, new LLVMPrimitiveType("i32", ":lower16:.read_scratch"), ARMMoveCode.Operator.MOVW));
-      armCode.add(new ARMMoveCode(opndReg, new LLVMPrimitiveType("i32", ":upper16:.read_scratch"), ARMMoveCode.Operator.MOVT));
+      armCode.add(new ARMMoveCode(opndReg, new LLVMPrimitiveType("i32", ":lower16:.read_scratch"), ARMMoveCode.Operator.MOVW, 46));
+      armCode.add(new ARMMoveCode(opndReg, new LLVMPrimitiveType("i32", ":upper16:.read_scratch"), ARMMoveCode.Operator.MOVT, 47));
       armCode.add(new ARMLoadStoreCode(opndReg, opndReg, ARMLoadStoreCode.Operator.LDR));
       return armCode;
    }

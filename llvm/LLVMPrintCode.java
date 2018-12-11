@@ -41,7 +41,6 @@ public class LLVMPrintCode extends LLVMCode
       List<LLVMRegisterType> result = new ArrayList<LLVMRegisterType>();
       if (opnd instanceof LLVMRegisterType) {
          result.add((LLVMRegisterType)opnd);
-
       }
       return result;
    }
@@ -49,9 +48,9 @@ public class LLVMPrintCode extends LLVMCode
    public List<ARMCode> generateArmCode()
    {
       LLVMType opndType = getOperand(opnd);
-      armCode.add(new ARMMoveCode(ARMCode.r1, opndType, ARMMoveCode.Operator.MOV));
-      armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ":lower16:.PRINTLN_FMT"), ARMMoveCode.Operator.MOVW));
-      armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ":upper16:.PRINTLN_FMT"), ARMMoveCode.Operator.MOVT));
+      armCode.add(new ARMMoveCode(ARMCode.r1, opndType, ARMMoveCode.Operator.MOV, 39));
+      armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ":lower16:.PRINTLN_FMT"), ARMMoveCode.Operator.MOVW, 40));
+      armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ":upper16:.PRINTLN_FMT"), ARMMoveCode.Operator.MOVT, 41));
       armCode.add(new ARMBranchCode("printf", ARMBranchCode.Operator.BL));
       return armCode;
    }

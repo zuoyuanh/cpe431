@@ -1,0 +1,12 @@
+fun test() void
+{
+   int a, b;
+   a = 3;
+   b = 4;
+   print a + b;
+}
+fun main() int
+{
+   test();
+   return 0;
+}

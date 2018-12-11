@@ -55,7 +55,7 @@ public class LLVMReturnCode extends LLVMCode
    {
       mergeARMConversions();
       if (!isVoid) {
-         armCode.add(new ARMMoveCode(ARMCode.r0, value, ARMMoveCode.Operator.MOV));
+         armCode.add(new ARMMoveCode(ARMCode.r0, value, ARMMoveCode.Operator.MOV, 48));
       }
       armCode.add(Compiler.createResetStackPointerToSavedRegsCode());
       armCode.add(Compiler.createPopCalleeSavedRegisterCode());

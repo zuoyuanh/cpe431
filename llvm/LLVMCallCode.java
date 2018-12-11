@@ -90,12 +90,12 @@ public class LLVMCallCode extends LLVMCode
       List<LLVMRegisterType> pushList = new ArrayList<LLVMRegisterType>();
       for (int i=args.size()-1; i>=0; i--) {
          if (i < SSAVisitor.PARAM_REG_NUMS) {
-            armCode.add(new ARMMoveCode(ARMCode.argRegs[i], args.get(i), ARMMoveCode.Operator.MOV));
+            armCode.add(new ARMMoveCode(ARMCode.argRegs[i], args.get(i), ARMMoveCode.Operator.MOV, 29));
          } else {
             LLVMType argType = args.get(i);
             if (argType instanceof LLVMPrimitiveType) {
                LLVMRegisterType tmpReg = SSAVisitor.createNewRegister(((LLVMPrimitiveType)argType).getTypeRep());
-               armCode.add(new ARMMoveCode(tmpReg, argType, ARMMoveCode.Operator.MOV));
+               armCode.add(new ARMMoveCode(tmpReg, argType, ARMMoveCode.Operator.MOV, 30));
                pushList.add(tmpReg);
             } else {
                pushList.add((LLVMRegisterType)argType);
@@ -107,7 +107,7 @@ public class LLVMCallCode extends LLVMCode
       }
       armCode.add(new ARMBranchCode(name, ARMBranchCode.Operator.BL));
       if (!isVoid && (resultReg != null)) {
-         armCode.add(new ARMMoveCode((LLVMRegisterType)resultReg, ARMCode.argRegs[0], ARMMoveCode.Operator.MOV));
+         armCode.add(new ARMMoveCode((LLVMRegisterType)resultReg, ARMCode.argRegs[0], ARMMoveCode.Operator.MOV, 31));
       }
       return armCode;
    } 

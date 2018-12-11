@@ -30,7 +30,8 @@ public class LLVMPhiDefCode extends LLVMCode
 
    public List<ARMCode> generateArmCode()
    {
-      this.armCode.add(new ARMMoveCode(phiRegister, target, ARMMoveCode.Operator.MOV));
+      LLVMType opnd = getOperand(target);
+      this.armCode.add(new ARMMoveCode(phiRegister, opnd, ARMMoveCode.Operator.MOV, 38));
       return armCode;
    }
 }

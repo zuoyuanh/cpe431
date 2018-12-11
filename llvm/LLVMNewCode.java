@@ -35,15 +35,15 @@ public class LLVMNewCode extends LLVMCode
    public List<ARMCode> generateArmCode()
    {
       if (size > 65535) {       
-         armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ":lower16:"+size), ARMMoveCode.Operator.MOVW));
-         armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ":upper16:"+size), ARMMoveCode.Operator.MOVT));
+         armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ":lower16:"+size), ARMMoveCode.Operator.MOVW, 33));
+         armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ":upper16:"+size), ARMMoveCode.Operator.MOVT, 34));
       }
       else{
-         armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ""+size), ARMMoveCode.Operator.MOVW));
+         armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ""+size), ARMMoveCode.Operator.MOVW, 35));
       }
       armCode.add(new ARMBranchCode("malloc", ARMBranchCode.Operator.BL));
       LLVMRegisterType iReg = getReg(intermediatorReg);
-      armCode.add(new ARMMoveCode(iReg, ARMCode.r0, ARMMoveCode.Operator.MOV));
+      armCode.add(new ARMMoveCode(iReg, ARMCode.r0, ARMMoveCode.Operator.MOV, 36));
       mergeARMConversions();
       return armCode;
    }

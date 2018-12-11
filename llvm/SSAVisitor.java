@@ -240,7 +240,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             LLVMRegisterType reg = new LLVMRegisterType(tTypeRep, "%" + originalName);
             writeVariable(originalName, startBlock, reg);
             if (paramCnt < PARAM_REG_NUMS) {
-               paramsDecls.add(new ARMMoveCode(reg, ARMCode.argRegs[paramCnt], ARMMoveCode.Operator.MOV));
+               paramsDecls.add(new ARMMoveCode(reg, ARMCode.argRegs[paramCnt], ARMMoveCode.Operator.MOV, 49));
             } else {
                overedRegisterList.add(0, reg);
             }
@@ -253,7 +253,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       popList.add(ARMCode.ut);
       for (LLVMRegisterType reg : overedRegisterList) {
          functionSetup.add(new ARMPushPopCode(popList, ARMPushPopCode.Operator.POP));
-         functionSetup.add(new ARMMoveCode(reg, ARMCode.ut, ARMMoveCode.Operator.MOV));
+         functionSetup.add(new ARMMoveCode(reg, ARMCode.ut, ARMMoveCode.Operator.MOV, 50));
       }
 
       startBlock.addToARMFront(paramsDecls);
@@ -410,8 +410,6 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
          ARMPushPopCode returnPopCode = Compiler.getPopCalleeSavedRegisterCode();
          returnPopCode.setRegList(calleeSavedRegisters);
-
-         Compiler.printLocalVariablesMap();
 
          for (LLVMBlockType block : blockList) {
             if (block.getPredecessors().size() == 0 && !block.isEntry() 
@@ -1040,7 +1038,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       } else { 
          m.put(variable, value); 
       }
-      //add to SSA regList
+      // add to SSA regList
       if ((regList != null) && (value instanceof LLVMRegisterType)) {
          regList.add((LLVMRegisterType)value); 
       }

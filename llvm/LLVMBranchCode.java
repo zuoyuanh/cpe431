@@ -77,7 +77,7 @@ public class LLVMBranchCode extends LLVMCode
    {
       if (conditonal) {
          LLVMRegisterType g = getReg(guardType);
-         armCode.add(new ARMMoveCode(g, new LLVMPrimitiveType("i32", "1"), ARMMoveCode.Operator.CMP));
+         armCode.add(new ARMMoveCode(g, new LLVMPrimitiveType("i32", "1"), ARMMoveCode.Operator.CMP, 28));
          armCode.add(new ARMBranchCode(thenLLVMBlock.getBlockId(), ARMBranchCode.Operator.BEQ));
          armCode.add(new ARMBranchCode(elseLLVMBlock.getBlockId(), ARMBranchCode.Operator.B));
       } else {
