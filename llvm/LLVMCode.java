@@ -180,8 +180,8 @@ public class LLVMCode
             return p;
          } else {
             LLVMRegisterType resReg = SSAVisitor.createNewRegister("i32");
-            armCode.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":lower16:"+v.substring(0,4)), ARMMoveCode.Operator.MOVW));
-            armCode.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":upper16:"+v.substring(4,8)), ARMMoveCode.Operator.MOVT));
+            armCode.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":lower16:" + v), ARMMoveCode.Operator.MOVW));
+            armCode.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":upper16:" + v), ARMMoveCode.Operator.MOVT));
             return resReg;
          }
       }
@@ -209,8 +209,8 @@ public class LLVMCode
             armCode.add(new ARMMoveCode(resReg, t, ARMMoveCode.Operator.MOV));
             return resReg;
          } else {
-            armCode.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":lower16:"+v.substring(0,4)), ARMMoveCode.Operator.MOVW));
-            armCode.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":upper16:"+v.substring(4,8)), ARMMoveCode.Operator.MOVT));
+            armCode.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":lower16:" + v), ARMMoveCode.Operator.MOVW));
+            armCode.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":upper16:" + v), ARMMoveCode.Operator.MOVT));
             return resReg;
          }
       }
