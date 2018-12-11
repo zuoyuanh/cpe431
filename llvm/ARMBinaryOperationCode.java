@@ -77,11 +77,11 @@ public class ARMBinaryOperationCode extends ARMCode
       
       String resReg = resultReg.toString();
       if ((resultReg).getAllocatedARMRegister() == null) {
-            resReg = ARMCode.r10.toString();
+         resReg = ARMCode.r10.toString();
       }
       res += operatorToString(operator) + " " + resReg + ", " + lf + ", " + rt + "\n";
       if ((resultReg).getAllocatedARMRegister() == null) {
-            res = loadSpill(res, ARMCode.r10, resultReg);
+         res = storeSpill(res, ARMCode.r10, resultReg);
       }
       return res;
    }
