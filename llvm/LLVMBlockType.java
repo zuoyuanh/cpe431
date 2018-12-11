@@ -186,8 +186,7 @@ public class LLVMBlockType implements LLVMType
          this.closed = true;
       }
       if (code instanceof LLVMBranchCode 
-       || code instanceof LLVMReturnCode 
-       || code instanceof LLVMReturnConversionCode) {
+       || code instanceof LLVMReturnCode) {
          branchLLVMCode.add(code);
       } else {
          llvmCode.add(code);
@@ -211,18 +210,7 @@ public class LLVMBlockType implements LLVMType
    {
       LLVMCode code = new LLVMPhiDefCode(phiDefRegister, target);
       if (target instanceof LLVMRegisterType) {
-         /* ((LLVMRegisterType)target).addUse(code);
-         if (((LLVMRegisterType)target).getDef() == null) {
-            llvmCode.add(0, code);
-            return code;
-         }
-         for (int i=0; i<llvmCode.size(); i++) {
-            if (llvmCode.get(i).getDef() != null && llvmCode.get(i).getDef().equals(target)) {
-               llvmCode.add(i + 1, code);
-               break;
-            }
-         } */
-         llvmCode.add(code);
+         branchLLVMCode.add(0, code);
       } else if (target instanceof LLVMPrimitiveType) {
          this.llvmCode.add(0, code);
       }

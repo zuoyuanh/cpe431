@@ -319,9 +319,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             }
          }
       }
-      
+
       removeTrivialPhis(phiCodes);
-      sparseSimpleConstantPropagation();
+      // sparseSimpleConstantPropagation();
 
       if (generateARM) {
          for (LLVMPhiCode phiCode : phiCodes) {
@@ -410,6 +410,8 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
          ARMPushPopCode returnPopCode = Compiler.getPopCalleeSavedRegisterCode();
          returnPopCode.setRegList(calleeSavedRegisters);
+
+         Compiler.printLocalVariablesMap();
 
          for (LLVMBlockType block : blockList) {
             if (block.getPredecessors().size() == 0 && !block.isEntry() 

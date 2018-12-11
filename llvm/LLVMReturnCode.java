@@ -53,6 +53,7 @@ public class LLVMReturnCode extends LLVMCode
 
    public List<ARMCode> generateArmCode()
    {
+      mergeARMConversions();
       if (!isVoid) {
          armCode.add(new ARMMoveCode(ARMCode.r0, value, ARMMoveCode.Operator.MOV));
       }
