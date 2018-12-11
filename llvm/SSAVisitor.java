@@ -1155,6 +1155,12 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       return new LLVMRegisterType(type, regId);
    }
 
+   public static LLVMRegisterType createNewPhiDefRegister(String type)
+   {
+      String regId = "_phi_u" + Integer.toString(registerCounter++);
+      return new LLVMRegisterType(type, regId);
+   }
+
    private void addToUsesList(LLVMType reg, LLVMCode c){
       if (reg instanceof LLVMRegisterType){
          ((LLVMRegisterType)reg).addUse(c);

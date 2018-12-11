@@ -11,6 +11,7 @@ public class LLVMBlockType implements LLVMType
    private String blockId;
    private Label label;
    private List<LLVMCode> llvmCode;
+   private List<LLVMCode> branchLLVMCode;
    private List<ARMCode> armCode;
    private ArrayList<LLVMBlockType> successors;
    private boolean closed;
@@ -34,6 +35,7 @@ public class LLVMBlockType implements LLVMType
       this.varTable = new HashMap<>();
       this.phiTable = new HashMap<>();
       this.llvmCode = new ArrayList<LLVMCode>();
+      this.branchLLVMCode = new ArrayList<LLVMCode>();
       this.armCode = new ArrayList<ARMCode>();
       this.closed = false;
       this.sealed = false;
@@ -55,6 +57,7 @@ public class LLVMBlockType implements LLVMType
       this.varTable = new HashMap<>();
       this.phiTable = new HashMap<>();
       this.llvmCode = new ArrayList<LLVMCode>();
+      this.branchLLVMCode = new ArrayList<LLVMCode>();
       this.armCode = new ArrayList<ARMCode>();
       this.closed = false;
       this.sealed = sealed;
@@ -76,6 +79,7 @@ public class LLVMBlockType implements LLVMType
       this.varTable = new HashMap<>();
       this.phiTable = new HashMap<>();
       this.llvmCode = llvmCode;
+      this.branchLLVMCode = new ArrayList<LLVMCode>();
       this.armCode = new ArrayList<ARMCode>();
       this.closed = closed;
       this.sealed = false;
@@ -139,7 +143,11 @@ public class LLVMBlockType implements LLVMType
 
    public List<LLVMCode> getLLVMCode()
    {
-      return llvmCode;
+      List<LLVMCode> codeList = new ArrayList<LLVMCode>(llvmCode);
+      for (LLVMCode c : branchLLVMCode) {
+         codeList.add(c);
+      }
+      return codeList;
    }
 
    public boolean isClosed()
@@ -177,7 +185,13 @@ public class LLVMBlockType implements LLVMType
       if (code.isRedirectInstruction()) {
          this.closed = true;
       }
-      llvmCode.add(code);
+      if (code instanceof LLVMBranchCode 
+       || code instanceof LLVMReturnCode 
+       || code instanceof LLVMReturnConversionCode) {
+         branchLLVMCode.add(code);
+      } else {
+         llvmCode.add(code);
+      }
       code.setBlock(this);
    }
    
@@ -197,7 +211,7 @@ public class LLVMBlockType implements LLVMType
    {
       LLVMCode code = new LLVMPhiDefCode(phiDefRegister, target);
       if (target instanceof LLVMRegisterType) {
-         ((LLVMRegisterType)target).addUse(code);
+         /* ((LLVMRegisterType)target).addUse(code);
          if (((LLVMRegisterType)target).getDef() == null) {
             llvmCode.add(0, code);
             return code;
@@ -207,7 +221,8 @@ public class LLVMBlockType implements LLVMType
                llvmCode.add(i + 1, code);
                break;
             }
-         }
+         } */
+         llvmCode.add(code);
       } else if (target instanceof LLVMPrimitiveType) {
          this.llvmCode.add(0, code);
       }
@@ -361,9 +376,6 @@ public class LLVMBlockType implements LLVMType
          this.availSet.add(exp);
       }
    }
-
-
-
 
    public Set<LLVMRegisterType> getArmGenSet()
    {

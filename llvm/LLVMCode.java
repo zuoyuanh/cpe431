@@ -155,6 +155,11 @@ public class LLVMCode
       this.block = b;
    }
 
+   public LLVMBlockType getBlock()
+   {
+      return this.block;
+   }
+
    protected LLVMType getOperand(LLVMType t)
    {
       if (t instanceof LLVMRegisterType) return (LLVMRegisterType)t ;

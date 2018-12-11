@@ -15,7 +15,7 @@ public class LLVMPhiCode extends LLVMCode
       phiRegister = r;
       this.entries = entries;
       this.defCodes = new ArrayList<LLVMCode>();
-      this.phiDefRegister = SSAVisitor.createNewRegister("i32");
+      this.phiDefRegister = SSAVisitor.createNewPhiDefRegister("i32");
    }
 
    public String toString()

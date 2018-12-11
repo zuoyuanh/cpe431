@@ -1,0 +1,135 @@
+{"types":[],"declarations":[],"functions":[{"line":2,"id":"mod","parameters":[{"line":2,"type":"int","id":"a"},{"line":2,"type":"int","id":"b"}],"return_type":"int","declarations":[],"body":[{"line":4,"stmt":"return","exp":{"line":4,"exp":"binary","operator":"-","lft":{"line":4,"exp":"id","id":"a"},"rht":{"line":4,"exp":"binary","operator":"*","lft":{"line":4,"exp":"binary","operator":"/","lft":{"line":4,"exp":"id","id":"a"},"rht":{"line":4,"exp":"id","id":"b"}},"rht":{"line":4,"exp":"id","id":"b"}}}}]},{"line":8,"id":"hailstone","parameters":[{"line":8,"type":"int","id":"n"}],"return_type":"void","declarations":[],"body":[{"line":10,"stmt":"while","guard":{"line":10,"exp":"true"},"body":{"stmt":"block","list":[{"line":12,"stmt":"print","exp":{"line":12,"exp":"id","id":"n"},"endl":false},{"line":13,"stmt":"if","guard":{"line":13,"exp":"binary","operator":"==","lft":{"line":13,"exp":"invocation","id":"mod","args":[{"line":13,"exp":"id","id":"n"},{"line":13,"exp":"num","value":"2"}]},"rht":{"line":13,"exp":"num","value":"1"}},"then":{"stmt":"block","list":[{"line":15,"stmt":"assign","source":{"line":15,"exp":"binary","operator":"+","lft":{"line":15,"exp":"binary","operator":"*","lft":{"line":15,"exp":"num","value":"3"},"rht":{"line":15,"exp":"id","id":"n"}},"rht":{"line":15,"exp":"num","value":"1"}},"target":{"line":15,"id":"n"}}]},"else":{"stmt":"block","list":[{"line":19,"stmt":"assign","source":{"line":19,"exp":"binary","operator":"/","lft":{"line":19,"exp":"id","id":"n"},"rht":{"line":19,"exp":"num","value":"2"}},"target":{"line":19,"id":"n"}}]}},{"line":21,"stmt":"if","guard":{"line":21,"exp":"binary","operator":"<=","lft":{"line":21,"exp":"id","id":"n"},"rht":{"line":21,"exp":"num","value":"1"}},"then":{"stmt":"block","list":[{"line":23,"stmt":"print","exp":{"line":23,"exp":"id","id":"n"},"endl":true},{"line":24,"stmt":"return"}]}}]}}]},{"line":29,"id":"main","parameters":[],"return_type":"int","declarations":[{"line":31,"type":"int","id":"num"}],"body":[{"line":32,"stmt":"assign","source":{"line":32,"exp":"read"},"target":{"line":32,"id":"num"}},{"line":33,"stmt":"invocation","id":"hailstone","args":[{"line":33,"exp":"id","id":"num"}]},{"line":34,"stmt":"return","exp":{"line":34,"exp":"num","value":"0"}}]}]}
+--- Generating LLVM Code ---
+	.arch armv7-a
+
+	.text
+	.align 2
+	.global mod
+mod:
+.LU1: 
+	push {fp, lr}
+	add fp, sp, #4
+	push {r4, r5, r6}
+	mov r6(%a), r0
+	mov r5(%b), r1
+	mov r0, r6(%a)
+	mov r1, r5(%b)
+	bl __aeabi_idiv
+	mov r4(u0), r0
+	mul r4(u1), r4(u0), r5(%b)
+	sub r4(u2), r6(%a), r4(u1)
+	b .LU0
+.LU0: 
+	mov r0, r4(u2)
+	pop {r4, r5, r6}
+	pop {fp, pc}
+	.size mod, .-mod
+	.align 2
+	.global hailstone
+hailstone:
+%n SPILL(%n).LU3
+u11 SPILL(u11).LU11
+u9 SPILL(u9).LU6
+u10 SPILL(u10).LU7
+.LU3: 
+	push {fp, lr}
+	add fp, sp, #4
+	push {r4, r5, r6, r7, r8}
+	mov r4(%n), r0
+	mov r8(_phi_u13), r4(%n)
+	mov r4(u15), #1
+	cmp r4(u15), #1
+	beq .LU4
+	b .LU5
+.LU4: 
+	mov r7(u5), r8(_phi_u13)
+	mov r1, r7(u5)
+	movw r0, #:lower16:.PRINTLN_FMT
+	movt r0, #:upper16:.PRINTLN_FMT
+	bl printf
+	mov r1, #2
+	mov r0, r7(u5)
+	bl mod
+	mov r5(u6), r0
+	mov r4(u7), #0
+	mov r6(u16), #1
+	cmp r5(u6), r6(u16)
+	moveq r4(u7), #1
+	cmp r4(u7), #1
+	beq .LU6
+	b .LU7
+.LU5: 
+	b .LU2
+.LU6: 
+	mov r4(u17), #3
+	mul r4(u8), r4(u17), r7(u5)
+	add r4(u9), r4(u8), #1
+	b .LU8
+.LU7: 
+	mov r0, r7(u5)
+	mov r1, #2
+	bl __aeabi_idiv
+	mov r4(u10), r0
+	b .LU8
+.LU8: 
+	mov r5(u11), r4(_phi_u14)
+	mov r6(u12), #0
+	mov r4(u18), #1
+	cmp r5(u11), r4(u18)
+	movle r6(u12), #1
+	cmp r6(u12), #1
+	beq .LU9
+	b .LU10
+.LU9: 
+	mov r1, r5(u11)
+	movw r0, #:lower16:.PRINTLN_FMT
+	movt r0, #:upper16:.PRINTLN_FMT
+	bl printf
+	b .LU2
+.LU10: 
+	b .LU11
+.LU11: 
+	mov r4(u19), #1
+	cmp r4(u19), #1
+	beq .LU4
+	b .LU5
+.LU2: 
+	pop {r4, r5, r6, r7, r8}
+	pop {fp, pc}
+	.size hailstone, .-hailstone
+	.align 2
+	.global main
+main:
+.LU13: 
+	push {fp, lr}
+	add fp, sp, #4
+	push {r4}
+	movw r1, #:lower16:.read_scratch
+	movt r1, #:upper16:.read_scratch
+	movw r0, #:lower16:.READ_FMT
+	movt r0, #:upper16:.READ_FMT
+	bl scanf
+	movw r4(u20), #:lower16:.read_scratch
+	movt r4(u20), #:upper16:.read_scratch
+	ldr r4(u20), [r4(u20)]
+	mov r0, r4(u20)
+	bl hailstone
+	b .LU12
+.LU12: 
+	mov r0, #0
+	pop {r4}
+	pop {fp, pc}
+	.size main, .-main
+	.section	.rodata
+	.align	2
+.PRINTLN_FMT:
+	.asciz	"%ld\n"
+	.align	2
+.PRINT_FMT:
+	.asciz	"%ld "
+	.align	2
+.READ_FMT:
+	.asciz	"%ld"
+	.comm	.read_scratch,4,4
+	.global	__aeabi_idiv
+
