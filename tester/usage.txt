@@ -1,0 +1,4 @@
+Tester for benchmark test cases:
+
+1. Run tester_pc.sh
+2. Run tester_arm.sh
