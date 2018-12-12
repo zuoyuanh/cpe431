@@ -51,17 +51,17 @@ public class ARMLoadStoreCode extends ARMCode
       } else {
          regString = reg.toString();
       }
-      if (address instanceof ARMRegister || address.getAllocatedARMRegister() != null) {
-         addressRep = address.toString();
+      String varName = address.getId().substring(1);
+      if (Compiler.getGlobalVariablesMap().containsKey(varName)) {
+         res += "movw ip, #:lower16:" + varName + "\n\t";
+         res += "movt ip, #:upper16:" + varName + "\n\t";
+         addressRep = "ip";
       } else {
-         int offset = Compiler.getLocalVariableOffset(address.getId());
-         if (offset != -1) {
-            addressRep = "sp, #" + offset + "";
+         if (address instanceof ARMRegister || address.getAllocatedARMRegister() != null) {
+            addressRep = address.toString();
          } else {
-            if (Compiler.getOriginalGlobalVariablesMap().containsKey(address.getId().substring(1))) {
-               res += "ldr ip, =" + address.getId().substring(1) + "\n\t";
-               addressRep = "ip";
-            }
+            int offset = Compiler.getLocalVariableOffset(address.getId());
+            addressRep = "sp, #" + offset + "";
          }
       }
       res += operatorToString(operator) + " " + regString + ", [" + addressRep + "]\n";

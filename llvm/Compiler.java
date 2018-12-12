@@ -16,6 +16,7 @@ public class Compiler
    private static ARMBinaryOperationCode resetStackPointerToFpCode;
    private static ARMBinaryOperationCode resetStackPointerToSavedRegsCode;
    private static Map<String, String> originalGlobalVariablesMap = new HashMap<String, String>();
+   private static Map<String, String> globalVariablesMap = null;
    
    private static void initializeLocalVariableMap()
    {
@@ -115,5 +116,15 @@ public class Compiler
    public static void putIntoOriginalGlobalVariablesMap(String key, String value)
    {
       originalGlobalVariablesMap.put(key, value);
+   }
+
+   public static Map<String, String> getGlobalVariablesMap()
+   {
+      return globalVariablesMap;
+   }
+
+   public static void setGlobalVariablesMap(Map<String, String> map)
+   {
+      globalVariablesMap = map;
    }
 }

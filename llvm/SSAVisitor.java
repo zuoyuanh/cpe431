@@ -40,8 +40,6 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
    private List<LLVMBlockType> globalBlockList;
 
-   private Map<String, String> globalVariablesMap = null;
-
    /**
     * @local generateARM
     *
@@ -232,12 +230,12 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       functionSetup.add(new ARMBinaryOperationCode(ARMCode.sp, new LLVMPrimitiveType("i32", "4"), ARMCode.fp, ARMBinaryOperationCode.Operator.ADD));
 
       // Reset global map for current function
-      globalVariablesMap = new HashMap<String, String>(Compiler.getOriginalGlobalVariablesMap());
+      Compiler.setGlobalVariablesMap(new HashMap<String, String>(Compiler.getOriginalGlobalVariablesMap()));
       for (Declaration local : locals) {
          LLVMType t = this.visit(local);
          if (t instanceof LLVMDeclType) {
             String tNameRep = ((LLVMDeclType)t).getName();
-            globalVariablesMap.remove(tNameRep);
+            Compiler.getGlobalVariablesMap().remove(tNameRep);
          }
       }
 
@@ -1059,8 +1057,8 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    
    private void writeVariable(String variable, LLVMBlockType block, LLVMType value)
    {
-      String typeRep = globalVariablesMap.get(variable);
-      if (globalVariablesMap.containsKey(variable)) {
+      String typeRep = Compiler.getGlobalVariablesMap().get(variable);
+      if (Compiler.getGlobalVariablesMap().containsKey(variable)) {
          LLVMStoreCode storeCode = new LLVMStoreCode(value, new LLVMRegisterType(typeRep, "@" + variable));
          addToUsesList(value, storeCode);
          block.add(storeCode);
@@ -1090,8 +1088,8 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
    private LLVMType readVariable(String variable, LLVMBlockType block)
    {
-      if (globalVariablesMap.containsKey(variable)) {
-         String typeRep = globalVariablesMap.get(variable);
+      if (Compiler.getGlobalVariablesMap().containsKey(variable)) {
+         String typeRep = Compiler.getGlobalVariablesMap().get(variable);
          LLVMRegisterType resultReg = createNewRegister(typeRep);
          LLVMLoadCode loadCode = new LLVMLoadCode(new LLVMRegisterType(typeRep + "*", "@" + variable), resultReg);
          block.add(loadCode);
