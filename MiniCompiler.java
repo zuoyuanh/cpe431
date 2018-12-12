@@ -44,7 +44,7 @@ public class MiniCompiler
          //TypeVisitor typeVisitor = new TypeVisitor();
          //typeVisitor.visit(program);
          
-         String llvmOutputFileName = _inputFile.substring(0, _inputFile.lastIndexOf('.')) + ".s";
+         String llvmOutputFileName = _inputFile.substring(0, _inputFile.lastIndexOf('.')) + ".ll";
          File f = null;
 
          if (printLLVMProgram) {
