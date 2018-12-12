@@ -2,9 +2,6 @@ package llvm;
 
 import ast.*;
 import staticChecker.*;
-import java.io.File;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -17,13 +14,6 @@ import exceptions.DuplicatedIdentifierDeclarationException;
 
 public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 {
-   public static int registerCounter = 0;
-
-   public static final int PARAM_REG_NUMS = 4;
-
-   private File output;
-   private BufferedWriter bufferedWriter;
-
    private int blockCounter = 0;
 
    private Table<Table<LLVMStructFieldEntry>> typesTable = new Table<Table<LLVMStructFieldEntry>>(null, "type");
@@ -40,41 +30,20 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
    private List<LLVMBlockType> globalBlockList;
 
-   /**
-    * @local generateARM
-    *
-    * if set to be true, the visitor will generate ARM code
-    * otherwise the visitor will generate LLVM code
-    */
-   public static boolean generateARM = true;
-
-   public SSAVisitor(File output)
-   {
-      registerCounter = 0;
-      this.output = output;
-      try {
-         if (output != null) {
-            this.bufferedWriter = new BufferedWriter(new FileWriter(output));
-         }
-      } catch (Exception e) {
-         System.out.println("cannot write to file");
-      }
-   }
-
    public LLVMType visit(Program program)
    {
       globalBlockList = new ArrayList<LLVMBlockType>();
       programBlock = new LLVMBlockType("PROG", true, LLVMBlockType.Label.PROGRAM);
-      if (generateARM) {
-         printStringToFile("\t.arch armv7-a");
+      if (Compiler.generateARM) {
+         Compiler.printStringToFile("\t.arch armv7-a");
       } else {
-         printStringToFile("target triple=\"i686\"\n");
+         Compiler.printStringToFile("target triple=\"i686\"\n");
       }
       List<TypeDeclaration> types = program.getTypes();
       for (TypeDeclaration typeDecl : types) {
          this.visit(typeDecl);
       }
-      printStringToFile("\n");
+      Compiler.printStringToFile("\n");
 
       List<Declaration> decls = program.getDecls();
       for (Declaration decl : decls){
@@ -88,34 +57,34 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                declsTable.insert(declName, decl.getType());
             } catch (Exception e) {
             } */
-            if (generateARM) {
-               printStringToFile("\t.comm   " + varName + ",4,4");
+            if (Compiler.generateARM) {
+               Compiler.printStringToFile("\t.comm   " + varName + ",4,4");
             } else {
-               printStringToFile(declName + " = common global ");
-               printStringToFile(typeRep + " ");
+               Compiler.printStringToFile(declName + " = common global ");
+               Compiler.printStringToFile(typeRep + " ");
                if (typeRep.equals("i32")) {
-                  printStringToFile("0, align 4");
+                  Compiler.printStringToFile("0, align 4");
                } else if (typeRep.equals("i1")) {
-                  printStringToFile("0, align 1");
+                  Compiler.printStringToFile("0, align 1");
                } else {
                   /* try {
                      String structName = typeRep.substring(0, typeRep.length()-1);
                      int size = typesSizeTable.get(structName);
-                     printStringToFile("null, align " + Integer.toString(size * 8));
+                     Compiler.printStringToFile("null, align " + Integer.toString(size * 8));
                   } catch (Exception esc) {
                   } */
-                  printStringToFile("null, align 8");
+                  Compiler.printStringToFile("null, align 8");
                }
             }
             // writeVariable(varName, programBlock, new LLVMRegisterType(typeRep, "@" + varName));
             Compiler.putIntoOriginalGlobalVariablesMap(varName, typeRep);
-            printStringToFile("\n");
+            Compiler.printStringToFile("\n");
          }
       }
-      printStringToFile("\n");
+      Compiler.printStringToFile("\n");
 
-      if (generateARM) {
-         printStringToFile("\t.text\n");
+      if (Compiler.generateARM) {
+         Compiler.printStringToFile("\t.text\n");
       }
 
       List<Function> funcs = program.getFuncs();
@@ -126,33 +95,28 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
       }
 
-      if (generateARM) {
-         printStringToFile("\t.section\t.rodata\n");
-         printStringToFile("\t.align	2\n");
-         printStringToFile(".PRINTLN_FMT:\n");
-         printStringToFile("\t.asciz	\"%ld\\n\"\n");
-         printStringToFile("\t.align	2\n");
-         printStringToFile(".PRINT_FMT:\n");
-         printStringToFile("\t.asciz	\"%ld \"\n");
-         printStringToFile("\t.align	2\n");
-         printStringToFile(".READ_FMT:\n");
-         printStringToFile("\t.asciz	\"%ld\"\n");
-         printStringToFile("\t.comm	.read_scratch,4,4\n");
-         printStringToFile("\t.global	__aeabi_idiv\n");
+      if (Compiler.generateARM) {
+         Compiler.printStringToFile("\t.section\t.rodata\n");
+         Compiler.printStringToFile("\t.align	2\n");
+         Compiler.printStringToFile(".PRINTLN_FMT:\n");
+         Compiler.printStringToFile("\t.asciz	\"%ld\\n\"\n");
+         Compiler.printStringToFile("\t.align	2\n");
+         Compiler.printStringToFile(".PRINT_FMT:\n");
+         Compiler.printStringToFile("\t.asciz	\"%ld \"\n");
+         Compiler.printStringToFile("\t.align	2\n");
+         Compiler.printStringToFile(".READ_FMT:\n");
+         Compiler.printStringToFile("\t.asciz	\"%ld\"\n");
+         Compiler.printStringToFile("\t.comm	.read_scratch,4,4\n");
+         Compiler.printStringToFile("\t.global	__aeabi_idiv\n");
       } else {
-         printStringToFile("declare i8* @malloc(i32)\n");
-         printStringToFile("declare void @free(i8*)\n");
-         printStringToFile("declare i32 @printf(i8*, ...)\n");
-         printStringToFile("declare i32 @scanf(i8*, ...)\n");
-         printStringToFile("@.println = private unnamed_addr constant [5 x i8] c\"%ld\\0A\\00\", align 1\n");
-         printStringToFile("@.print = private unnamed_addr constant [5 x i8] c\"%ld \\00\", align 1\n");
-         printStringToFile("@.read = private unnamed_addr constant [4 x i8] c\"%ld\\00\", align 1\n");
-         printStringToFile("@.read_scratch = common global i32 0, align 8\n");
-      }
-
-      try {
-         bufferedWriter.close();
-      } catch (Exception e) {
+         Compiler.printStringToFile("declare i8* @malloc(i32)\n");
+         Compiler.printStringToFile("declare void @free(i8*)\n");
+         Compiler.printStringToFile("declare i32 @printf(i8*, ...)\n");
+         Compiler.printStringToFile("declare i32 @scanf(i8*, ...)\n");
+         Compiler.printStringToFile("@.println = private unnamed_addr constant [5 x i8] c\"%ld\\0A\\00\", align 1\n");
+         Compiler.printStringToFile("@.print = private unnamed_addr constant [5 x i8] c\"%ld \\00\", align 1\n");
+         Compiler.printStringToFile("@.read = private unnamed_addr constant [4 x i8] c\"%ld\\00\", align 1\n");
+         Compiler.printStringToFile("@.read_scratch = common global i32 0, align 8\n");
       }
       return new LLVMVoidType(); 
    }
@@ -182,8 +146,8 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          typeDeclString = typeDeclString.substring(0, typeDeclString.length()-2);
       }
 
-      if (!generateARM) {
-         printStringToFile(typeDeclString + "}\n");
+      if (!Compiler.generateARM) {
+         Compiler.printStringToFile(typeDeclString + "}\n");
       }
       return new LLVMVoidType(); 
    }
@@ -253,7 +217,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             paramsRep += tTypeRep + " %" + ((LLVMDeclType)t).getName() + ", ";
             LLVMRegisterType reg = new LLVMRegisterType(tTypeRep, "%" + originalName);
             writeVariable(originalName, startBlock, reg);
-            if (paramCnt < PARAM_REG_NUMS) {
+            if (paramCnt < Compiler.PARAM_REG_NUMS) {
                ARMMoveCode movCode = new ARMMoveCode(reg, ARMCode.argRegs[paramCnt], ARMMoveCode.Operator.MOV, 49);
                paramsDecls.add(movCode);
             } else {
@@ -277,12 +241,12 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       }
       paramsRep += ")";
 
-      if (generateARM) {
-         printStringToFile("\t.align 2\n");
-         printStringToFile("\t.global " + func.getName() + "\n");
-         printStringToFile(func.getName() + ":\n");
+      if (Compiler.generateARM) {
+         Compiler.printStringToFile("\t.align 2\n");
+         Compiler.printStringToFile("\t.global " + func.getName() + "\n");
+         Compiler.printStringToFile(func.getName() + ":\n");
       } else {
-         printStringToFile("define " + returnTypeLLVMRep + " @" + func.getName() + paramsRep + "\n{\n");
+         Compiler.printStringToFile("define " + returnTypeLLVMRep + " @" + func.getName() + paramsRep + "\n{\n");
       }
 
       // Declare locals
@@ -345,7 +309,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       removeTrivialPhis(phiCodes);
       sparseSimpleConstantPropagation();
 
-      if (generateARM) {
+      if (Compiler.generateARM) {
          for (LLVMPhiCode phiCode : phiCodes) {
             phiCode.processPhiDefs();
          }
@@ -354,7 +318,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       markUsefulInstructionInBlock(blockList);
       localVariableNumbering(startBlock);
 
-      if (generateARM) {
+      if (Compiler.generateARM) {
          for (LLVMBlockType block : blockList) {
             Set<LLVMRegisterType> armGenSet = block.newArmGenSet(); 
             Set<LLVMRegisterType> armKillSet = block.newArmKillSet();
@@ -438,27 +402,20 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                continue;
             }
             globalBlockList.add(block);
-            printStringToFile(block.getBlockId() + ": \n");
-            /*
-            List<LLVMCode> llvmCode = block.getLLVMCode();
-            for (LLVMCode code : llvmCode) {
-               if (code.isMarked() && (!code.isRemoved())) {
-                  block.addARMCode(code.generateArmCode());
-               }
-            }*/
+            Compiler.printStringToFile(block.getBlockId() + ": \n");
             for (ARMCode code : block.getARMCode()) {
                String codeString = code.toString();
                if (codeString != null && codeString.length() > 0 && code.isEnabled()) {
-                  printStringToFile("\t" + code);
+                  Compiler.printStringToFile("\t" + code);
                }
             }
             if (!block.isClosed() && !block.getBlockId().equals(funcExitBlockId))
             {
-               printStringToFile("\tb ." + funcExitBlockId + "\n");
+               Compiler.printStringToFile("\tb ." + funcExitBlockId + "\n");
             }
 
          }
-         printStringToFile("\t.size " + func.getName() + ", .-" + func.getName() + "\n");
+         Compiler.printStringToFile("\t.size " + func.getName() + ", .-" + func.getName() + "\n");
       } else {
          for (LLVMBlockType block : blockList) {
             if (block.getPredecessors().size() == 0 && !block.isEntry() 
@@ -467,18 +424,18 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                continue;
             }
             globalBlockList.add(block);
-            printStringToFile(block.getBlockId() + ": \n");
+            Compiler.printStringToFile(block.getBlockId() + ": \n");
             List<LLVMCode> llvmCode = block.getLLVMCode();
             for (LLVMCode code : llvmCode) {
                if (code.isMarked() && (!code.isRemoved())) {
-                  printStringToFile("\t" + code);
+                  Compiler.printStringToFile("\t" + code);
                }
             }
             if (!block.isClosed() && !block.getBlockId().equals(funcExitBlockId)) {
-               printStringToFile("\tbr label %" + funcExitBlockId + "\n");
+               Compiler.printStringToFile("\tbr label %" + funcExitBlockId + "\n");
             }
          }
-         printStringToFile("}\n\n");
+         Compiler.printStringToFile("}\n\n");
       }
       return startBlock;
    }
@@ -531,8 +488,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       if (target instanceof LvalueId) {
          String id = ((LvalueId)target).getId();
          if (sourceType instanceof LLVMReadExpressionType) {
-            String newRegId = "u" + Integer.toString(registerCounter++);
-            LLVMRegisterType newReg = new LLVMRegisterType("i32", newRegId);
+            LLVMRegisterType newReg = Compiler.createNewRegister("i32");
             LLVMCode readCode = ((LLVMReadExpressionType)sourceType).getSSAReadInstruction(newReg);
             block.add(readCode);
             newReg.setDef(readCode);
@@ -544,7 +500,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       }
       if (targetType instanceof LLVMRegisterType) {
          if (sourceType instanceof LLVMReadExpressionType) {
-            LLVMType tmpReg = createNewRegister("i32");
+            LLVMType tmpReg = Compiler.createNewRegister("i32");
             LLVMCode readCode = ((LLVMReadExpressionType)sourceType).getSSAReadInstruction(tmpReg);
             ((LLVMRegisterType)tmpReg).setDef(readCode);
             block.add(readCode);
@@ -810,15 +766,13 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             LLVMStructFieldEntry field = fieldsTable.get(id);
             String fieldPositionRep = field.getPositionRep();
             String fieldTypeRep = field.getTypeRep();
-            LLVMRegisterType tempReg = new LLVMRegisterType(fieldTypeRep + "*", "u" + Integer.toString(registerCounter++));
-            /* block.add("%" + tempReg + " = getelementptr " + typeRep + " %" + regName 
-                    + ", i1 0, " + fieldTypeRep + " " + fieldPositionRep + "\n"); */
+            LLVMRegisterType tempReg = Compiler.createNewRegister(fieldTypeRep + "*");
             regList.add(tempReg);
             LLVMGetPtrCode getPtrCode = new LLVMGetPtrCode(tempReg, leftType, fieldPositionRep);
             block.add(getPtrCode);
             tempReg.setDef(getPtrCode);
             addToUsesList(leftType, getPtrCode);
-            LLVMRegisterType resultReg = new LLVMRegisterType(fieldTypeRep, "u" + Integer.toString(registerCounter++));
+            LLVMRegisterType resultReg = Compiler.createNewRegister(fieldTypeRep);
             LLVMLoadCode loadCode = new LLVMLoadCode(tempReg, resultReg);
             block.add(loadCode);
             addToUsesList(tempReg, loadCode);
@@ -826,7 +780,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             regList.add(resultReg);
             return resultReg;
          } catch (Exception e) {
-            printStringToFile(id + ": IDENTIFIER NOT FOUND 2\n");
+            Compiler.printStringToFile(id + ": IDENTIFIER NOT FOUND 2\n");
          }
       }
       return new LLVMVoidType();
@@ -874,7 +828,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
 
          if (!returnTypeRep.equals("void")) {
-            LLVMRegisterType returnReg = new LLVMRegisterType(returnTypeRep, "u" + Integer.toString(registerCounter++));
+            LLVMRegisterType returnReg = Compiler.createNewRegister(returnTypeRep);
             LLVMCallCode callCode = new LLVMCallCode(name, params, visitedArgs, returnReg);
             for (LLVMType arg : visitedArgs){
                addToUsesList(arg, callCode);
@@ -891,7 +845,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             }
          }
       } catch (IdentifierNotFoundException exc) {
-         printStringToFile("IDENTIFIER NOT FOUND 3\n");
+         Compiler.printStringToFile("IDENTIFIER NOT FOUND 3\n");
       }
       return new LLVMVoidType();
    }
@@ -967,9 +921,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             LLVMStructFieldEntry field = fieldsTable.get(id);
             String fieldPositionRep = field.getPositionRep();
             String fieldTypeRep = field.getTypeRep();
-            LLVMRegisterType tempReg = new LLVMRegisterType(fieldTypeRep, "u" + Integer.toString(registerCounter++));
-            // block.add("%" + tempReg + " = getelementptr " + typeRep + " %" + regName 
-            //         + ", i1 0, " + fieldTypeRep + " " + fieldPositionRep + "\n");
+            LLVMRegisterType tempReg = Compiler.createNewRegister(fieldTypeRep);
             LLVMGetPtrCode getPtrCode = new LLVMGetPtrCode(tempReg, leftType, fieldPositionRep);
             block.add(getPtrCode);
             tempReg.setDef(getPtrCode);
@@ -977,7 +929,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             regList.add(tempReg);
             return tempReg;
          } catch (Exception e) {
-            printStringToFile(id + ": IDENTIFIER NOT FOUND 1\n");
+            Compiler.printStringToFile(id + ": IDENTIFIER NOT FOUND 1\n");
          }
       }
       return new LLVMVoidType();
@@ -1037,23 +989,6 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       return;
    }
 
-   private void printStringToFile(String s)
-   {
-      if (output != null) {
-         System.out.print(s);
-         try {
-            bufferedWriter.write(s);
-         } catch (Exception e) {
-            e.printStackTrace();
-            try {
-               bufferedWriter.close();
-            } catch (Exception exc) {
-            }
-         }
-      }
-   }
-
-
    //SSA methods
    
    private void writeVariable(String variable, LLVMBlockType block, LLVMType value)
@@ -1091,7 +1026,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    {
       if (Compiler.getGlobalVariablesMap().containsKey(variable)) {
          String typeRep = Compiler.getGlobalVariablesMap().get(variable);
-         LLVMRegisterType resultReg = createNewRegister(typeRep);
+         LLVMRegisterType resultReg = Compiler.createNewRegister(typeRep);
          LLVMLoadCode loadCode = new LLVMLoadCode(new LLVMRegisterType(typeRep + "*", "@" + variable), resultReg);
          block.add(loadCode);
          ((LLVMRegisterType)resultReg).setDef(loadCode);
@@ -1117,7 +1052,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       LLVMType val;
       if (!block.isSealed()) {
          LLVMPhiType phi = new LLVMPhiType(block);
-         LLVMRegisterType reg = createNewRegister(null);
+         LLVMRegisterType reg = Compiler.createNewRegister(null);
          phi.setRegister(reg);
          writePhiVariable(variable, block, phi);
          String t = getValTypeFromPredecessors(block, variable);
@@ -1129,7 +1064,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          val =  readVariableCore(variable, block.getPredecessors().get(0));
       } else {
          LLVMPhiType phi = new LLVMPhiType(block);
-         LLVMRegisterType reg = createNewRegister("i32");
+         LLVMRegisterType reg = Compiler.createNewRegister("i32");
          phi.setRegister(reg);
          writePhiVariable(variable, block, phi);
          writeVariable(variable,block,reg);
@@ -1197,18 +1132,6 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       block.seal();
    }
 
-   public static LLVMRegisterType createNewRegister(String type)
-   {
-      String regId = "u" + Integer.toString(registerCounter++);
-      return new LLVMRegisterType(type, regId);
-   }
-
-   public static LLVMRegisterType createNewPhiDefRegister(String type)
-   {
-      String regId = "_phi_u" + Integer.toString(registerCounter++);
-      return new LLVMRegisterType(type, regId);
-   }
-
    private void addToUsesList(LLVMType reg, LLVMCode c){
       if (reg instanceof LLVMRegisterType){
          ((LLVMRegisterType)reg).addUse(c);
@@ -1245,7 +1168,6 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                SSCPValue val = valueTable.get(m);
                SSCPValue resVal = evaluate(use, valueTable);
                if (resVal != null && (resVal instanceof SSCPIntConstant) && (val instanceof SSCPIntConstant) && !resVal.equals(val)){
-                  System.out.println(m+" not constant");
                   resVal = new SSCPBottom();
                }
                if ((resVal != null)  && !(resVal.equals(val))) {

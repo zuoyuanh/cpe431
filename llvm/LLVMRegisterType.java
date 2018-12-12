@@ -82,7 +82,7 @@ public class LLVMRegisterType implements LLVMType
    @Override
    public String toString()
    {
-      if (SSAVisitor.generateARM) {
+      if (Compiler.generateARM) {
          if (allocatedARMRegister != null) {
             return allocatedARMRegister.toString();
          } else {

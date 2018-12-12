@@ -1,5 +1,9 @@
 package llvm;
 
+import ast.Program;
+import java.io.File;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.util.Map;
 import java.util.Set;
 import java.util.List;
@@ -9,7 +13,15 @@ import java.util.ArrayList;
 
 public class Compiler
 {
+   public static final int PARAM_REG_NUMS = 4;
+
+   public static boolean generateARM = true;
+
+   private static File output;
+   private static BufferedWriter bufferedWriter;
+
    private static int currentOffset;
+   private static int registerCounter = 0;
    private static Set<ARMRegister> allocatedARMRegister;
    private static Map<String, Integer> localVariablesMap;
    private static ARMPushPopCode popCalleeSavedRegisterCode;
@@ -17,6 +29,68 @@ public class Compiler
    private static ARMBinaryOperationCode resetStackPointerToSavedRegsCode;
    private static Map<String, String> originalGlobalVariablesMap = new HashMap<String, String>();
    private static Map<String, String> globalVariablesMap = null;
+
+   public static void start(String filename, Program program, boolean outputLLVM)
+   {
+      if (outputLLVM) {
+         resetCompiler();
+         generateARM = false;
+         String llvmOutputFileName = filename.substring(0, filename.lastIndexOf('.')) + ".ll";
+         setOutput(llvmOutputFileName);
+         SSAVisitor visitor = new SSAVisitor();
+         visitor.visit(program);
+         closeOutput();
+      }
+      resetCompiler();
+      generateARM = true;
+      String ssaOutputFileName = filename.substring(0, filename.lastIndexOf('.')) + ".s";
+      setOutput(ssaOutputFileName);
+      SSAVisitor visitor = new SSAVisitor();
+      visitor.visit(program);
+      closeOutput();
+   }
+
+   private static void setOutput(String outputFileName)
+   {
+      output = new File(outputFileName);
+      try {
+         if (output != null) {
+            bufferedWriter = new BufferedWriter(new FileWriter(output));
+         }
+      } catch (Exception e) {
+         System.out.println("cannot write to file");
+      }
+   }
+
+   private static void closeOutput()
+   {
+      try {
+         bufferedWriter.close();
+      } catch (Exception e) {
+      }
+   }
+
+   private static void resetCompiler()
+   {
+      registerCounter = 0;
+   }
+
+   public static LLVMRegisterType createNewRegister(String type)
+   {
+      String regId = "u" + Integer.toString(registerCounter++);
+      return new LLVMRegisterType(type, regId);
+   }
+
+   public static String nextNewRegisterId()
+   {
+      return "u" + Integer.toString(registerCounter++);
+   }
+
+   public static LLVMRegisterType createNewPhiDefRegister(String type)
+   {
+      String regId = "_phi_u" + Integer.toString(registerCounter++);
+      return new LLVMRegisterType(type, regId);
+   }
    
    private static void initializeLocalVariableMap()
    {
@@ -126,5 +200,20 @@ public class Compiler
    public static void setGlobalVariablesMap(Map<String, String> map)
    {
       globalVariablesMap = map;
+   }
+
+   public static void printStringToFile(String s)
+   {
+      if (output != null) {
+         try {
+            bufferedWriter.write(s);
+         } catch (Exception e) {
+            e.printStackTrace();
+            try {
+               bufferedWriter.close();
+            } catch (Exception exc) {
+            }
+         }
+      }
    }
 }

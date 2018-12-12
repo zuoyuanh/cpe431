@@ -51,17 +51,17 @@ public class LLVMCode
       String opnd = opndType.toString();
       LLVMRegisterType res;
       if (originalType.equals("i32") && expectedType.equals("i1")) {
-         String tmpRegId = "u" + Integer.toString((SSAVisitor.registerCounter)++);
+         String tmpRegId = Compiler.nextNewRegisterId();
          typeConversions.add("%" + tmpRegId + " = trunc " + originalType 
                             + " " + opnd + " to " + expectedType + "\n");
          res =  new LLVMRegisterType(expectedType, tmpRegId);
       } else if (originalType.equals("i1") && expectedType.equals("i32")) {
-         String tmpRegId = "u" + Integer.toString((SSAVisitor.registerCounter)++);
+         String tmpRegId = Compiler.nextNewRegisterId();
          typeConversions.add("%" + tmpRegId + " = zext " + originalType 
                             + " " + opnd + " to " + expectedType + "\n");
          res =  new LLVMRegisterType(expectedType, tmpRegId);
       } else {
-         String tmpRegId = "u" + Integer.toString((SSAVisitor.registerCounter)++);
+         String tmpRegId = Compiler.nextNewRegisterId();
          typeConversions.add("%" + tmpRegId + " = bitcast " + originalType 
                             + " " + opnd + " to " + expectedType + "\n");
          res =  new LLVMRegisterType(expectedType, tmpRegId);
@@ -179,7 +179,7 @@ public class LLVMCode
          if (i >= -256 && i < 65535) {
             return p;
          } else {
-            LLVMRegisterType resReg = SSAVisitor.createNewRegister("i32");
+            LLVMRegisterType resReg = Compiler.createNewRegister("i32");
             armCode.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":lower16:" + v), ARMMoveCode.Operator.MOVW, 2));
             armCode.add(new ARMMoveCode(resReg, new LLVMPrimitiveType("i32", ":upper16:" + v), ARMMoveCode.Operator.MOVT, 3));
             return resReg;
@@ -208,7 +208,7 @@ public class LLVMCode
          if (i > -256 && i < 256) {
             return p;
          } else {
-            LLVMRegisterType resReg = SSAVisitor.createNewRegister("i32");
+            LLVMRegisterType resReg = Compiler.createNewRegister("i32");
             LLVMType opnd = getOperand(t);
             armCode.add(new ARMMoveCode(resReg, opnd, ARMMoveCode.Operator.MOV, 4));
             return resReg;
@@ -221,7 +221,7 @@ public class LLVMCode
    public LLVMRegisterType getReg(LLVMType t)
    {
       if (t instanceof LLVMRegisterType) return (LLVMRegisterType)t;
-      LLVMRegisterType resReg = SSAVisitor.createNewRegister("i32");
+      LLVMRegisterType resReg = Compiler.createNewRegister("i32");
       if (t instanceof LLVMPrimitiveType) {
          LLVMPrimitiveType p = (LLVMPrimitiveType)t;
          String v = p.getValueRep();

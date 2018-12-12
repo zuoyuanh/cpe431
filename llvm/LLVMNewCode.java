@@ -13,7 +13,7 @@ public class LLVMNewCode extends LLVMCode
       super();
       this.size = size;
       this.structTypeRep = structTypeRep;
-      this.intermediatorReg = SSAVisitor.createNewRegister("i8*");
+      this.intermediatorReg = Compiler.createNewRegister("i8*");
       this.resultReg = typeConverter("i8*", structTypeRep + "*", intermediatorReg);
    }
 

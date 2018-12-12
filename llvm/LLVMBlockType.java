@@ -130,7 +130,7 @@ public class LLVMBlockType implements LLVMType
 
    public String getBlockId()
    {
-      if (SSAVisitor.generateARM) {
+      if (Compiler.generateARM) {
          return "." + blockId;
       }
       return blockId;

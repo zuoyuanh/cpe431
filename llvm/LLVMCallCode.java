@@ -88,13 +88,13 @@ public class LLVMCallCode extends LLVMCode
    public List<ARMCode> generateArmCode()
    {
       for (int i=0; i<args.size(); i++) {
-         if (i < SSAVisitor.PARAM_REG_NUMS) {
+         if (i < Compiler.PARAM_REG_NUMS) {
             armCode.add(new ARMMoveCode(ARMCode.argRegs[i], args.get(i), ARMMoveCode.Operator.MOV, 29));
          } else {
             LLVMType argType = args.get(i);
             List<LLVMRegisterType> pushList = new ArrayList<LLVMRegisterType>();
             if (argType instanceof LLVMPrimitiveType) {
-               LLVMRegisterType tmpReg = SSAVisitor.createNewRegister(((LLVMPrimitiveType)argType).getTypeRep());
+               LLVMRegisterType tmpReg = Compiler.createNewRegister(((LLVMPrimitiveType)argType).getTypeRep());
                armCode.add(new ARMMoveCode(tmpReg, argType, ARMMoveCode.Operator.MOV, 30));
                pushList.add(tmpReg);
                armCode.add(new ARMPushPopCode(pushList, ARMPushPopCode.Operator.PUSH));

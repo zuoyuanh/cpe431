@@ -6,3 +6,4 @@
 *.s
 *.myout
 a.out
+*.myout.longer

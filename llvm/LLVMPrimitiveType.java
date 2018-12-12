@@ -23,7 +23,7 @@ public class LLVMPrimitiveType implements LLVMType
 
    public String getValueRep()
    {
-      if (SSAVisitor.generateARM) {
+      if (Compiler.generateARM) {
          if (valueRep != null && valueRep.equals("null")) {
             return "0";
          }
@@ -38,7 +38,7 @@ public class LLVMPrimitiveType implements LLVMType
 
    public String toString()
    {
-      if (SSAVisitor.generateARM) {
+      if (Compiler.generateARM) {
          if (valueRep != null && valueRep.equals("null")) {
             return "0";
          }

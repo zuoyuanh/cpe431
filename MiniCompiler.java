@@ -4,8 +4,7 @@ import org.antlr.v4.runtime.tree.*;
 import java.io.*;
 import javax.json.JsonValue;
 import staticChecker.*;
-// import llvm.StackLLVMVisitor;
-import llvm.SSAVisitor;
+import llvm.Compiler;
 
 public class MiniCompiler
 {
@@ -32,7 +31,6 @@ public class MiniCompiler
          
          MiniToJsonVisitor jsonVisitor = new MiniToJsonVisitor();
          JsonValue json = jsonVisitor.visit(tree);
-         System.out.println(json);
          
          /*
             This visitor will build an object representation of the AST
@@ -41,50 +39,12 @@ public class MiniCompiler
          MiniToAstProgramVisitor programVisitor =
             new MiniToAstProgramVisitor();
          ast.Program program = programVisitor.visit(tree);
-         //TypeVisitor typeVisitor = new TypeVisitor();
-         //typeVisitor.visit(program);
-         
-         String llvmOutputFileName = _inputFile.substring(0, _inputFile.lastIndexOf('.')) + ".s";
-         File f = null;
+         TypeVisitor typeVisitor = new TypeVisitor();
+         typeVisitor.visit(program);
 
          if (printLLVMProgram) {
-            f = new File(llvmOutputFileName);
-            System.out.println("--- Generating LLVM Code ---");
+            Compiler.start(_inputFile, program, true);
          }
-
-         SSAVisitor ssaLLVMVisitor = new SSAVisitor(f);
-         ssaLLVMVisitor.visit(program);
-
-         /* f = null;
-         if (printStackLLVMProgram) {
-            f = new File(llvmOutputFileName);
-            System.out.println("--- Generating Stack LLVM Code ---");
-         }
-         StackLLVMVisitor llvmVisitor = new StackLLVMVisitor(f);
-         llvmVisitor.visit(program);
-         System.out.println("\n--- Showing CFG ---");
-         for (llvm.LLVMBlockType b : llvmVisitor.getGlobalBlockList()){
-            System.out.println("block: "+ b.toString());
-            for (llvm.LLVMBlockType s : b.getSuccessors())
-               System.out.println("successor: "+ s.toString());
-         } */
-
-
-         /* System.out.println("--- Generate CFG ---");
-         CFGGenerator cfg = new CFGGenerator();
-         cfg.visit(program, null, null);
-         for (Block b : cfg.blockList){
-            System.out.println("block: "+ b.toString());
-            for (Block s : b.getSuccessors())
-               System.out.println("successor: "+ s.toString());
-         } */
-
-         System.out.println();
-         /*
-         System.out.println("--- Return Check ---");
-         ReturnVisitor returnVisitor = new ReturnVisitor();
-         returnVisitor.visit(program);
-         */
 
       }
    }

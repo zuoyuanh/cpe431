@@ -1,300 +1,173 @@
-	.arch armv7-a
-	.comm   globalfoo,4,4
+target triple="i686"
+%struct.simple = type {i32}
+%struct.foo = type {i32, i32, %struct.simple*}
 
-	.text
-	.align 2
-	.global tailrecursive
-tailrecursive:
-.LU1: 
-	push {fp, lr}
-	add fp, sp, #4
-	mov r1, r0
-	mov r0, #0
-	mov r0, #0
-	cmp r1, r0
-	movle r0, #1
-	cmp r0, #1
-	beq .LU2
-	b .LU3
-.LU2: 
-	b .LU0
-.LU3: 
-	b .LU4
-.LU4: 
-	sub r0, r1, #1
-	bl tailrecursive
-	b .LU0
-.LU0: 
-	pop {fp, pc}
-	.size tailrecursive, .-tailrecursive
-	.align 2
-	.global add
-add:
-.LU6: 
-	push {fp, lr}
-	add fp, sp, #4
-	mov r2, r0
-	add r0, r2, r0
-	b .LU5
-.LU5: 
-	pop {fp, pc}
-	.size add, .-add
-	.align 2
-	.global domath
-domath:
-.LU8: 
-	push {fp, lr}
-	add fp, sp, #4
-	push {r4, r5, r6, r7, r8}
-	sub sp, sp, #8
-	mov r4, r0
-	mov r5, r4
-	movw r0, #12
-	bl malloc
-	mov r2, r0
-	mov r10, r2
-	str r10, [fp, #-8]
-	mov r8, r2
-	add r1, r2, #8
-	movw r0, #4
-	bl malloc
-	str r0, [r1]
-	movw r0, #12
-	bl malloc
-	mov r3, r0
-	mov r6, r3
-	mov r7, r3
-	add r1, r3, #8
-	movw r0, #4
-	bl malloc
-	str r0, [r1]
-	add r0, r2, #0
-	str r4, [r0]
-	add r0, r3, #0
-	mov r1, #3
-	str r1, [r0]
-	add r0, r2, #8
-	ldr r0, [r0]
-	add r1, r0, #0
-	add r0, r2, #0
-	ldr r0, [r0]
-	str r0, [r1]
-	add r0, r3, #8
-	ldr r0, [r0]
-	add r1, r0, #0
-	add r0, r3, #0
-	ldr r0, [r0]
-	str r0, [r1]
-	mov r0, #0
-	mov r0, #0
-	cmp r4, r0
-	movgt r0, #1
-	cmp r0, #1
-	beq .LU9
-	b .LU10
-.LU9: 
-	mov r3, r5
-	mov r0, r7
-	mov r6, r0
-	mov r7, r0
-	mov r1, r8
-	mov r10, r1
-	str r10, [fp, #-8]
-	mov r8, r1
-	add r0, r0, #8
-	ldr r0, [r0]
-	add r0, r0, #0
-	ldr r2, [r0]
-	add r0, r1, #0
-	ldr r0, [r0]
-	mov r0, r2
-	bl add
-	sub r1, r3, #1
-	mov r5, r1
-	mov r0, #0
-	mov r0, #0
-	cmp r1, r0
-	movgt r0, #1
-	cmp r0, #1
-	beq .LU9
-	b .LU10
-.LU10: 
-	mov r1, r6
-	ldr r9, [fp, #-8]
-	mov r0, r9
-	bl free
-	mov r0, r1
-	bl free
-	b .LU7
-.LU7: 
-	pop {r4, r5, r6, r7, r8}
-	pop {fp, pc}
-	.size domath, .-domath
-	.align 2
-	.global objinstantiation
-objinstantiation:
-.LU12: 
-	push {fp, lr}
-	add fp, sp, #4
-	mov r1, r0
-	mov r2, r1
-	mov r0, #0
-	mov r0, #0
-	cmp r1, r0
-	movgt r0, #1
-	cmp r0, #1
-	beq .LU13
-	b .LU14
-.LU13: 
-	mov r1, r2
-	movw r0, #12
-	bl malloc
-	bl free
-	sub r1, r1, #1
-	mov r2, r1
-	mov r0, #0
-	mov r0, #0
-	cmp r1, r0
-	movgt r0, #1
-	cmp r0, #1
-	beq .LU13
-	b .LU14
-.LU14: 
-	b .LU11
-.LU11: 
-	pop {fp, pc}
-	.size objinstantiation, .-objinstantiation
-	.align 2
-	.global ackermann
-ackermann:
-.LU16: 
-	push {fp, lr}
-	add fp, sp, #4
-	mov r3, r0
-	mov r0, #0
-	mov r0, #0
-	cmp r3, r0
-	moveq r0, #1
-	cmp r0, #1
-	beq .LU17
-	b .LU18
-.LU17: 
-	add r0, r1, #1
-	b .LU15
-.LU18: 
-	b .LU19
-.LU19: 
-	mov r0, #0
-	mov r0, #0
-	cmp r1, r0
-	moveq r0, #1
-	cmp r0, #1
-	beq .LU20
-	b .LU21
-.LU20: 
-	sub r0, r3, #1
-	mov r1, #1
-	bl ackermann
-	b .LU15
-.LU21: 
-	sub r2, r3, #1
-	sub r0, r1, #1
-	mov r1, r0
-	mov r0, r3
-	bl ackermann
-	mov r1, r0
-	mov r0, r2
-	bl ackermann
-	b .LU15
-.LU15: 
-	pop {fp, pc}
-	.size ackermann, .-ackermann
-	.align 2
-	.global main
-main:
-.LU24: 
-	push {fp, lr}
-	add fp, sp, #4
-	push {r4, r5, r6}
-	movw r1, #:lower16:.read_scratch
-	movt r1, #:upper16:.read_scratch
-	movw r0, #:lower16:.READ_FMT
-	movt r0, #:upper16:.READ_FMT
-	bl scanf
-	movw r5, #:lower16:.read_scratch
-	movt r5, #:upper16:.read_scratch
-	ldr r5, [r5]
-	movw r1, #:lower16:.read_scratch
-	movt r1, #:upper16:.read_scratch
-	movw r0, #:lower16:.READ_FMT
-	movt r0, #:upper16:.READ_FMT
-	bl scanf
-	movw r6, #:lower16:.read_scratch
-	movt r6, #:upper16:.read_scratch
-	ldr r6, [r6]
-	movw r1, #:lower16:.read_scratch
-	movt r1, #:upper16:.read_scratch
-	movw r0, #:lower16:.READ_FMT
-	movt r0, #:upper16:.READ_FMT
-	bl scanf
-	movw r3, #:lower16:.read_scratch
-	movt r3, #:upper16:.read_scratch
-	ldr r3, [r3]
-	movw r1, #:lower16:.read_scratch
-	movt r1, #:upper16:.read_scratch
-	movw r0, #:lower16:.READ_FMT
-	movt r0, #:upper16:.READ_FMT
-	bl scanf
-	movw r4, #:lower16:.read_scratch
-	movt r4, #:upper16:.read_scratch
-	ldr r4, [r4]
-	movw r1, #:lower16:.read_scratch
-	movt r1, #:upper16:.read_scratch
-	movw r0, #:lower16:.READ_FMT
-	movt r0, #:upper16:.READ_FMT
-	bl scanf
-	movw r2, #:lower16:.read_scratch
-	movt r2, #:upper16:.read_scratch
-	ldr r2, [r2]
-	mov r0, r5
-	bl tailrecursive
-	mov r1, r5
-	movw r0, #:lower16:.PRINTLN_FMT
-	movt r0, #:upper16:.PRINTLN_FMT
-	bl printf
-	mov r0, r6
-	bl domath
-	mov r1, r6
-	movw r0, #:lower16:.PRINTLN_FMT
-	movt r0, #:upper16:.PRINTLN_FMT
-	bl printf
-	mov r0, r3
-	bl objinstantiation
-	mov r1, r3
-	movw r0, #:lower16:.PRINTLN_FMT
-	movt r0, #:upper16:.PRINTLN_FMT
-	bl printf
-	mov r1, r2
-	mov r0, r4
-	bl ackermann
-	movw r0, #:lower16:.PRINTLN_FMT
-	movt r0, #:upper16:.PRINTLN_FMT
-	bl printf
-	b .LU23
-.LU23: 
-	mov r0, #0
-	pop {r4, r5, r6}
-	pop {fp, pc}
-	.size main, .-main
-	.section	.rodata
-	.align	2
-.PRINTLN_FMT:
-	.asciz	"%ld"
-	.align	2
-.PRINT_FMT:
-	.asciz	"%ld "
-	.align	2
-.READ_FMT:
-	.asciz	"%ld"
-	.comm	.read_scratch,4,4
-	.global	__aeabi_idiv
+@globalfoo = common global %struct.foo* null, align 8
+
+define void @tailrecursive(i32 %num)
+{
+LU1: 
+	%u0 = icmp sle i32 %num, 0
+	br i1 %u0, label %LU2, label %LU3
+LU2: 
+	br label %LU0
+LU3: 
+	br label %LU4
+LU4: 
+	%u3 = sub i32 %num, 1
+		call void @tailrecursive(i32 %u3)
+	br label %LU0
+LU0: 
+	ret void
+}
+
+define i32 @add(i32 %x, i32 %y)
+{
+LU6: 
+	%u4 = add i32 %x, %y
+	br label %LU5
+LU5: 
+	ret i32 %u4
+}
+
+define void @domath(i32 %num)
+{
+LU8: 
+	%u7 = call i8* @malloc(i32 12)
+	%u8 = bitcast i8* %u7 to %struct.foo*
+	%u9 = getelementptr %struct.foo* %u8, i1 0, i32 2
+	%u10 = call i8* @malloc(i32 4)
+	%u11 = bitcast i8* %u10 to %struct.simple*
+	store %struct.simple* %u11, %struct.simple** %u9
+	%u12 = call i8* @malloc(i32 12)
+	%u13 = bitcast i8* %u12 to %struct.foo*
+	%u14 = getelementptr %struct.foo* %u13, i1 0, i32 2
+	%u15 = call i8* @malloc(i32 4)
+	%u16 = bitcast i8* %u15 to %struct.simple*
+	store %struct.simple* %u16, %struct.simple** %u14
+	%u17 = getelementptr %struct.foo* %u8, i1 0, i32 0
+	store i32 %num, i32* %u17
+	%u18 = getelementptr %struct.foo* %u13, i1 0, i32 0
+	store i32 3, i32* %u18
+	%u19 = getelementptr %struct.foo* %u8, i1 0, i32 2
+	%u20 = load %struct.simple** %u19
+	%u21 = getelementptr %struct.simple* %u20, i1 0, i32 0
+	%u22 = getelementptr %struct.foo* %u8, i1 0, i32 0
+	%u23 = load i32* %u22
+	store i32 %u23, i32* %u21
+	%u24 = getelementptr %struct.foo* %u13, i1 0, i32 2
+	%u25 = load %struct.simple** %u24
+	%u26 = getelementptr %struct.simple* %u25, i1 0, i32 0
+	%u27 = getelementptr %struct.foo* %u13, i1 0, i32 0
+	%u28 = load i32* %u27
+	store i32 %u28, i32* %u26
+	%u29 = icmp sgt i32 %num, 0
+	br i1 %u29, label %LU9, label %LU10
+LU9: 
+	%u58 = phi i32 [%num, %LU8], [%u59, %LU9]
+	%u34 = phi %struct.foo* [%u13, %LU8], [%u34, %LU9]
+	%u31 = phi %struct.foo* [%u8, %LU8], [%u31, %LU9]
+	%u46 = getelementptr %struct.foo* %u34, i1 0, i32 2
+	%u47 = load %struct.simple** %u46
+	%u48 = getelementptr %struct.simple* %u47, i1 0, i32 0
+	%u49 = load i32* %u48
+	%u50 = getelementptr %struct.foo* %u31, i1 0, i32 0
+	%u51 = load i32* %u50
+		%u52 = call i32 @add(i32 %u49, i32 %u51)
+	%u59 = sub i32 %u58, 1
+	%u60 = icmp sgt i32 %u59, 0
+	br i1 %u60, label %LU9, label %LU10
+LU10: 
+	%u62 = phi %struct.foo* [%u13, %LU8], [%u34, %LU9]
+	%u61 = phi %struct.foo* [%u8, %LU8], [%u31, %LU9]
+		%u69 = bitcast %struct.foo* %u61 to i8*
+	call void @free(i8* %u69)
+		%u70 = bitcast %struct.foo* %u62 to i8*
+	call void @free(i8* %u70)
+	br label %LU7
+LU7: 
+	ret void
+}
+
+define void @objinstantiation(i32 %num)
+{
+LU12: 
+	%u71 = icmp sgt i32 %num, 0
+	br i1 %u71, label %LU13, label %LU14
+LU13: 
+	%u75 = phi i32 [%num, %LU12], [%u76, %LU13]
+	%u73 = call i8* @malloc(i32 12)
+	%u74 = bitcast i8* %u73 to %struct.foo*
+		%u80 = bitcast %struct.foo* %u74 to i8*
+	call void @free(i8* %u80)
+	%u76 = sub i32 %u75, 1
+	%u77 = icmp sgt i32 %u76, 0
+	br i1 %u77, label %LU13, label %LU14
+LU14: 
+	br label %LU11
+LU11: 
+	ret void
+}
+
+define i32 @ackermann(i32 %m, i32 %n)
+{
+LU16: 
+	%u81 = icmp eq i32 %m, 0
+	br i1 %u81, label %LU17, label %LU18
+LU17: 
+	%u82 = add i32 %n, 1
+	br label %LU15
+LU18: 
+	br label %LU19
+LU19: 
+	%u83 = icmp eq i32 %n, 0
+	br i1 %u83, label %LU20, label %LU21
+LU20: 
+	%u84 = sub i32 %m, 1
+		%u85 = call i32 @ackermann(i32 %u84, i32 1)
+	br label %LU15
+LU21: 
+	%u86 = sub i32 %m, 1
+	%u87 = sub i32 %n, 1
+		%u88 = call i32 @ackermann(i32 %m, i32 %u87)
+		%u89 = call i32 @ackermann(i32 %u86, i32 %u88)
+	br label %LU15
+LU15: 
+	%u90 = phi i32 [%u82, %LU17], [%u85, %LU20], [%u89, %LU21]
+	ret i32 %u90
+}
+
+define i32 @main()
+{
+LU24: 
+	call i32 (i8*, ...)* @scanf(i8* getelementptr inbounds ([4 x i8]* @.read, i32 0, i32 0), i32* @.read_scratch)
+	%u92 = load i32* @.read_scratch
+	call i32 (i8*, ...)* @scanf(i8* getelementptr inbounds ([4 x i8]* @.read, i32 0, i32 0), i32* @.read_scratch)
+	%u93 = load i32* @.read_scratch
+	call i32 (i8*, ...)* @scanf(i8* getelementptr inbounds ([4 x i8]* @.read, i32 0, i32 0), i32* @.read_scratch)
+	%u94 = load i32* @.read_scratch
+	call i32 (i8*, ...)* @scanf(i8* getelementptr inbounds ([4 x i8]* @.read, i32 0, i32 0), i32* @.read_scratch)
+	%u95 = load i32* @.read_scratch
+	call i32 (i8*, ...)* @scanf(i8* getelementptr inbounds ([4 x i8]* @.read, i32 0, i32 0), i32* @.read_scratch)
+	%u96 = load i32* @.read_scratch
+		call void @tailrecursive(i32 %u92)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u92)
+		call void @domath(i32 %u93)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u93)
+		call void @objinstantiation(i32 %u94)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u94)
+		%u97 = call i32 @ackermann(i32 %u95, i32 %u96)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u97)
+	br label %LU23
+LU23: 
+	ret i32 0
+}
+
+declare i8* @malloc(i32)
+declare void @free(i8*)
+declare i32 @printf(i8*, ...)
+declare i32 @scanf(i8*, ...)
+@.println = private unnamed_addr constant [5 x i8] c"%ld\0A\00", align 1
+@.print = private unnamed_addr constant [5 x i8] c"%ld \00", align 1
+@.read = private unnamed_addr constant [4 x i8] c"%ld\00", align 1
+@.read_scratch = common global i32 0, align 8

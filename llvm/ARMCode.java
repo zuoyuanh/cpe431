@@ -36,9 +36,6 @@ public class ARMCode
    public static Set<ARMRegister> systemRegsSet = new HashSet<ARMRegister>(systemRegs);
    public static Set<ARMRegister> argRegsSet = new HashSet<ARMRegister>(new ArrayList<ARMRegister>(Arrays.asList(argRegs)));
 
-   // User defined convenience registers (virtual)
-   public static LLVMRegisterType ut = new LLVMRegisterType("i32", "ut");
-
    private LLVMRegisterType def;
    private List<LLVMRegisterType> uses;
    private boolean enabled = true;

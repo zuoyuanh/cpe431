@@ -19,7 +19,7 @@ public class LLVMBinaryOperationCode extends LLVMCode
       this.operator = operator;
       this.leftType = leftType;
       this.rightType = rightType;
-      this.resultReg = SSAVisitor.createNewRegister(binaryOperationResultType(operator));
+      this.resultReg = Compiler.createNewRegister(binaryOperationResultType(operator));
    }
 
    private String binaryOperationOpcode(BinaryExpression.Operator operator)
