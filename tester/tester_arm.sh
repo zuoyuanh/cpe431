@@ -19,18 +19,32 @@ do
             if [[ $(diff "../../benchmarks/$filename/output" $filename.myout) ]]; then
                echo "diff shows difference"
             else
-               echo -n "shorter passed, "
+               echo "passed"
             fi
          fi
-         if [[ $(./$filename.out < ../../benchmarks/$filename/input.longer > $filename.myout.longer) ]]; then
-            echo "runtime error"
-         else
-            if [[ $(diff "../../benchmarks/$filename/output.longer" $filename.myout.longer) ]]; then
-               echo "diff shows difference"
-            else
-               echo "longer passed "
-            fi
-         fi
+      fi
+   fi
+
+   cd ../..
+
+   cd tester
+done
+
+echo "Testing ARM assembly code with longer inputs..."
+
+cat test_cases_names.txt | while read filename
+do
+   echo -n "case $filename... "
+
+   cd ../tests/test_m2
+
+   if [[ $(./$filename.out < ../../benchmarks/$filename/input.longer > $filename.myout.longer) ]]; then
+      echo "runtime error"
+   else
+      if [[ $(diff "../../benchmarks/$filename/output.longer" $filename.myout.longer) ]]; then
+         echo "diff shows difference"
+      else
+         echo -n "passed"
       fi
    fi
 

@@ -52,10 +52,7 @@ fun takealltypes(int i, bool b, struct thing s) void
 fun tonofargs(int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8)
 void
 {
-	if (a5 == 5) { print 1 endl; } else { print 0; print a5 endl; }
-	if (a6 == 6) { print 1 endl; } else { print 0; print a6 endl; }
-	if (a7 == 7) { print 1 endl; } else { print 0; print a7 endl; }
-	if (a8 == 8) { print 1 endl; } else { print 0; print a8 endl; }
+
 }
 
 fun returnint(int ret)             int          { return ret; }

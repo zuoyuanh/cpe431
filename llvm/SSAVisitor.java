@@ -46,7 +46,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
     * if set to be true, the visitor will generate ARM code
     * otherwise the visitor will generate LLVM code
     */
-   public static boolean generateARM = false;
+   public static boolean generateARM = true;
 
    public SSAVisitor(File output)
    {

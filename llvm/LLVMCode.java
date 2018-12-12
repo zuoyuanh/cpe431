@@ -176,7 +176,7 @@ public class LLVMCode
          } catch (Exception e) {
             System.out.println("primitive can't be cast to int");
          }
-         if (i > -9999 && i < 9999) {
+         if (i >= -256 && i < 65535) {
             return p;
          } else {
             LLVMRegisterType resReg = SSAVisitor.createNewRegister("i32");
@@ -234,7 +234,7 @@ public class LLVMCode
          } catch (Exception e) {
             System.out.println("primitive can't be cast to int");
          }
-         if (i < 65535) {
+         if (i >= -256 && i < 65535) {
             armCode.add(new ARMMoveCode(resReg, t, ARMMoveCode.Operator.MOV, 5));
             return resReg;
          } else {

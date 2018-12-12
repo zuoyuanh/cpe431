@@ -54,7 +54,7 @@ public class Compiler
 
    public static int getLocalVariableStackSize()
    {
-      return localVariablesMap.keySet().size() * 8;
+      return localVariablesMap.keySet().size() * 4;
    }
 
    public static void printLocalVariablesMap()
