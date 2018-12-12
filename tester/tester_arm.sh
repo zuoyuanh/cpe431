@@ -19,7 +19,7 @@ do
             if [[ $(diff "../../benchmarks/$filename/output" $filename.myout) ]]; then
                echo "diff shows difference"
             else
-               echo "passed"
+               echo " [passed]"
             fi
          fi
       fi
@@ -30,7 +30,9 @@ do
    cd tester
 done
 
+echo
 echo "Testing ARM assembly code with longer inputs..."
+echo "============================================="
 
 cat test_cases_names.txt | while read filename
 do
@@ -44,7 +46,7 @@ do
       if [[ $(diff "../../benchmarks/$filename/output.longer" $filename.myout.longer) ]]; then
          echo "diff shows difference"
       else
-         echo -n "passed"
+         echo " [passed]"
       fi
    fi
 
