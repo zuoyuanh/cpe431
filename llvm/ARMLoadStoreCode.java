@@ -8,12 +8,29 @@ public class ARMLoadStoreCode extends ARMCode
    private LLVMRegisterType address;
    private String offset;
 
-   public ARMLoadStoreCode(LLVMRegisterType reg, LLVMRegisterType address,  Operator operator)
+   public ARMLoadStoreCode(LLVMRegisterType reg, LLVMRegisterType address, Operator operator)
    {
       super();
       this.address = address;
       this.reg = reg;
       this.operator = operator;
+      this.offset = null;
+      if (operator == Operator.LDR) {
+         addUse(address);
+         setDef(reg);
+      } else {
+         addUse(reg);
+         addUse(address); 
+      }
+   }
+
+   public ARMLoadStoreCode(LLVMRegisterType reg, LLVMRegisterType address, Operator operator, String offset)
+   {
+      super();
+      this.address = address;
+      this.reg = reg;
+      this.operator = operator;
+      this.offset = offset;
       if (operator == Operator.LDR) {
          addUse(address);
          setDef(reg);
@@ -43,10 +60,15 @@ public class ARMLoadStoreCode extends ARMCode
    public String toString()
    {
       String res = "";
+      String spill = "";
       String regString = "";
       String addressRep = "";
-      if ((reg).getAllocatedARMRegister() == null) {
-         res = loadSpill(res, ARMCode.r9, reg);
+      if (!(reg instanceof ARMRegister) && reg.getAllocatedARMRegister() == null) {
+         if (operator == Operator.LDR) {
+            spill = storeSpill(res, ARMCode.r9, reg);
+         } else {
+            res = loadSpill(spill, ARMCode.r9, reg);
+         }
          regString = ARMCode.r9.toString();
       } else {
          regString = reg.toString();
@@ -59,12 +81,19 @@ public class ARMLoadStoreCode extends ARMCode
       } else {
          if (address instanceof ARMRegister || address.getAllocatedARMRegister() != null) {
             addressRep = address.toString();
+            if (offset != null) {
+               addressRep += ", #" + offset;
+            }
          } else {
             int offset = Compiler.getLocalVariableOffset(address.getId());
+            if (offset == -1 && operator == Operator.STR) {
+               Compiler.putLocalVariable(address.getId());
+               offset = Compiler.getLocalVariableOffset(address.getId());
+            }
             addressRep = "sp, #" + offset + "";
          }
       }
-      res += operatorToString(operator) + " " + regString + ", [" + addressRep + "]\n";
+      res += operatorToString(operator) + " " + regString + ", [" + addressRep + "]\n" + spill;
       return res;
    }
 }

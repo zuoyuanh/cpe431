@@ -229,6 +229,9 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       functionSetup.add(new ARMPushPopCode(pushList, ARMPushPopCode.Operator.PUSH));
       functionSetup.add(new ARMBinaryOperationCode(ARMCode.sp, new LLVMPrimitiveType("i32", "4"), ARMCode.fp, ARMBinaryOperationCode.Operator.ADD));
 
+      // Reset shared function info
+      Compiler.resetFunction();
+
       // Reset global map for current function
       Compiler.setGlobalVariablesMap(new HashMap<String, String>(Compiler.getOriginalGlobalVariablesMap()));
       for (Declaration local : locals) {
@@ -251,7 +254,8 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             LLVMRegisterType reg = new LLVMRegisterType(tTypeRep, "%" + originalName);
             writeVariable(originalName, startBlock, reg);
             if (paramCnt < PARAM_REG_NUMS) {
-               paramsDecls.add(new ARMMoveCode(reg, ARMCode.argRegs[paramCnt], ARMMoveCode.Operator.MOV, 49));
+               ARMMoveCode movCode = new ARMMoveCode(reg, ARMCode.argRegs[paramCnt], ARMMoveCode.Operator.MOV, 49);
+               paramsDecls.add(movCode);
             } else {
                overedRegisterList.add(0, reg);
             }
@@ -259,12 +263,11 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
       }
 
-      // TODO!!!
-      List<LLVMRegisterType> popList = new ArrayList<LLVMRegisterType>();
-      popList.add(ARMCode.ut);
+      int offset = 4;
       for (LLVMRegisterType reg : overedRegisterList) {
-         functionSetup.add(new ARMPushPopCode(popList, ARMPushPopCode.Operator.POP));
-         functionSetup.add(new ARMMoveCode(reg, ARMCode.ut, ARMMoveCode.Operator.MOV, 50));
+         Compiler.putLocalVariable(reg.getId());
+         paramsDecls.add(new ARMLoadStoreCode(reg, ARMCode.fp, ARMLoadStoreCode.Operator.LDR, offset + ""));
+         offset += 4;
       }
 
       startBlock.addToARMFront(paramsDecls);
@@ -351,8 +354,6 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       markUsefulInstructionInBlock(blockList);
       localVariableNumbering(startBlock);
 
-      Compiler.resetFunction();
-
       if (generateARM) {
          for (LLVMBlockType block : blockList) {
             Set<LLVMRegisterType> armGenSet = block.newArmGenSet(); 
@@ -372,7 +373,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                if (def != null) {
                   armKillSet.add(def);
                }
-               if (uses != null){
+               if (uses != null) {
                   for (LLVMRegisterType u : uses){
                      if (!armKillSet.contains(u)){
                         armGenSet.add(u);

@@ -1,7 +1,16 @@
-int m;
+fun t(int a, int b, int c, int d, int e, int f, int g, int h) void
+{
+   print a;
+   print b;
+   print c;
+   print d;
+   print e;
+   print f;
+   print g;
+   print h;
+}
 
 fun main() void
 {
-   m = 1;
-   print m;
+   t(1, 2, 3, 4, 5, 6, 7, 8);
 }

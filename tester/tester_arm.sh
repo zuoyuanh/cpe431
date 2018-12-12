@@ -19,7 +19,16 @@ do
             if [[ $(diff "../../benchmarks/$filename/output" $filename.myout) ]]; then
                echo "diff shows difference"
             else
-               echo "pass"
+               echo -n "shorter passed, "
+            fi
+         fi
+         if [[ $(./$filename.out < ../../benchmarks/$filename/input.longer > $filename.myout.longer) ]]; then
+            echo "runtime error"
+         else
+            if [[ $(diff "../../benchmarks/$filename/output.longer" $filename.myout.longer) ]]; then
+               echo "diff shows difference"
+            else
+               echo "longer passed "
             fi
          fi
       fi
