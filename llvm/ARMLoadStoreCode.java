@@ -54,7 +54,15 @@ public class ARMLoadStoreCode extends ARMCode
       if (address instanceof ARMRegister || address.getAllocatedARMRegister() != null) {
          addressRep = address.toString();
       } else {
-         addressRep = "sp, #" + Compiler.getLocalVariableOffset(address.getId());
+         int offset = Compiler.getLocalVariableOffset(address.getId());
+         if (offset != -1) {
+            addressRep = "sp, #" + offset + "";
+         } else {
+            if (Compiler.getOriginalGlobalVariablesMap().containsKey(address.getId().substring(1))) {
+               res += "ldr ip, =" + address.getId().substring(1) + "\n\t";
+               addressRep = "ip";
+            }
+         }
       }
       res += operatorToString(operator) + " " + regString + ", [" + addressRep + "]\n";
       return res;

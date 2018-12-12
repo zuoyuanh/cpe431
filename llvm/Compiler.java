@@ -15,6 +15,7 @@ public class Compiler
    private static ARMPushPopCode popCalleeSavedRegisterCode;
    private static ARMBinaryOperationCode resetStackPointerToFpCode;
    private static ARMBinaryOperationCode resetStackPointerToSavedRegsCode;
+   private static Map<String, String> originalGlobalVariablesMap = new HashMap<String, String>();
    
    private static void initializeLocalVariableMap()
    {
@@ -104,5 +105,15 @@ public class Compiler
    public static ARMBinaryOperationCode getResetStackPointerToSavedRegsCode()
    {
       return resetStackPointerToSavedRegsCode;
+   }
+
+   public static Map<String, String> getOriginalGlobalVariablesMap()
+   {
+      return originalGlobalVariablesMap;
+   }
+
+   public static void putIntoOriginalGlobalVariablesMap(String key, String value)
+   {
+      originalGlobalVariablesMap.put(key, value);
    }
 }

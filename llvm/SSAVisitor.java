@@ -40,7 +40,6 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
    private List<LLVMBlockType> globalBlockList;
 
-   private Map<String, String> originalGlobalVariablesMap = new HashMap<String, String>();
    private Map<String, String> globalVariablesMap = null;
 
    /**
@@ -111,7 +110,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                }
             }
             // writeVariable(varName, programBlock, new LLVMRegisterType(typeRep, "@" + varName));
-            originalGlobalVariablesMap.put(varName, typeRep);
+            Compiler.putIntoOriginalGlobalVariablesMap(varName, typeRep);
             printStringToFile("\n");
          }
       }
@@ -233,7 +232,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       functionSetup.add(new ARMBinaryOperationCode(ARMCode.sp, new LLVMPrimitiveType("i32", "4"), ARMCode.fp, ARMBinaryOperationCode.Operator.ADD));
 
       // Reset global map for current function
-      globalVariablesMap = new HashMap<String, String>(originalGlobalVariablesMap);
+      globalVariablesMap = new HashMap<String, String>(Compiler.getOriginalGlobalVariablesMap());
       for (Declaration local : locals) {
          LLVMType t = this.visit(local);
          if (t instanceof LLVMDeclType) {

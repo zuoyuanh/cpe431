@@ -26,6 +26,7 @@ public class ARMCode
    public static ARMRegister fp = new ARMRegister("fp");
    public static ARMRegister lr = new ARMRegister("lr");
    public static ARMRegister sp = new ARMRegister("sp");
+   public static ARMRegister ip = new ARMRegister("ip");
 
    public static ARMRegister[] argRegs = {r0, r1, r2, r3};
    public static ArrayList<ARMRegister> systemRegs = new ArrayList<ARMRegister>(Arrays.asList(new ARMRegister[]{pc, fp, lr, sp}));
