@@ -37,8 +37,7 @@ public class LLVMNewCode extends LLVMCode
       if (size > 65535) {       
          armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ":lower16:"+size), ARMMoveCode.Operator.MOVW, 33));
          armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ":upper16:"+size), ARMMoveCode.Operator.MOVT, 34));
-      }
-      else{
+      } else {
          armCode.add(new ARMMoveCode(ARMCode.r0, new LLVMPrimitiveType("i32", ""+size), ARMMoveCode.Operator.MOVW, 35));
       }
       armCode.add(new ARMBranchCode("malloc", ARMBranchCode.Operator.BL));
