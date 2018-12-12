@@ -46,7 +46,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
     * if set to be true, the visitor will generate ARM code
     * otherwise the visitor will generate LLVM code
     */
-   public static boolean generateARM = true;
+   public static boolean generateARM = false;
 
    public SSAVisitor(File output)
    {
@@ -343,7 +343,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       }
 
       removeTrivialPhis(phiCodes);
-      // sparseSimpleConstantPropagation();
+      sparseSimpleConstantPropagation();
 
       if (generateARM) {
          for (LLVMPhiCode phiCode : phiCodes) {
@@ -1244,6 +1244,10 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                LLVMRegisterType m = (LLVMRegisterType)def;
                SSCPValue val = valueTable.get(m);
                SSCPValue resVal = evaluate(use, valueTable);
+               if (resVal != null && (resVal instanceof SSCPIntConstant) && (val instanceof SSCPIntConstant) && !resVal.equals(val)){
+                  System.out.println(m+" not constant");
+                  resVal = new SSCPBottom();
+               }
                if ((resVal != null)  && !(resVal.equals(val))) {
                   valueTable.put(m, resVal);
                   if (!workList.contains(m)) {
@@ -1338,27 +1342,33 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
                if (val instanceof SSCPBottom ) {
                   return new SSCPBottom();
                } else if (val instanceof SSCPTop) {
-                  phiTypes.add(t);
+                  //phiTypes.add(t);
                } else {
-                  phiTypes.add(t);
+                  phiTypes.add(val);
                }
             }
             else if (operand instanceof LLVMPrimitiveType){
                phiTypes.add(getPrimitiveValue((LLVMPrimitiveType)operand));
             }
          }
+         /*
          if (phiTypes.contains(t)) {
             return t;
-         }
+         }*/
          SSCPValue tmp = null;
          for (SSCPValue v : phiTypes) {
             if (tmp == null) {
                tmp = v;
-            } else if (!tmp.equals(v)) {
+            } else if (!tmp.equals(v)) { //different constants 
                return new SSCPBottom(); 
             }
          }
-         return tmp;
+         if (tmp ==null){
+            return t; //all top
+         }
+         else {
+            return tmp;
+         }
       }
       if (c instanceof LLVMStoreCode) {
          LLVMType source = ((LLVMStoreCode)c).getSource();
@@ -1398,6 +1408,32 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          int lf6 = ((SSCPIntConstant)lfVal).getValue();
          int rt6 = ((SSCPIntConstant)rtVal).getValue();
          if (lf6 == 1 || rt6 == 1) return new SSCPIntConstant(1);
+         else return new SSCPIntConstant(0);      
+      case LT:    
+         int lf7 = ((SSCPIntConstant)lfVal).getValue();
+         int rt7 = ((SSCPIntConstant)rtVal).getValue();
+         if (lf7<rt7) return new SSCPIntConstant(1);
+         else return new SSCPIntConstant(0);
+      case GT:    
+         int lf8 = ((SSCPIntConstant)lfVal).getValue();
+         int rt8 = ((SSCPIntConstant)rtVal).getValue();
+         if (lf8>rt8) return new SSCPIntConstant(1);
+         else return new SSCPIntConstant(0);
+      case GE:    
+         int lf9 = ((SSCPIntConstant)lfVal).getValue();
+         int rt9 = ((SSCPIntConstant)rtVal).getValue();
+         if (lf9>=rt9) return new SSCPIntConstant(1);
+         else return new SSCPIntConstant(0);
+      case LE:    
+         int lf10 = ((SSCPIntConstant)lfVal).getValue();
+         int rt10 = ((SSCPIntConstant)rtVal).getValue();
+         if (lf10<=rt10) return new SSCPIntConstant(1);
+         else return new SSCPIntConstant(0);
+      case EQ:   
+         if (lfVal.equals(rtVal)) return new SSCPIntConstant(1);
+         else return new SSCPIntConstant(0);
+      case NE:   
+         if (!lfVal.equals(rtVal)) return new SSCPIntConstant(1);
          else return new SSCPIntConstant(0);
       default:
          return new SSCPIntConstant(0);

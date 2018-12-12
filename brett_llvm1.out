@@ -1,0 +1,767 @@
+{"types":[{"line":10,"id":"thing","fields":[{"line":11,"type":"int","id":"i"},{"line":12,"type":"bool","id":"b"},{"line":13,"type":"thing","id":"s"}]}],"declarations":[{"line":16,"type":"int","id":"gi1"},{"line":17,"type":"bool","id":"gb1"},{"line":18,"type":"thing","id":"gs1"},{"line":21,"type":"int","id":"counter"}],"functions":[{"line":23,"id":"printgroup","parameters":[{"line":23,"type":"int","id":"groupnum"}],"return_type":"void","declarations":[],"body":[{"line":26,"stmt":"print","exp":{"line":26,"exp":"num","value":"1"},"endl":false},{"line":27,"stmt":"print","exp":{"line":27,"exp":"num","value":"0"},"endl":false},{"line":28,"stmt":"print","exp":{"line":28,"exp":"num","value":"1"},"endl":false},{"line":29,"stmt":"print","exp":{"line":29,"exp":"num","value":"0"},"endl":false},{"line":30,"stmt":"print","exp":{"line":30,"exp":"num","value":"1"},"endl":false},{"line":31,"stmt":"print","exp":{"line":31,"exp":"num","value":"0"},"endl":false},{"line":32,"stmt":"print","exp":{"line":32,"exp":"id","id":"groupnum"},"endl":true},{"line":34,"stmt":"return"}]},{"line":37,"id":"setcounter","parameters":[{"line":37,"type":"int","id":"val"}],"return_type":"bool","declarations":[],"body":[{"line":40,"stmt":"assign","source":{"line":40,"exp":"id","id":"val"},"target":{"line":40,"id":"counter"}},{"line":42,"stmt":"return","exp":{"line":42,"exp":"true"}}]},{"line":45,"id":"takealltypes","parameters":[{"line":45,"type":"int","id":"i"},{"line":45,"type":"bool","id":"b"},{"line":45,"type":"thing","id":"s"}],"return_type":"void","declarations":[],"body":[{"line":47,"stmt":"if","guard":{"line":47,"exp":"binary","operator":"==","lft":{"line":47,"exp":"id","id":"i"},"rht":{"line":47,"exp":"num","value":"3"}},"then":{"stmt":"block","list":[{"line":47,"stmt":"print","exp":{"line":47,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":47,"stmt":"print","exp":{"line":47,"exp":"num","value":"0"},"endl":true}]}},{"line":48,"stmt":"if","guard":{"line":48,"exp":"id","id":"b"},"then":{"stmt":"block","list":[{"line":48,"stmt":"print","exp":{"line":48,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":48,"stmt":"print","exp":{"line":48,"exp":"num","value":"0"},"endl":true}]}},{"line":49,"stmt":"if","guard":{"line":49,"exp":"dot","left":{"line":49,"exp":"id","id":"s"},"id":"b"},"then":{"stmt":"block","list":[{"line":49,"stmt":"print","exp":{"line":49,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":49,"stmt":"print","exp":{"line":49,"exp":"num","value":"0"},"endl":true}]}}]},{"line":52,"id":"tonofargs","parameters":[{"line":52,"type":"int","id":"a1"},{"line":52,"type":"int","id":"a2"},{"line":52,"type":"int","id":"a3"},{"line":52,"type":"int","id":"a4"},{"line":52,"type":"int","id":"a5"},{"line":52,"type":"int","id":"a6"},{"line":52,"type":"int","id":"a7"},{"line":52,"type":"int","id":"a8"}],"return_type":"void","declarations":[],"body":[{"line":55,"stmt":"if","guard":{"line":55,"exp":"binary","operator":"==","lft":{"line":55,"exp":"id","id":"a5"},"rht":{"line":55,"exp":"num","value":"5"}},"then":{"stmt":"block","list":[{"line":55,"stmt":"print","exp":{"line":55,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":55,"stmt":"print","exp":{"line":55,"exp":"num","value":"0"},"endl":false},{"line":55,"stmt":"print","exp":{"line":55,"exp":"id","id":"a5"},"endl":true}]}},{"line":56,"stmt":"if","guard":{"line":56,"exp":"binary","operator":"==","lft":{"line":56,"exp":"id","id":"a6"},"rht":{"line":56,"exp":"num","value":"6"}},"then":{"stmt":"block","list":[{"line":56,"stmt":"print","exp":{"line":56,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":56,"stmt":"print","exp":{"line":56,"exp":"num","value":"0"},"endl":false},{"line":56,"stmt":"print","exp":{"line":56,"exp":"id","id":"a6"},"endl":true}]}},{"line":57,"stmt":"if","guard":{"line":57,"exp":"binary","operator":"==","lft":{"line":57,"exp":"id","id":"a7"},"rht":{"line":57,"exp":"num","value":"7"}},"then":{"stmt":"block","list":[{"line":57,"stmt":"print","exp":{"line":57,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":57,"stmt":"print","exp":{"line":57,"exp":"num","value":"0"},"endl":false},{"line":57,"stmt":"print","exp":{"line":57,"exp":"id","id":"a7"},"endl":true}]}},{"line":58,"stmt":"if","guard":{"line":58,"exp":"binary","operator":"==","lft":{"line":58,"exp":"id","id":"a8"},"rht":{"line":58,"exp":"num","value":"8"}},"then":{"stmt":"block","list":[{"line":58,"stmt":"print","exp":{"line":58,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":58,"stmt":"print","exp":{"line":58,"exp":"num","value":"0"},"endl":false},{"line":58,"stmt":"print","exp":{"line":58,"exp":"id","id":"a8"},"endl":true}]}}]},{"line":61,"id":"returnint","parameters":[{"line":61,"type":"int","id":"ret"}],"return_type":"int","declarations":[],"body":[{"line":61,"stmt":"return","exp":{"line":61,"exp":"id","id":"ret"}}]},{"line":62,"id":"returnbool","parameters":[{"line":62,"type":"bool","id":"ret"}],"return_type":"bool","declarations":[],"body":[{"line":62,"stmt":"return","exp":{"line":62,"exp":"id","id":"ret"}}]},{"line":63,"id":"returnstruct","parameters":[{"line":63,"type":"thing","id":"ret"}],"return_type":"thing","declarations":[],"body":[{"line":63,"stmt":"return","exp":{"line":63,"exp":"id","id":"ret"}}]},{"line":65,"id":"main","parameters":[],"return_type":"int","declarations":[{"line":68,"type":"bool","id":"b1"},{"line":68,"type":"bool","id":"b2"},{"line":69,"type":"int","id":"i1"},{"line":69,"type":"int","id":"i2"},{"line":69,"type":"int","id":"i3"},{"line":70,"type":"thing","id":"s1"},{"line":70,"type":"thing","id":"s2"}],"body":[{"line":73,"stmt":"assign","source":{"line":73,"exp":"num","value":"0"},"target":{"line":73,"id":"counter"}},{"line":78,"stmt":"invocation","id":"printgroup","args":[{"line":78,"exp":"num","value":"1"}]},{"line":80,"stmt":"assign","source":{"line":80,"exp":"false"},"target":{"line":80,"id":"b1"}},{"line":81,"stmt":"assign","source":{"line":81,"exp":"false"},"target":{"line":81,"id":"b2"}},{"line":82,"stmt":"if","guard":{"line":82,"exp":"binary","operator":"&&","lft":{"line":82,"exp":"id","id":"b1"},"rht":{"line":82,"exp":"id","id":"b2"}},"then":{"stmt":"block","list":[{"line":82,"stmt":"print","exp":{"line":82,"exp":"num","value":"0"},"endl":true}]},"else":{"stmt":"block","list":[{"line":82,"stmt":"print","exp":{"line":82,"exp":"num","value":"1"},"endl":true}]}},{"line":84,"stmt":"assign","source":{"line":84,"exp":"true"},"target":{"line":84,"id":"b1"}},{"line":85,"stmt":"assign","source":{"line":85,"exp":"false"},"target":{"line":85,"id":"b2"}},{"line":86,"stmt":"if","guard":{"line":86,"exp":"binary","operator":"&&","lft":{"line":86,"exp":"id","id":"b1"},"rht":{"line":86,"exp":"id","id":"b2"}},"then":{"stmt":"block","list":[{"line":86,"stmt":"print","exp":{"line":86,"exp":"num","value":"0"},"endl":true}]},"else":{"stmt":"block","list":[{"line":86,"stmt":"print","exp":{"line":86,"exp":"num","value":"1"},"endl":true}]}},{"line":88,"stmt":"assign","source":{"line":88,"exp":"false"},"target":{"line":88,"id":"b1"}},{"line":89,"stmt":"assign","source":{"line":89,"exp":"true"},"target":{"line":89,"id":"b2"}},{"line":90,"stmt":"if","guard":{"line":90,"exp":"binary","operator":"&&","lft":{"line":90,"exp":"id","id":"b1"},"rht":{"line":90,"exp":"id","id":"b2"}},"then":{"stmt":"block","list":[{"line":90,"stmt":"print","exp":{"line":90,"exp":"num","value":"0"},"endl":true}]},"else":{"stmt":"block","list":[{"line":90,"stmt":"print","exp":{"line":90,"exp":"num","value":"1"},"endl":true}]}},{"line":92,"stmt":"assign","source":{"line":92,"exp":"true"},"target":{"line":92,"id":"b1"}},{"line":93,"stmt":"assign","source":{"line":93,"exp":"true"},"target":{"line":93,"id":"b2"}},{"line":94,"stmt":"if","guard":{"line":94,"exp":"binary","operator":"&&","lft":{"line":94,"exp":"id","id":"b1"},"rht":{"line":94,"exp":"id","id":"b2"}},"then":{"stmt":"block","list":[{"line":94,"stmt":"print","exp":{"line":94,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":94,"stmt":"print","exp":{"line":94,"exp":"num","value":"0"},"endl":true}]}},{"line":96,"stmt":"assign","source":{"line":96,"exp":"num","value":"0"},"target":{"line":96,"id":"counter"}},{"line":99,"stmt":"invocation","id":"printgroup","args":[{"line":99,"exp":"num","value":"2"}]},{"line":101,"stmt":"assign","source":{"line":101,"exp":"true"},"target":{"line":101,"id":"b1"}},{"line":102,"stmt":"assign","source":{"line":102,"exp":"true"},"target":{"line":102,"id":"b2"}},{"line":103,"stmt":"if","guard":{"line":103,"exp":"binary","operator":"||","lft":{"line":103,"exp":"id","id":"b1"},"rht":{"line":103,"exp":"id","id":"b2"}},"then":{"stmt":"block","list":[{"line":103,"stmt":"print","exp":{"line":103,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":103,"stmt":"print","exp":{"line":103,"exp":"num","value":"0"},"endl":true}]}},{"line":105,"stmt":"assign","source":{"line":105,"exp":"true"},"target":{"line":105,"id":"b1"}},{"line":106,"stmt":"assign","source":{"line":106,"exp":"false"},"target":{"line":106,"id":"b2"}},{"line":107,"stmt":"if","guard":{"line":107,"exp":"binary","operator":"||","lft":{"line":107,"exp":"id","id":"b1"},"rht":{"line":107,"exp":"id","id":"b2"}},"then":{"stmt":"block","list":[{"line":107,"stmt":"print","exp":{"line":107,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":107,"stmt":"print","exp":{"line":107,"exp":"num","value":"0"},"endl":true}]}},{"line":109,"stmt":"assign","source":{"line":109,"exp":"false"},"target":{"line":109,"id":"b1"}},{"line":110,"stmt":"assign","source":{"line":110,"exp":"true"},"target":{"line":110,"id":"b2"}},{"line":111,"stmt":"if","guard":{"line":111,"exp":"binary","operator":"||","lft":{"line":111,"exp":"id","id":"b1"},"rht":{"line":111,"exp":"id","id":"b2"}},"then":{"stmt":"block","list":[{"line":111,"stmt":"print","exp":{"line":111,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":111,"stmt":"print","exp":{"line":111,"exp":"num","value":"0"},"endl":true}]}},{"line":113,"stmt":"assign","source":{"line":113,"exp":"false"},"target":{"line":113,"id":"b1"}},{"line":114,"stmt":"assign","source":{"line":114,"exp":"false"},"target":{"line":114,"id":"b2"}},{"line":115,"stmt":"if","guard":{"line":115,"exp":"binary","operator":"||","lft":{"line":115,"exp":"id","id":"b1"},"rht":{"line":115,"exp":"id","id":"b2"}},"then":{"stmt":"block","list":[{"line":115,"stmt":"print","exp":{"line":115,"exp":"num","value":"0"},"endl":true}]},"else":{"stmt":"block","list":[{"line":115,"stmt":"print","exp":{"line":115,"exp":"num","value":"1"},"endl":true}]}},{"line":119,"stmt":"invocation","id":"printgroup","args":[{"line":119,"exp":"num","value":"3"}]},{"line":121,"stmt":"if","guard":{"line":121,"exp":"binary","operator":">","lft":{"line":121,"exp":"num","value":"42"},"rht":{"line":121,"exp":"num","value":"1"}},"then":{"stmt":"block","list":[{"line":121,"stmt":"print","exp":{"line":121,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":121,"stmt":"print","exp":{"line":121,"exp":"num","value":"0"},"endl":true}]}},{"line":122,"stmt":"if","guard":{"line":122,"exp":"binary","operator":">=","lft":{"line":122,"exp":"num","value":"42"},"rht":{"line":122,"exp":"num","value":"1"}},"then":{"stmt":"block","list":[{"line":122,"stmt":"print","exp":{"line":122,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":122,"stmt":"print","exp":{"line":122,"exp":"num","value":"0"},"endl":true}]}},{"line":123,"stmt":"if","guard":{"line":123,"exp":"binary","operator":"<","lft":{"line":123,"exp":"num","value":"42"},"rht":{"line":123,"exp":"num","value":"1"}},"then":{"stmt":"block","list":[{"line":123,"stmt":"print","exp":{"line":123,"exp":"num","value":"0"},"endl":true}]},"else":{"stmt":"block","list":[{"line":123,"stmt":"print","exp":{"line":123,"exp":"num","value":"1"},"endl":true}]}},{"line":124,"stmt":"if","guard":{"line":124,"exp":"binary","operator":"<=","lft":{"line":124,"exp":"num","value":"42"},"rht":{"line":124,"exp":"num","value":"1"}},"then":{"stmt":"block","list":[{"line":124,"stmt":"print","exp":{"line":124,"exp":"num","value":"0"},"endl":true}]},"else":{"stmt":"block","list":[{"line":124,"stmt":"print","exp":{"line":124,"exp":"num","value":"1"},"endl":true}]}},{"line":125,"stmt":"if","guard":{"line":125,"exp":"binary","operator":"==","lft":{"line":125,"exp":"num","value":"42"},"rht":{"line":125,"exp":"num","value":"1"}},"then":{"stmt":"block","list":[{"line":125,"stmt":"print","exp":{"line":125,"exp":"num","value":"0"},"endl":true}]},"else":{"stmt":"block","list":[{"line":125,"stmt":"print","exp":{"line":125,"exp":"num","value":"1"},"endl":true}]}},{"line":126,"stmt":"if","guard":{"line":126,"exp":"binary","operator":"!=","lft":{"line":126,"exp":"num","value":"42"},"rht":{"line":126,"exp":"num","value":"1"}},"then":{"stmt":"block","list":[{"line":126,"stmt":"print","exp":{"line":126,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":126,"stmt":"print","exp":{"line":126,"exp":"num","value":"0"},"endl":true}]}},{"line":127,"stmt":"if","guard":{"line":127,"exp":"true"},"then":{"stmt":"block","list":[{"line":127,"stmt":"print","exp":{"line":127,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":127,"stmt":"print","exp":{"line":127,"exp":"num","value":"0"},"endl":true}]}},{"line":128,"stmt":"if","guard":{"line":128,"exp":"unary","operator":"!","operand":{"line":128,"exp":"true"}},"then":{"stmt":"block","list":[{"line":128,"stmt":"print","exp":{"line":128,"exp":"num","value":"0"},"endl":true}]},"else":{"stmt":"block","list":[{"line":128,"stmt":"print","exp":{"line":128,"exp":"num","value":"1"},"endl":true}]}},{"line":129,"stmt":"if","guard":{"line":129,"exp":"false"},"then":{"stmt":"block","list":[{"line":129,"stmt":"print","exp":{"line":129,"exp":"num","value":"0"},"endl":true}]},"else":{"stmt":"block","list":[{"line":129,"stmt":"print","exp":{"line":129,"exp":"num","value":"1"},"endl":true}]}},{"line":130,"stmt":"if","guard":{"line":130,"exp":"unary","operator":"!","operand":{"line":130,"exp":"false"}},"then":{"stmt":"block","list":[{"line":130,"stmt":"print","exp":{"line":130,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":130,"stmt":"print","exp":{"line":130,"exp":"num","value":"0"},"endl":true}]}},{"line":131,"stmt":"if","guard":{"line":131,"exp":"unary","operator":"!","operand":{"line":131,"exp":"false"}},"then":{"stmt":"block","list":[{"line":131,"stmt":"print","exp":{"line":131,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":131,"stmt":"print","exp":{"line":131,"exp":"num","value":"0"},"endl":true}]}},{"line":136,"stmt":"invocation","id":"printgroup","args":[{"line":136,"exp":"num","value":"4"}]},{"line":138,"stmt":"if","guard":{"line":138,"exp":"binary","operator":"==","lft":{"line":138,"exp":"binary","operator":"+","lft":{"line":138,"exp":"num","value":"2"},"rht":{"line":138,"exp":"num","value":"3"}},"rht":{"line":138,"exp":"num","value":"5"}},"then":{"stmt":"block","list":[{"line":138,"stmt":"print","exp":{"line":138,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":139,"stmt":"print","exp":{"line":139,"exp":"num","value":"0"},"endl":false},{"line":139,"stmt":"print","exp":{"line":139,"exp":"binary","operator":"+","lft":{"line":139,"exp":"num","value":"2"},"rht":{"line":139,"exp":"num","value":"3"}},"endl":true}]}},{"line":140,"stmt":"if","guard":{"line":140,"exp":"binary","operator":"==","lft":{"line":140,"exp":"binary","operator":"*","lft":{"line":140,"exp":"num","value":"2"},"rht":{"line":140,"exp":"num","value":"3"}},"rht":{"line":140,"exp":"num","value":"6"}},"then":{"stmt":"block","list":[{"line":140,"stmt":"print","exp":{"line":140,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":141,"stmt":"print","exp":{"line":141,"exp":"num","value":"0"},"endl":false},{"line":141,"stmt":"print","exp":{"line":141,"exp":"binary","operator":"*","lft":{"line":141,"exp":"num","value":"2"},"rht":{"line":141,"exp":"num","value":"3"}},"endl":true}]}},{"line":142,"stmt":"if","guard":{"line":142,"exp":"binary","operator":"==","lft":{"line":142,"exp":"binary","operator":"-","lft":{"line":142,"exp":"num","value":"3"},"rht":{"line":142,"exp":"num","value":"2"}},"rht":{"line":142,"exp":"num","value":"1"}},"then":{"stmt":"block","list":[{"line":142,"stmt":"print","exp":{"line":142,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":143,"stmt":"print","exp":{"line":143,"exp":"num","value":"0"},"endl":false},{"line":143,"stmt":"print","exp":{"line":143,"exp":"binary","operator":"-","lft":{"line":143,"exp":"num","value":"3"},"rht":{"line":143,"exp":"num","value":"2"}},"endl":true}]}},{"line":144,"stmt":"if","guard":{"line":144,"exp":"binary","operator":"==","lft":{"line":144,"exp":"binary","operator":"/","lft":{"line":144,"exp":"num","value":"6"},"rht":{"line":144,"exp":"num","value":"3"}},"rht":{"line":144,"exp":"num","value":"2"}},"then":{"stmt":"block","list":[{"line":144,"stmt":"print","exp":{"line":144,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":145,"stmt":"print","exp":{"line":145,"exp":"num","value":"0"},"endl":false},{"line":145,"stmt":"print","exp":{"line":145,"exp":"binary","operator":"/","lft":{"line":145,"exp":"num","value":"6"},"rht":{"line":145,"exp":"num","value":"3"}},"endl":true}]}},{"line":146,"stmt":"if","guard":{"line":146,"exp":"binary","operator":"<","lft":{"line":146,"exp":"unary","operator":"-","operand":{"line":146,"exp":"num","value":"6"}},"rht":{"line":146,"exp":"num","value":"0"}},"then":{"stmt":"block","list":[{"line":146,"stmt":"print","exp":{"line":146,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":146,"stmt":"print","exp":{"line":146,"exp":"num","value":"0"},"endl":true}]}},{"line":150,"stmt":"invocation","id":"printgroup","args":[{"line":150,"exp":"num","value":"5"}]},{"line":151,"stmt":"assign","source":{"line":151,"exp":"num","value":"42"},"target":{"line":151,"id":"i1"}},{"line":152,"stmt":"if","guard":{"line":152,"exp":"binary","operator":"==","lft":{"line":152,"exp":"id","id":"i1"},"rht":{"line":152,"exp":"num","value":"42"}},"then":{"stmt":"block","list":[{"line":152,"stmt":"print","exp":{"line":152,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":152,"stmt":"print","exp":{"line":152,"exp":"num","value":"0"},"endl":true}]}},{"line":154,"stmt":"assign","source":{"line":154,"exp":"num","value":"3"},"target":{"line":154,"id":"i1"}},{"line":155,"stmt":"assign","source":{"line":155,"exp":"num","value":"2"},"target":{"line":155,"id":"i2"}},{"line":156,"stmt":"assign","source":{"line":156,"exp":"binary","operator":"+","lft":{"line":156,"exp":"id","id":"i1"},"rht":{"line":156,"exp":"id","id":"i2"}},"target":{"line":156,"id":"i3"}},{"line":157,"stmt":"if","guard":{"line":157,"exp":"binary","operator":"==","lft":{"line":157,"exp":"id","id":"i3"},"rht":{"line":157,"exp":"num","value":"5"}},"then":{"stmt":"block","list":[{"line":157,"stmt":"print","exp":{"line":157,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":157,"stmt":"print","exp":{"line":157,"exp":"num","value":"0"},"endl":true}]}},{"line":159,"stmt":"assign","source":{"line":159,"exp":"true"},"target":{"line":159,"id":"b1"}},{"line":160,"stmt":"if","guard":{"line":160,"exp":"id","id":"b1"},"then":{"stmt":"block","list":[{"line":160,"stmt":"print","exp":{"line":160,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":160,"stmt":"print","exp":{"line":160,"exp":"num","value":"0"},"endl":true}]}},{"line":161,"stmt":"if","guard":{"line":161,"exp":"unary","operator":"!","operand":{"line":161,"exp":"id","id":"b1"}},"then":{"stmt":"block","list":[{"line":161,"stmt":"print","exp":{"line":161,"exp":"num","value":"0"},"endl":true}]},"else":{"stmt":"block","list":[{"line":161,"stmt":"print","exp":{"line":161,"exp":"num","value":"1"},"endl":true}]}},{"line":163,"stmt":"assign","source":{"line":163,"exp":"false"},"target":{"line":163,"id":"b1"}},{"line":164,"stmt":"if","guard":{"line":164,"exp":"id","id":"b1"},"then":{"stmt":"block","list":[{"line":164,"stmt":"print","exp":{"line":164,"exp":"num","value":"0"},"endl":true}]},"else":{"stmt":"block","list":[{"line":164,"stmt":"print","exp":{"line":164,"exp":"num","value":"1"},"endl":true}]}},{"line":165,"stmt":"if","guard":{"line":165,"exp":"unary","operator":"!","operand":{"line":165,"exp":"id","id":"b1"}},"then":{"stmt":"block","list":[{"line":165,"stmt":"print","exp":{"line":165,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":165,"stmt":"print","exp":{"line":165,"exp":"num","value":"0"},"endl":true}]}},{"line":166,"stmt":"if","guard":{"line":166,"exp":"id","id":"b1"},"then":{"stmt":"block","list":[{"line":166,"stmt":"print","exp":{"line":166,"exp":"num","value":"0"},"endl":true}]},"else":{"stmt":"block","list":[{"line":166,"stmt":"print","exp":{"line":166,"exp":"num","value":"1"},"endl":true}]}},{"line":170,"stmt":"invocation","id":"printgroup","args":[{"line":170,"exp":"num","value":"6"}]},{"line":171,"stmt":"assign","source":{"line":171,"exp":"num","value":"0"},"target":{"line":171,"id":"i1"}},{"line":172,"stmt":"while","guard":{"line":172,"exp":"binary","operator":"<","lft":{"line":172,"exp":"id","id":"i1"},"rht":{"line":172,"exp":"num","value":"5"}},"body":{"stmt":"block","list":[{"line":173,"stmt":"if","guard":{"line":173,"exp":"binary","operator":">=","lft":{"line":173,"exp":"id","id":"i1"},"rht":{"line":173,"exp":"num","value":"5"}},"then":{"stmt":"block","list":[{"line":173,"stmt":"print","exp":{"line":173,"exp":"num","value":"0"},"endl":true}]}},{"line":174,"stmt":"assign","source":{"line":174,"exp":"binary","operator":"+","lft":{"line":174,"exp":"id","id":"i1"},"rht":{"line":174,"exp":"num","value":"5"}},"target":{"line":174,"id":"i1"}}]}},{"line":176,"stmt":"if","guard":{"line":176,"exp":"binary","operator":"==","lft":{"line":176,"exp":"id","id":"i1"},"rht":{"line":176,"exp":"num","value":"5"}},"then":{"stmt":"block","list":[{"line":176,"stmt":"print","exp":{"line":176,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":176,"stmt":"print","exp":{"line":176,"exp":"num","value":"0"},"endl":false},{"line":176,"stmt":"print","exp":{"line":176,"exp":"id","id":"i1"},"endl":true}]}},{"line":180,"stmt":"invocation","id":"printgroup","args":[{"line":180,"exp":"num","value":"7"}]},{"line":182,"stmt":"assign","source":{"line":182,"exp":"new","id":"thing"},"target":{"line":182,"id":"s1"}},{"line":183,"stmt":"assign","source":{"line":183,"exp":"num","value":"42"},"target":{"line":183,"left":{"line":183,"id":"s1"},"id":"i"}},{"line":184,"stmt":"assign","source":{"line":184,"exp":"true"},"target":{"line":184,"left":{"line":184,"id":"s1"},"id":"b"}},{"line":185,"stmt":"if","guard":{"line":185,"exp":"binary","operator":"==","lft":{"line":185,"exp":"dot","left":{"line":185,"exp":"id","id":"s1"},"id":"i"},"rht":{"line":185,"exp":"num","value":"42"}},"then":{"stmt":"block","list":[{"line":185,"stmt":"print","exp":{"line":185,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":185,"stmt":"print","exp":{"line":185,"exp":"num","value":"0"},"endl":false},{"line":185,"stmt":"print","exp":{"line":185,"exp":"dot","left":{"line":185,"exp":"id","id":"s1"},"id":"i"},"endl":true}]}},{"line":186,"stmt":"if","guard":{"line":186,"exp":"dot","left":{"line":186,"exp":"id","id":"s1"},"id":"b"},"then":{"stmt":"block","list":[{"line":186,"stmt":"print","exp":{"line":186,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":186,"stmt":"print","exp":{"line":186,"exp":"num","value":"0"},"endl":true}]}},{"line":188,"stmt":"assign","source":{"line":188,"exp":"new","id":"thing"},"target":{"line":188,"left":{"line":188,"id":"s1"},"id":"s"}},{"line":189,"stmt":"assign","source":{"line":189,"exp":"num","value":"13"},"target":{"line":189,"left":{"line":189,"left":{"line":189,"id":"s1"},"id":"s"},"id":"i"}},{"line":190,"stmt":"assign","source":{"line":190,"exp":"false"},"target":{"line":190,"left":{"line":190,"left":{"line":190,"id":"s1"},"id":"s"},"id":"b"}},{"line":192,"stmt":"if","guard":{"line":192,"exp":"binary","operator":"==","lft":{"line":192,"exp":"dot","left":{"line":192,"exp":"dot","left":{"line":192,"exp":"id","id":"s1"},"id":"s"},"id":"i"},"rht":{"line":192,"exp":"num","value":"13"}},"then":{"stmt":"block","list":[{"line":192,"stmt":"print","exp":{"line":192,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":192,"stmt":"print","exp":{"line":192,"exp":"num","value":"0"},"endl":false},{"line":192,"stmt":"print","exp":{"line":192,"exp":"dot","left":{"line":192,"exp":"dot","left":{"line":192,"exp":"id","id":"s1"},"id":"s"},"id":"i"},"endl":true}]}},{"line":193,"stmt":"if","guard":{"line":193,"exp":"unary","operator":"!","operand":{"line":193,"exp":"dot","left":{"line":193,"exp":"dot","left":{"line":193,"exp":"id","id":"s1"},"id":"s"},"id":"b"}},"then":{"stmt":"block","list":[{"line":193,"stmt":"print","exp":{"line":193,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":193,"stmt":"print","exp":{"line":193,"exp":"num","value":"0"},"endl":true}]}},{"line":195,"stmt":"if","guard":{"line":195,"exp":"binary","operator":"==","lft":{"line":195,"exp":"id","id":"s1"},"rht":{"line":195,"exp":"id","id":"s1"}},"then":{"stmt":"block","list":[{"line":195,"stmt":"print","exp":{"line":195,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":195,"stmt":"print","exp":{"line":195,"exp":"num","value":"0"},"endl":true}]}},{"line":196,"stmt":"if","guard":{"line":196,"exp":"binary","operator":"!=","lft":{"line":196,"exp":"id","id":"s1"},"rht":{"line":196,"exp":"dot","left":{"line":196,"exp":"id","id":"s1"},"id":"s"}},"then":{"stmt":"block","list":[{"line":196,"stmt":"print","exp":{"line":196,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":196,"stmt":"print","exp":{"line":196,"exp":"num","value":"0"},"endl":true}]}},{"line":198,"stmt":"delete","exp":{"line":198,"exp":"dot","left":{"line":198,"exp":"id","id":"s1"},"id":"s"}},{"line":199,"stmt":"delete","exp":{"line":199,"exp":"id","id":"s1"}},{"line":203,"stmt":"invocation","id":"printgroup","args":[{"line":203,"exp":"num","value":"8"}]},{"line":205,"stmt":"assign","source":{"line":205,"exp":"num","value":"7"},"target":{"line":205,"id":"gi1"}},{"line":206,"stmt":"if","guard":{"line":206,"exp":"binary","operator":"==","lft":{"line":206,"exp":"id","id":"gi1"},"rht":{"line":206,"exp":"num","value":"7"}},"then":{"stmt":"block","list":[{"line":206,"stmt":"print","exp":{"line":206,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":206,"stmt":"print","exp":{"line":206,"exp":"num","value":"0"},"endl":false},{"line":206,"stmt":"print","exp":{"line":206,"exp":"id","id":"gi1"},"endl":true}]}},{"line":208,"stmt":"assign","source":{"line":208,"exp":"true"},"target":{"line":208,"id":"gb1"}},{"line":209,"stmt":"if","guard":{"line":209,"exp":"id","id":"gb1"},"then":{"stmt":"block","list":[{"line":209,"stmt":"print","exp":{"line":209,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":209,"stmt":"print","exp":{"line":209,"exp":"num","value":"0"},"endl":true}]}},{"line":211,"stmt":"assign","source":{"line":211,"exp":"new","id":"thing"},"target":{"line":211,"id":"gs1"}},{"line":212,"stmt":"assign","source":{"line":212,"exp":"num","value":"34"},"target":{"line":212,"left":{"line":212,"id":"gs1"},"id":"i"}},{"line":213,"stmt":"assign","source":{"line":213,"exp":"false"},"target":{"line":213,"left":{"line":213,"id":"gs1"},"id":"b"}},{"line":214,"stmt":"if","guard":{"line":214,"exp":"binary","operator":"==","lft":{"line":214,"exp":"dot","left":{"line":214,"exp":"id","id":"gs1"},"id":"i"},"rht":{"line":214,"exp":"num","value":"34"}},"then":{"stmt":"block","list":[{"line":214,"stmt":"print","exp":{"line":214,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":215,"stmt":"print","exp":{"line":215,"exp":"num","value":"0"},"endl":false},{"line":215,"stmt":"print","exp":{"line":215,"exp":"dot","left":{"line":215,"exp":"id","id":"gs1"},"id":"i"},"endl":true}]}},{"line":216,"stmt":"if","guard":{"line":216,"exp":"unary","operator":"!","operand":{"line":216,"exp":"dot","left":{"line":216,"exp":"id","id":"gs1"},"id":"b"}},"then":{"stmt":"block","list":[{"line":216,"stmt":"print","exp":{"line":216,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":216,"stmt":"print","exp":{"line":216,"exp":"num","value":"0"},"endl":true}]}},{"line":218,"stmt":"assign","source":{"line":218,"exp":"new","id":"thing"},"target":{"line":218,"left":{"line":218,"id":"gs1"},"id":"s"}},{"line":219,"stmt":"assign","source":{"line":219,"exp":"num","value":"16"},"target":{"line":219,"left":{"line":219,"left":{"line":219,"id":"gs1"},"id":"s"},"id":"i"}},{"line":220,"stmt":"assign","source":{"line":220,"exp":"true"},"target":{"line":220,"left":{"line":220,"left":{"line":220,"id":"gs1"},"id":"s"},"id":"b"}},{"line":221,"stmt":"if","guard":{"line":221,"exp":"binary","operator":"==","lft":{"line":221,"exp":"dot","left":{"line":221,"exp":"dot","left":{"line":221,"exp":"id","id":"gs1"},"id":"s"},"id":"i"},"rht":{"line":221,"exp":"num","value":"16"}},"then":{"stmt":"block","list":[{"line":221,"stmt":"print","exp":{"line":221,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":222,"stmt":"print","exp":{"line":222,"exp":"num","value":"0"},"endl":false},{"line":222,"stmt":"print","exp":{"line":222,"exp":"dot","left":{"line":222,"exp":"dot","left":{"line":222,"exp":"id","id":"gs1"},"id":"s"},"id":"i"},"endl":true}]}},{"line":223,"stmt":"if","guard":{"line":223,"exp":"dot","left":{"line":223,"exp":"dot","left":{"line":223,"exp":"id","id":"gs1"},"id":"s"},"id":"b"},"then":{"stmt":"block","list":[{"line":223,"stmt":"print","exp":{"line":223,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":223,"stmt":"print","exp":{"line":223,"exp":"num","value":"0"},"endl":true}]}},{"line":225,"stmt":"delete","exp":{"line":225,"exp":"dot","left":{"line":225,"exp":"id","id":"gs1"},"id":"s"}},{"line":226,"stmt":"delete","exp":{"line":226,"exp":"id","id":"gs1"}},{"line":230,"stmt":"invocation","id":"printgroup","args":[{"line":230,"exp":"num","value":"9"}]},{"line":232,"stmt":"assign","source":{"line":232,"exp":"new","id":"thing"},"target":{"line":232,"id":"s1"}},{"line":233,"stmt":"assign","source":{"line":233,"exp":"true"},"target":{"line":233,"left":{"line":233,"id":"s1"},"id":"b"}},{"line":234,"stmt":"invocation","id":"takealltypes","args":[{"line":234,"exp":"num","value":"3"},{"line":234,"exp":"true"},{"line":234,"exp":"id","id":"s1"}]},{"line":236,"stmt":"print","exp":{"line":236,"exp":"num","value":"2"},"endl":true},{"line":237,"stmt":"invocation","id":"tonofargs","args":[{"line":237,"exp":"num","value":"1"},{"line":237,"exp":"num","value":"2"},{"line":237,"exp":"num","value":"3"},{"line":237,"exp":"num","value":"4"},{"line":237,"exp":"num","value":"5"},{"line":237,"exp":"num","value":"6"},{"line":237,"exp":"num","value":"7"},{"line":237,"exp":"num","value":"8"}]},{"line":239,"stmt":"print","exp":{"line":239,"exp":"num","value":"3"},"endl":true},{"line":241,"stmt":"assign","source":{"line":241,"exp":"invocation","id":"returnint","args":[{"line":241,"exp":"num","value":"3"}]},"target":{"line":241,"id":"i1"}},{"line":242,"stmt":"if","guard":{"line":242,"exp":"binary","operator":"==","lft":{"line":242,"exp":"id","id":"i1"},"rht":{"line":242,"exp":"num","value":"3"}},"then":{"stmt":"block","list":[{"line":242,"stmt":"print","exp":{"line":242,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":242,"stmt":"print","exp":{"line":242,"exp":"num","value":"0"},"endl":false},{"line":242,"stmt":"print","exp":{"line":242,"exp":"id","id":"i1"},"endl":true}]}},{"line":244,"stmt":"assign","source":{"line":244,"exp":"invocation","id":"returnbool","args":[{"line":244,"exp":"true"}]},"target":{"line":244,"id":"b1"}},{"line":245,"stmt":"if","guard":{"line":245,"exp":"id","id":"b1"},"then":{"stmt":"block","list":[{"line":245,"stmt":"print","exp":{"line":245,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":245,"stmt":"print","exp":{"line":245,"exp":"num","value":"0"},"endl":true}]}},{"line":247,"stmt":"assign","source":{"line":247,"exp":"new","id":"thing"},"target":{"line":247,"id":"s1"}},{"line":248,"stmt":"assign","source":{"line":248,"exp":"invocation","id":"returnstruct","args":[{"line":248,"exp":"id","id":"s1"}]},"target":{"line":248,"id":"s2"}},{"line":249,"stmt":"if","guard":{"line":249,"exp":"binary","operator":"==","lft":{"line":249,"exp":"id","id":"s1"},"rht":{"line":249,"exp":"id","id":"s2"}},"then":{"stmt":"block","list":[{"line":249,"stmt":"print","exp":{"line":249,"exp":"num","value":"1"},"endl":true}]},"else":{"stmt":"block","list":[{"line":249,"stmt":"print","exp":{"line":249,"exp":"num","value":"0"},"endl":true}]}},{"line":251,"stmt":"invocation","id":"printgroup","args":[{"line":251,"exp":"num","value":"10"}]},{"line":253,"stmt":"return","exp":{"line":253,"exp":"num","value":"0"}}]}]}
+--- Generating LLVM Code ---
+target triple="i686"
+%struct.thing = type {i32, i32, %struct.thing*}
+
+@gi1 = common global i32 0, align 4
+@gb1 = common global i32 0, align 4
+@gs1 = common global %struct.thing* null, align 8
+@counter = common global i32 0, align 4
+
+define void @printgroup(i32 %groupnum)
+{
+LU1: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), i32 1)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), i32 0)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), i32 1)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), i32 0)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), i32 1)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), i32 0)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %groupnum)
+	br label %LU0
+LU0: 
+	ret void
+}
+
+define i32 @setcounter(i32 %val)
+{
+LU3: 
+	store i32 %val, i32* @counter
+		%u1 = zext i1 1 to i32
+	br label %LU2
+LU2: 
+	ret i32 %u1
+}
+
+define void @takealltypes(i32 %i, i32 %b, %struct.thing* %s)
+{
+LU5: 
+	%u5 = icmp eq i32 %i, 3
+	br i1 %u5, label %LU6, label %LU7
+LU6: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU8
+LU7: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU8
+LU8: 
+		%u14 = trunc i32 %b to i1
+br i1 %u14, label %LU9, label %LU10
+LU9: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU11
+LU10: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU11
+LU11: 
+	%u9 = getelementptr %struct.thing* %s, i1 0, i32 1
+	%u10 = load i32* %u9
+		%u15 = trunc i32 %u10 to i1
+br i1 %u15, label %LU12, label %LU13
+LU12: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU14
+LU13: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU14
+LU14: 
+	br label %LU4
+LU4: 
+	ret void
+}
+
+define void @tonofargs(i32 %a1, i32 %a2, i32 %a3, i32 %a4, i32 %a5, i32 %a6, i32 %a7, i32 %a8)
+{
+LU16: 
+	%u16 = icmp eq i32 %a5, 5
+	br i1 %u16, label %LU17, label %LU18
+LU17: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU19
+LU18: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), i32 0)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %a5)
+	br label %LU19
+LU19: 
+	%u18 = icmp eq i32 %a6, 6
+	br i1 %u18, label %LU20, label %LU21
+LU20: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU22
+LU21: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), i32 0)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %a6)
+	br label %LU22
+LU22: 
+	%u21 = icmp eq i32 %a7, 7
+	br i1 %u21, label %LU23, label %LU24
+LU23: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU25
+LU24: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), i32 0)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %a7)
+	br label %LU25
+LU25: 
+	%u25 = icmp eq i32 %a8, 8
+	br i1 %u25, label %LU26, label %LU27
+LU26: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU28
+LU27: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), i32 0)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %a8)
+	br label %LU28
+LU28: 
+	br label %LU15
+LU15: 
+	ret void
+}
+
+define i32 @returnint(i32 %ret)
+{
+LU30: 
+	br label %LU29
+LU29: 
+	ret i32 %ret
+}
+
+define i32 @returnbool(i32 %ret)
+{
+LU32: 
+	br label %LU31
+LU31: 
+	ret i32 %ret
+}
+
+define %struct.thing* @returnstruct(%struct.thing* %ret)
+{
+LU34: 
+	br label %LU33
+LU33: 
+	ret %struct.thing* %ret
+}
+
+define i32 @main()
+{
+LU36: 
+	store i32 0, i32* @counter
+		call void @printgroup(i32 1)
+	%u39 = and i1 0, 0
+	br i1 %u39, label %LU37, label %LU38
+LU37: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU39
+LU38: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU39
+LU39: 
+	%u42 = and i1 1, 0
+	br i1 %u42, label %LU40, label %LU41
+LU40: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU42
+LU41: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU42
+LU42: 
+	%u45 = and i1 0, 1
+	br i1 %u45, label %LU43, label %LU44
+LU43: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU45
+LU44: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU45
+LU45: 
+	%u48 = and i1 1, 1
+	br i1 %u48, label %LU46, label %LU47
+LU46: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU48
+LU47: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU48
+LU48: 
+	store i32 0, i32* @counter
+		call void @printgroup(i32 2)
+	%u52 = or i1 1, 1
+	br i1 %u52, label %LU49, label %LU50
+LU49: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU51
+LU50: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU51
+LU51: 
+	%u55 = or i1 1, 0
+	br i1 %u55, label %LU52, label %LU53
+LU52: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU54
+LU53: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU54
+LU54: 
+	%u58 = or i1 0, 1
+	br i1 %u58, label %LU55, label %LU56
+LU55: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU57
+LU56: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU57
+LU57: 
+	%u61 = or i1 0, 0
+	br i1 %u61, label %LU58, label %LU59
+LU58: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU60
+LU59: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU60
+LU60: 
+		call void @printgroup(i32 3)
+	%u62 = icmp sgt i32 42, 1
+	br i1 %u62, label %LU61, label %LU62
+LU61: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU63
+LU62: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU63
+LU63: 
+	%u63 = icmp sge i32 42, 1
+	br i1 %u63, label %LU64, label %LU65
+LU64: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU66
+LU65: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU66
+LU66: 
+	%u64 = icmp slt i32 42, 1
+	br i1 %u64, label %LU67, label %LU68
+LU67: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU69
+LU68: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU69
+LU69: 
+	%u65 = icmp sle i32 42, 1
+	br i1 %u65, label %LU70, label %LU71
+LU70: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU72
+LU71: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU72
+LU72: 
+	%u66 = icmp eq i32 42, 1
+	br i1 %u66, label %LU73, label %LU74
+LU73: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU75
+LU74: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU75
+LU75: 
+	%u67 = icmp ne i32 42, 1
+	br i1 %u67, label %LU76, label %LU77
+LU76: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU78
+LU77: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU78
+LU78: 
+	br label %LU79
+LU79: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU81
+LU80: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU81
+LU81: 
+		%u689 = zext i1 1 to i32
+%u68 = sub i32 1, %u689
+		%u691 = trunc i32 %u68 to i1
+br i1 %u691, label %LU82, label %LU83
+LU82: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU84
+LU83: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU84
+LU84: 
+	br label %LU86
+LU85: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU87
+LU86: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU87
+LU87: 
+		%u692 = zext i1 0 to i32
+%u69 = sub i32 1, %u692
+		%u694 = trunc i32 %u69 to i1
+br i1 %u694, label %LU88, label %LU89
+LU88: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU90
+LU89: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU90
+LU90: 
+		%u695 = zext i1 0 to i32
+%u70 = sub i32 1, %u695
+		%u697 = trunc i32 %u70 to i1
+br i1 %u697, label %LU91, label %LU92
+LU91: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU93
+LU92: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU93
+LU93: 
+		call void @printgroup(i32 4)
+	%u71 = add i32 2, 3
+	%u72 = icmp eq i32 %u71, 5
+	br i1 %u72, label %LU94, label %LU95
+LU94: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU96
+LU95: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), i32 0)
+	%u73 = add i32 2, 3
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u73)
+	br label %LU96
+LU96: 
+	%u74 = mul i32 2, 3
+	%u75 = icmp eq i32 %u74, 6
+	br i1 %u75, label %LU97, label %LU98
+LU97: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU99
+LU98: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), i32 0)
+	%u76 = mul i32 2, 3
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u76)
+	br label %LU99
+LU99: 
+	%u77 = sub i32 3, 2
+	%u78 = icmp eq i32 %u77, 1
+	br i1 %u78, label %LU100, label %LU101
+LU100: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU102
+LU101: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), i32 0)
+	%u79 = sub i32 3, 2
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u79)
+	br label %LU102
+LU102: 
+	%u80 = sdiv i32 6, 3
+	%u81 = icmp eq i32 %u80, 2
+	br i1 %u81, label %LU103, label %LU104
+LU103: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU105
+LU104: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), i32 0)
+	%u82 = sdiv i32 6, 3
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u82)
+	br label %LU105
+LU105: 
+	%u83 = sub i32 0, 6
+	%u84 = icmp slt i32 %u83, 0
+	br i1 %u84, label %LU106, label %LU107
+LU106: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU108
+LU107: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU108
+LU108: 
+		call void @printgroup(i32 5)
+	%u109 = icmp eq i32 42, 42
+	br i1 %u109, label %LU109, label %LU110
+LU109: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU111
+LU110: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU111
+LU111: 
+	%u161 = add i32 3, 2
+	%u162 = icmp eq i32 %u161, 5
+	br i1 %u162, label %LU112, label %LU113
+LU112: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU114
+LU113: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU114
+LU114: 
+	br label %LU115
+LU115: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU117
+LU116: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU117
+LU117: 
+		%u698 = zext i1 1 to i32
+%u183 = sub i32 1, %u698
+		%u700 = trunc i32 %u183 to i1
+br i1 %u700, label %LU118, label %LU119
+LU118: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU120
+LU119: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU120
+LU120: 
+	br label %LU122
+LU121: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU123
+LU122: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU123
+LU123: 
+		%u701 = zext i1 0 to i32
+%u186 = sub i32 1, %u701
+		%u703 = trunc i32 %u186 to i1
+br i1 %u703, label %LU124, label %LU125
+LU124: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU126
+LU125: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU126
+LU126: 
+	br label %LU128
+LU127: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU129
+LU128: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU129
+LU129: 
+		call void @printgroup(i32 6)
+	%u194 = icmp slt i32 0, 5
+	br i1 %u194, label %LU130, label %LU131
+LU130: 
+	%u195 = phi i32 [0, %LU129], [%u198, %LU134]
+	%u196 = icmp sge i32 %u195, 5
+	br i1 %u196, label %LU132, label %LU133
+LU131: 
+	%u200 = phi i32 [0, %LU129], [%u198, %LU134]
+	%u201 = icmp eq i32 %u200, 5
+	br i1 %u201, label %LU135, label %LU136
+LU132: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU134
+LU133: 
+	br label %LU134
+LU134: 
+	%u198 = add i32 %u195, 5
+	%u199 = icmp slt i32 %u198, 5
+	br i1 %u199, label %LU130, label %LU131
+LU135: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU137
+LU136: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), i32 0)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u200)
+	br label %LU137
+LU137: 
+		call void @printgroup(i32 7)
+	%u237 = call i8* @malloc(i32 12)
+	%u238 = bitcast i8* %u237 to %struct.thing*
+	%u239 = getelementptr %struct.thing* %u238, i1 0, i32 0
+	store i32 42, i32* %u239
+	%u240 = getelementptr %struct.thing* %u238, i1 0, i32 1
+		%u704 = zext i1 1 to i32
+store i32 %u704, i32* %u240
+	%u241 = getelementptr %struct.thing* %u238, i1 0, i32 0
+	%u242 = load i32* %u241
+	%u243 = icmp eq i32 %u242, 42
+	br i1 %u243, label %LU138, label %LU139
+LU138: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU140
+LU139: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), i32 0)
+	%u244 = getelementptr %struct.thing* %u238, i1 0, i32 0
+	%u245 = load i32* %u244
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u245)
+	br label %LU140
+LU140: 
+	%u247 = getelementptr %struct.thing* %u238, i1 0, i32 1
+	%u248 = load i32* %u247
+		%u706 = trunc i32 %u248 to i1
+br i1 %u706, label %LU141, label %LU142
+LU141: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU143
+LU142: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU143
+LU143: 
+	%u250 = getelementptr %struct.thing* %u238, i1 0, i32 2
+	%u251 = call i8* @malloc(i32 12)
+	%u252 = bitcast i8* %u251 to %struct.thing*
+	store %struct.thing* %u252, %struct.thing** %u250
+	%u253 = getelementptr %struct.thing* %u238, i1 0, i32 2
+	%u254 = load %struct.thing** %u253
+	%u255 = getelementptr %struct.thing* %u254, i1 0, i32 0
+	store i32 13, i32* %u255
+	%u256 = getelementptr %struct.thing* %u238, i1 0, i32 2
+	%u257 = load %struct.thing** %u256
+	%u258 = getelementptr %struct.thing* %u257, i1 0, i32 1
+		%u707 = zext i1 0 to i32
+store i32 %u707, i32* %u258
+	%u259 = getelementptr %struct.thing* %u238, i1 0, i32 2
+	%u260 = load %struct.thing** %u259
+	%u261 = getelementptr %struct.thing* %u260, i1 0, i32 0
+	%u262 = load i32* %u261
+	%u263 = icmp eq i32 %u262, 13
+	br i1 %u263, label %LU144, label %LU145
+LU144: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU146
+LU145: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), i32 0)
+	%u264 = getelementptr %struct.thing* %u238, i1 0, i32 2
+	%u265 = load %struct.thing** %u264
+	%u266 = getelementptr %struct.thing* %u265, i1 0, i32 0
+	%u267 = load i32* %u266
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u267)
+	br label %LU146
+LU146: 
+	%u269 = getelementptr %struct.thing* %u238, i1 0, i32 2
+	%u270 = load %struct.thing** %u269
+	%u271 = getelementptr %struct.thing* %u270, i1 0, i32 1
+	%u272 = load i32* %u271
+	%u273 = sub i32 1, %u272
+		%u709 = trunc i32 %u273 to i1
+br i1 %u709, label %LU147, label %LU148
+LU147: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU149
+LU148: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU149
+LU149: 
+	%u275 = icmp eq %struct.thing* %u238, %u238
+	br i1 %u275, label %LU150, label %LU151
+LU150: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU152
+LU151: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU152
+LU152: 
+	%u277 = getelementptr %struct.thing* %u238, i1 0, i32 2
+	%u278 = load %struct.thing** %u277
+	%u279 = icmp ne %struct.thing* %u238, %u278
+	br i1 %u279, label %LU153, label %LU154
+LU153: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU155
+LU154: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU155
+LU155: 
+	%u281 = getelementptr %struct.thing* %u238, i1 0, i32 2
+	%u282 = load %struct.thing** %u281
+		%u710 = bitcast %struct.thing* %u282 to i8*
+	call void @free(i8* %u710)
+		%u711 = bitcast %struct.thing* %u238 to i8*
+	call void @free(i8* %u711)
+		call void @printgroup(i32 8)
+	store i32 7, i32* @gi1
+	%u284 = load i32* @gi1
+	%u285 = icmp eq i32 %u284, 7
+	br i1 %u285, label %LU156, label %LU157
+LU156: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU158
+LU157: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), i32 0)
+	%u286 = load i32* @gi1
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u286)
+	br label %LU158
+LU158: 
+		%u712 = zext i1 1 to i32
+store i32 %u712, i32* @gb1
+	%u288 = load i32* @gb1
+		%u714 = trunc i32 %u288 to i1
+br i1 %u714, label %LU159, label %LU160
+LU159: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU161
+LU160: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU161
+LU161: 
+	%u290 = call i8* @malloc(i32 12)
+	%u291 = bitcast i8* %u290 to %struct.thing*
+	store %struct.thing* %u291, %struct.thing** @gs1
+	%u292 = load %struct.thing** @gs1
+	%u293 = getelementptr %struct.thing* %u292, i1 0, i32 0
+	store i32 34, i32* %u293
+	%u294 = load %struct.thing** @gs1
+	%u295 = getelementptr %struct.thing* %u294, i1 0, i32 1
+		%u715 = zext i1 0 to i32
+store i32 %u715, i32* %u295
+	%u296 = load %struct.thing** @gs1
+	%u297 = getelementptr %struct.thing* %u296, i1 0, i32 0
+	%u298 = load i32* %u297
+	%u299 = icmp eq i32 %u298, 34
+	br i1 %u299, label %LU162, label %LU163
+LU162: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU164
+LU163: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), i32 0)
+	%u300 = load %struct.thing** @gs1
+	%u301 = getelementptr %struct.thing* %u300, i1 0, i32 0
+	%u302 = load i32* %u301
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u302)
+	br label %LU164
+LU164: 
+	%u303 = load %struct.thing** @gs1
+	%u304 = getelementptr %struct.thing* %u303, i1 0, i32 1
+	%u305 = load i32* %u304
+	%u306 = sub i32 1, %u305
+		%u717 = trunc i32 %u306 to i1
+br i1 %u717, label %LU165, label %LU166
+LU165: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU167
+LU166: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU167
+LU167: 
+	%u307 = load %struct.thing** @gs1
+	%u308 = getelementptr %struct.thing* %u307, i1 0, i32 2
+	%u309 = call i8* @malloc(i32 12)
+	%u310 = bitcast i8* %u309 to %struct.thing*
+	store %struct.thing* %u310, %struct.thing** %u308
+	%u311 = load %struct.thing** @gs1
+	%u312 = getelementptr %struct.thing* %u311, i1 0, i32 2
+	%u313 = load %struct.thing** %u312
+	%u314 = getelementptr %struct.thing* %u313, i1 0, i32 0
+	store i32 16, i32* %u314
+	%u315 = load %struct.thing** @gs1
+	%u316 = getelementptr %struct.thing* %u315, i1 0, i32 2
+	%u317 = load %struct.thing** %u316
+	%u318 = getelementptr %struct.thing* %u317, i1 0, i32 1
+		%u718 = zext i1 1 to i32
+store i32 %u718, i32* %u318
+	%u319 = load %struct.thing** @gs1
+	%u320 = getelementptr %struct.thing* %u319, i1 0, i32 2
+	%u321 = load %struct.thing** %u320
+	%u322 = getelementptr %struct.thing* %u321, i1 0, i32 0
+	%u323 = load i32* %u322
+	%u324 = icmp eq i32 %u323, 16
+	br i1 %u324, label %LU168, label %LU169
+LU168: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU170
+LU169: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), i32 0)
+	%u325 = load %struct.thing** @gs1
+	%u326 = getelementptr %struct.thing* %u325, i1 0, i32 2
+	%u327 = load %struct.thing** %u326
+	%u328 = getelementptr %struct.thing* %u327, i1 0, i32 0
+	%u329 = load i32* %u328
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u329)
+	br label %LU170
+LU170: 
+	%u330 = load %struct.thing** @gs1
+	%u331 = getelementptr %struct.thing* %u330, i1 0, i32 2
+	%u332 = load %struct.thing** %u331
+	%u333 = getelementptr %struct.thing* %u332, i1 0, i32 1
+	%u334 = load i32* %u333
+		%u720 = trunc i32 %u334 to i1
+br i1 %u720, label %LU171, label %LU172
+LU171: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU173
+LU172: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU173
+LU173: 
+	%u335 = load %struct.thing** @gs1
+	%u336 = getelementptr %struct.thing* %u335, i1 0, i32 2
+	%u337 = load %struct.thing** %u336
+		%u721 = bitcast %struct.thing* %u337 to i8*
+	call void @free(i8* %u721)
+	%u338 = load %struct.thing** @gs1
+		%u722 = bitcast %struct.thing* %u338 to i8*
+	call void @free(i8* %u722)
+		call void @printgroup(i32 9)
+	%u345 = call i8* @malloc(i32 12)
+	%u346 = bitcast i8* %u345 to %struct.thing*
+	%u347 = getelementptr %struct.thing* %u346, i1 0, i32 1
+		%u723 = zext i1 1 to i32
+store i32 %u723, i32* %u347
+		%u725 = zext i1 1 to i32
+	call void @takealltypes(i32 3, i32 %u725, %struct.thing* %u346)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 2)
+		call void @tonofargs(i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 8)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 3)
+		%u361 = call i32 @returnint(i32 3)
+	%u362 = icmp eq i32 %u361, 3
+	br i1 %u362, label %LU174, label %LU175
+LU174: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU176
+LU175: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.print, i32 0, i32 0), i32 0)
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 %u361)
+	br label %LU176
+LU176: 
+		%u727 = zext i1 1 to i32
+	%u381 = call i32 @returnbool(i32 %u727)
+		%u729 = trunc i32 %u381 to i1
+br i1 %u729, label %LU177, label %LU178
+LU177: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU179
+LU178: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU179
+LU179: 
+	%u384 = call i8* @malloc(i32 12)
+	%u385 = bitcast i8* %u384 to %struct.thing*
+		%u435 = call %struct.thing* @returnstruct(%struct.thing* %u385)
+	%u436 = icmp eq %struct.thing* %u385, %u435
+	br i1 %u436, label %LU180, label %LU181
+LU180: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 1)
+	br label %LU182
+LU181: 
+	call i32 (i8*, ...)* @printf(i8* getelementptr inbounds ([5 x i8]* @.println, i32 0, i32 0), i32 0)
+	br label %LU182
+LU182: 
+		call void @printgroup(i32 10)
+	br label %LU35
+LU35: 
+	ret i32 0
+}
+
+declare i8* @malloc(i32)
+declare void @free(i8*)
+declare i32 @printf(i8*, ...)
+declare i32 @scanf(i8*, ...)
+@.println = private unnamed_addr constant [5 x i8] c"%ld\0A\00", align 1
+@.print = private unnamed_addr constant [5 x i8] c"%ld \00", align 1
+@.read = private unnamed_addr constant [4 x i8] c"%ld\00", align 1
+@.read_scratch = common global i32 0, align 8
+
