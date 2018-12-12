@@ -419,7 +419,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          }
          int spillsStackSize = Compiler.getLocalVariableStackSize();
          if (spillsStackSize != 0) {
-            LLVMType sizeType = new LLVMPrimitiveType("i32", spillsStackSize + "");
+            LLVMType sizeType = new LLVMPrimitiveType("i32", spillsStackSize + 4 + "");
             functionSetup.add(new ARMBinaryOperationCode(ARMCode.sp, sizeType, 
                              ARMCode.sp, ARMBinaryOperationCode.Operator.SUB));
             Compiler.getResetStackPointerToSavedRegsCode().setRightType(sizeType);
