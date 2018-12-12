@@ -40,7 +40,10 @@ public class MiniCompiler
             new MiniToAstProgramVisitor();
          ast.Program program = programVisitor.visit(tree);
          TypeVisitor typeVisitor = new TypeVisitor();
-         typeVisitor.visit(program);
+         try {
+            typeVisitor.visit(program);
+         } catch (Exception e) {
+         }
 
          if (printLLVMProgram) {
             Compiler.start(_inputFile, program, true);
