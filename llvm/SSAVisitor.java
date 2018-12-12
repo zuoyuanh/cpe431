@@ -422,10 +422,10 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             LLVMType sizeType = new LLVMPrimitiveType("i32", spillsStackSize + "");
             functionSetup.add(new ARMBinaryOperationCode(ARMCode.sp, sizeType, 
                              ARMCode.sp, ARMBinaryOperationCode.Operator.SUB));
-            Compiler.getResetStackPointerToFpCode().enable();
             Compiler.getResetStackPointerToSavedRegsCode().setRightType(sizeType);
             Compiler.getResetStackPointerToSavedRegsCode().enable();
          }
+         Compiler.getResetStackPointerToFpCode().enable();
          startBlock.addToARMFront(functionSetup);
 
          ARMPushPopCode returnPopCode = Compiler.getPopCalleeSavedRegisterCode();
