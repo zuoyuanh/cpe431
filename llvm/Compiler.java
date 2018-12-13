@@ -29,15 +29,16 @@ public class Compiler
    private static ARMBinaryOperationCode resetStackPointerToSavedRegsCode;
    private static Map<String, String> originalGlobalVariablesMap = new HashMap<String, String>();
    private static Map<String, String> globalVariablesMap = null;
+   private static List<LLVMNewCode> newCodeList;
 
-   public static void start(String filename, Program program, boolean outputLLVM)
+   public static void start(String filename, Program program, boolean outputLLVM, boolean noOptimization)
    {
       if (outputLLVM) {
          resetCompiler();
          generateARM = false;
          String llvmOutputFileName = filename.substring(0, filename.lastIndexOf('.')) + ".ll";
          setOutput(llvmOutputFileName);
-         SSAVisitor visitor = new SSAVisitor();
+         SSAVisitor visitor = new SSAVisitor(noOptimization);
          visitor.visit(program);
          closeOutput();
       }
@@ -45,7 +46,7 @@ public class Compiler
       generateARM = true;
       String ssaOutputFileName = filename.substring(0, filename.lastIndexOf('.')) + ".s";
       setOutput(ssaOutputFileName);
-      SSAVisitor visitor = new SSAVisitor();
+      SSAVisitor visitor = new SSAVisitor(noOptimization);
       visitor.visit(program);
       closeOutput();
    }
@@ -110,6 +111,21 @@ public class Compiler
       popCalleeSavedRegisterCode = null;
       resetStackPointerToFpCode = null;
       resetStackPointerToSavedRegsCode = null;
+      newCodeList = new ArrayList<LLVMNewCode>();
+   }
+
+   public static void addToNewCodeList(LLVMNewCode code)
+   {
+      newCodeList.add(code);
+   }
+
+   public static void linkFreeCode(LLVMFreeCode code)
+   {
+      for (LLVMNewCode c : newCodeList) {
+         if (c.getDef().equals(code.getOpnd())) {
+            c.linkFreeCode(code);
+         }
+      }
    }
 
    public static void putLocalVariable(String id)

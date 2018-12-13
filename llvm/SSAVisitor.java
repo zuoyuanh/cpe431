@@ -15,6 +15,7 @@ import exceptions.DuplicatedIdentifierDeclarationException;
 public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 {
    private int blockCounter = 0;
+   private boolean noOptimization = false;
 
    private Table<Table<LLVMStructFieldEntry>> typesTable = new Table<Table<LLVMStructFieldEntry>>(null, "type");
    private Table<Integer> typesSizeTable = new Table<Integer>(null, "any");
@@ -29,6 +30,11 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
    private HashSet<LLVMRegisterType> regList = null;
 
    private List<LLVMBlockType> globalBlockList;
+
+   public SSAVisitor(boolean noOptimization)
+   {
+      this.noOptimization = noOptimization;
+   }
 
    public LLVMType visit(Program program)
    {
@@ -307,16 +313,22 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
       }
 
       removeTrivialPhis(phiCodes);
-      sparseSimpleConstantPropagation();
+
+      if (!noOptimization) {
+         sparseSimpleConstantPropagation();
+      }
 
       if (Compiler.generateARM) {
          for (LLVMPhiCode phiCode : phiCodes) {
             phiCode.processPhiDefs();
          }
       }
-      
-      markUsefulInstructionInBlock(blockList);
-      localVariableNumbering(startBlock);
+    
+      if (!noOptimization) {
+         localVariableNumbering(startBlock);
+         markUsefulInstructionInBlock(blockList);
+      }
+
 
       if (Compiler.generateARM) {
          for (LLVMBlockType block : blockList) {
@@ -325,7 +337,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             block.newLiveOutSet();
             List<LLVMCode> llvmCode = block.getLLVMCode();
             for (LLVMCode code : llvmCode) {
-               if (code.isMarked() && (!code.isRemoved())) {
+               if ((code.isMarked() || noOptimization) && (!code.isRemoved())) {
                   block.addARMCode(code.generateArmCode());
                }
             }
@@ -349,7 +361,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
 
          // live registers analysis, already initialize liveOut as empty sets
          boolean changed = true;
-         while (changed){
+         while (changed) {
             changed = false;
             for (int i = blockList.size()-1; i>=0; i--){ 
                changed = changed || calculateLiveOutSet(blockList.get(i));
@@ -427,7 +439,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
             Compiler.printStringToFile(block.getBlockId() + ": \n");
             List<LLVMCode> llvmCode = block.getLLVMCode();
             for (LLVMCode code : llvmCode) {
-               if (code.isMarked() && (!code.isRemoved())) {
+               if ((code.isMarked() || noOptimization) && (!code.isRemoved())) {
                   Compiler.printStringToFile("\t" + code);
                }
             }
@@ -1385,8 +1397,7 @@ public class SSAVisitor implements LLVMVisitor<LLVMType, LLVMBlockType>
          for (LLVMCode code : block.getLLVMCode()) {
             if ((code instanceof LLVMReturnCode) || (code instanceof LLVMBranchCode)
             || (code instanceof LLVMCallCode) || (code instanceof LLVMStoreCode)
-            || (code instanceof LLVMPrintCode) || (code instanceof LLVMReadCode)
-            || (code instanceof LLVMFreeCode)) {
+            || (code instanceof LLVMPrintCode) || (code instanceof LLVMReadCode)) {
                markUsefulInstruction(code);
             }
          }

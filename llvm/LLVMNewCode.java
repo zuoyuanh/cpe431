@@ -7,6 +7,7 @@ public class LLVMNewCode extends LLVMCode
    private String structTypeRep;
    private LLVMType intermediatorReg;
    private LLVMType resultReg;
+   private LLVMFreeCode linkedFreeCode;
 
    public LLVMNewCode(int size, String structTypeRep)
    {
@@ -15,6 +16,8 @@ public class LLVMNewCode extends LLVMCode
       this.structTypeRep = structTypeRep;
       this.intermediatorReg = Compiler.createNewRegister("i8*");
       this.resultReg = typeConverter("i8*", structTypeRep + "*", intermediatorReg);
+      this.linkedFreeCode = null;
+      Compiler.addToNewCodeList(this);
    }
 
    public LLVMType getConvertedResultReg()
@@ -30,6 +33,20 @@ public class LLVMNewCode extends LLVMCode
    public LLVMType getDef()
    {
       return resultReg;
+   }
+   
+   public void linkFreeCode(LLVMFreeCode code)
+   {
+      this.linkedFreeCode = code;
+   }
+
+   @Override
+   public void mark()
+   {
+      super.mark();
+      if (linkedFreeCode != null) {
+         linkedFreeCode.mark();
+      }
    }
 
    public List<ARMCode> generateArmCode()

@@ -11,6 +11,7 @@ public class LLVMFreeCode extends LLVMCode
    {
       super();
       this.opnd = opnd;
+      Compiler.linkFreeCode(this);
    }
 
    public String toString()
@@ -27,6 +28,11 @@ public class LLVMFreeCode extends LLVMCode
             ((LLVMRegisterType)newVal).addUse(this);
          }
       }
+   }
+
+   public LLVMType getOpnd()
+   {
+      return this.opnd;
    }
 
    public List<LLVMRegisterType> dependenciesList()

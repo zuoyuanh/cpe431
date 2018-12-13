@@ -1,0 +1,562 @@
+Timer
+=============================================
+[Test case BenchMarkishTopics]
+time for optimized ARM: 
+
+real	0m0.011s
+user	0m0.006s
+sys	0m0.000s
+--------------
+time for non-optimized ARM: 
+
+real	0m0.010s
+user	0m0.006s
+sys	0m0.000s
+--------------
+time for optimized GCC: 
+
+real	0m0.011s
+user	0m0.002s
+sys	0m0.003s
+--------------
+time for non-optimized GCC: 
+
+real	0m0.010s
+user	0m0.006s
+sys	0m0.000s
+--------------
+
+
+
+[Test case bert]
+time for optimized ARM: 
+
+real	0m0.012s
+user	0m0.007s
+sys	0m0.000s
+--------------
+time for non-optimized ARM: 
+
+real	0m0.012s
+user	0m0.002s
+sys	0m0.005s
+--------------
+time for optimized GCC: 
+
+real	0m0.012s
+user	0m0.006s
+sys	0m0.001s
+--------------
+time for non-optimized GCC: 
+
+real	0m0.012s
+user	0m0.006s
+sys	0m0.000s
+--------------
+
+
+
+[Test case biggest]
+time for optimized ARM: 
+
+real	0m0.020s
+user	0m0.013s
+sys	0m0.001s
+--------------
+time for non-optimized ARM: 
+
+real	0m0.019s
+user	0m0.013s
+sys	0m0.001s
+--------------
+time for optimized GCC: 
+
+real	0m0.016s
+user	0m0.008s
+sys	0m0.001s
+--------------
+time for non-optimized GCC: 
+
+real	0m0.012s
+user	0m0.007s
+sys	0m0.000s
+--------------
+
+
+
+[Test case binaryConverter]
+time for optimized ARM: 
+
+real	0m5.263s
+user	0m5.245s
+sys	0m0.013s
+--------------
+time for non-optimized ARM: 
+
+real	0m5.313s
+user	0m5.276s
+sys	0m0.010s
+--------------
+time for optimized GCC: 
+
+real	0m0.011s
+user	0m0.005s
+sys	0m0.000s
+--------------
+time for non-optimized GCC: 
+
+real	0m7.425s
+user	0m7.398s
+sys	0m0.020s
+--------------
+
+
+
+[Test case brett]
+time for optimized ARM: 
+
+real	0m0.011s
+user	0m0.006s
+sys	0m0.000s
+--------------
+time for non-optimized ARM: 
+
+real	0m0.011s
+user	0m0.002s
+sys	0m0.004s
+--------------
+time for optimized GCC: 
+
+real	0m0.011s
+user	0m0.002s
+sys	0m0.003s
+--------------
+time for non-optimized GCC: 
+
+real	0m0.011s
+user	0m0.005s
+sys	0m0.000s
+--------------
+
+
+
+[Test case creativeBenchMarkName]
+time for optimized ARM: 
+
+real	0m8.523s
+user	0m8.517s
+sys	0m0.000s
+--------------
+time for non-optimized ARM: 
+
+real	0m8.542s
+user	0m8.512s
+sys	0m0.010s
+--------------
+time for optimized GCC: 
+
+real	0m0.011s
+user	0m0.005s
+sys	0m0.000s
+--------------
+time for non-optimized GCC: 
+
+real	0m8.523s
+user	0m8.507s
+sys	0m0.010s
+--------------
+
+
+
+[Test case fact_sum]
+time for optimized ARM: 
+
+real	0m0.015s
+user	0m0.008s
+sys	0m0.000s
+--------------
+time for non-optimized ARM: 
+
+real	0m0.015s
+user	0m0.009s
+sys	0m0.000s
+--------------
+time for optimized GCC: 
+
+real	0m0.020s
+user	0m0.008s
+sys	0m0.000s
+--------------
+time for non-optimized GCC: 
+
+real	0m0.014s
+user	0m0.009s
+sys	0m0.000s
+--------------
+
+
+
+[Test case Fibonacci]
+time for optimized ARM: 
+
+real	0m12.773s
+user	0m12.763s
+sys	0m0.001s
+--------------
+time for non-optimized ARM: 
+
+real	0m12.780s
+user	0m12.762s
+sys	0m0.000s
+--------------
+time for optimized GCC: 
+
+real	0m2.808s
+user	0m2.791s
+sys	0m0.010s
+--------------
+time for non-optimized GCC: 
+
+real	0m12.233s
+user	0m12.227s
+sys	0m0.001s
+--------------
+
+
+
+[Test case GeneralFunctAndOptimize]
+time for optimized ARM: 
+
+real	0m5.259s
+user	0m5.245s
+sys	0m0.002s
+--------------
+time for non-optimized ARM: 
+
+real	0m5.891s
+user	0m5.885s
+sys	0m0.000s
+--------------
+time for optimized GCC: 
+
+real	0m0.116s
+user	0m0.110s
+sys	0m0.000s
+--------------
+time for non-optimized GCC: 
+
+real	0m3.824s
+user	0m3.815s
+sys	0m0.002s
+--------------
+
+
+
+[Test case hailstone]
+time for optimized ARM: 
+
+real	0m0.011s
+user	0m0.004s
+sys	0m0.002s
+--------------
+time for non-optimized ARM: 
+
+real	0m0.011s
+user	0m0.004s
+sys	0m0.002s
+--------------
+time for optimized GCC: 
+
+real	0m0.011s
+user	0m0.005s
+sys	0m0.000s
+--------------
+time for non-optimized GCC: 
+
+real	0m0.011s
+user	0m0.005s
+sys	0m0.000s
+--------------
+
+
+
+[Test case hanoi_benchmark]
+time for optimized ARM: 
+
+real	0m2.989s
+user	0m2.973s
+sys	0m0.010s
+--------------
+time for non-optimized ARM: 
+
+real	0m3.350s
+user	0m3.328s
+sys	0m0.012s
+--------------
+time for optimized GCC: 
+
+real	0m0.827s
+user	0m0.810s
+sys	0m0.010s
+--------------
+time for non-optimized GCC: 
+
+real	0m2.398s
+user	0m2.392s
+sys	0m0.000s
+--------------
+
+
+
+[Test case killerBubbles]
+time for optimized ARM: 
+
+real	0m24.632s
+user	0m24.615s
+sys	0m0.000s
+--------------
+time for non-optimized ARM: 
+
+real	0m28.971s
+user	0m28.944s
+sys	0m0.010s
+--------------
+time for optimized GCC: 
+
+real	0m3.432s
+user	0m3.416s
+sys	0m0.000s
+--------------
+time for non-optimized GCC: 
+
+real	0m17.144s
+user	0m17.123s
+sys	0m0.000s
+--------------
+
+
+
+[Test case mile1]
+time for optimized ARM: 
+
+real	0m0.101s
+user	0m0.096s
+sys	0m0.000s
+--------------
+time for non-optimized ARM: 
+
+real	0m0.118s
+user	0m0.107s
+sys	0m0.000s
+--------------
+time for optimized GCC: 
+
+real	0m0.026s
+user	0m0.020s
+sys	0m0.002s
+--------------
+time for non-optimized GCC: 
+
+real	0m0.107s
+user	0m0.090s
+sys	0m0.010s
+--------------
+
+
+
+[Test case mixed]
+time for optimized ARM: 
+
+real	0m1.753s
+user	0m1.731s
+sys	0m0.010s
+--------------
+time for non-optimized ARM: 
+
+real	0m9.756s
+user	0m9.750s
+sys	0m0.000s
+--------------
+time for optimized GCC: 
+
+real	0m0.014s
+user	0m0.008s
+sys	0m0.001s
+--------------
+time for non-optimized GCC: 
+
+real	0m9.325s
+user	0m9.303s
+sys	0m0.000s
+--------------
+
+
+
+[Test case OptimizationBenchmark]
+time for optimized ARM: 
+
+real	0m0.088s
+user	0m0.083s
+sys	0m0.000s
+--------------
+time for non-optimized ARM: 
+
+real	0m0.228s
+user	0m0.222s
+sys	0m0.000s
+--------------
+time for optimized GCC: 
+
+real	0m0.012s
+user	0m0.005s
+sys	0m0.000s
+--------------
+time for non-optimized GCC: 
+
+real	0m0.118s
+user	0m0.112s
+sys	0m0.000s
+--------------
+
+
+
+[Test case primes]
+time for optimized ARM: 
+
+real	0m1.030s
+user	0m1.010s
+sys	0m0.001s
+--------------
+time for non-optimized ARM: 
+
+real	0m0.994s
+user	0m0.969s
+sys	0m0.010s
+--------------
+time for optimized GCC: 
+
+real	0m0.506s
+user	0m0.480s
+sys	0m0.010s
+--------------
+time for non-optimized GCC: 
+
+real	0m1.026s
+user	0m1.011s
+sys	0m0.000s
+--------------
+
+
+
+[Test case programBreaker]
+time for optimized ARM: 
+
+real	0m0.025s
+user	0m0.013s
+sys	0m0.003s
+--------------
+time for non-optimized ARM: 
+
+real	0m0.025s
+user	0m0.015s
+sys	0m0.001s
+--------------
+time for optimized GCC: 
+
+real	0m0.031s
+user	0m0.009s
+sys	0m0.012s
+--------------
+time for non-optimized GCC: 
+
+real	0m0.040s
+user	0m0.020s
+sys	0m0.009s
+--------------
+
+
+
+[Test case stats]
+time for optimized ARM: 
+
+real	0m0.011s
+user	0m0.002s
+sys	0m0.004s
+--------------
+time for non-optimized ARM: 
+
+real	0m0.011s
+user	0m0.005s
+sys	0m0.000s
+--------------
+time for optimized GCC: 
+
+real	0m0.010s
+user	0m0.003s
+sys	0m0.002s
+--------------
+time for non-optimized GCC: 
+
+real	0m0.011s
+user	0m0.005s
+sys	0m0.000s
+--------------
+
+
+
+[Test case TicTac]
+time for optimized ARM: 
+
+real	0m0.016s
+user	0m0.005s
+sys	0m0.001s
+--------------
+time for non-optimized ARM: 
+
+real	0m0.011s
+user	0m0.002s
+sys	0m0.004s
+--------------
+time for optimized GCC: 
+
+real	0m0.011s
+user	0m0.006s
+sys	0m0.001s
+--------------
+time for non-optimized GCC: 
+
+real	0m0.019s
+user	0m0.010s
+sys	0m0.000s
+--------------
+
+
+
+[Test case wasteOfCycles]
+time for optimized ARM: 
+
+real	0m0.011s
+user	0m0.006s
+sys	0m0.000s
+--------------
+time for non-optimized ARM: 
+
+real	0m0.011s
+user	0m0.002s
+sys	0m0.004s
+--------------
+time for optimized GCC: 
+
+real	0m0.011s
+user	0m0.002s
+sys	0m0.004s
+--------------
+time for non-optimized GCC: 
+
+real	0m0.011s
+user	0m0.006s
+sys	0m0.000s
+--------------
+
+
+

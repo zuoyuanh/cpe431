@@ -10,6 +10,7 @@ public class MiniCompiler
 {
    private static boolean printStackLLVMProgram = false;
    private static boolean printLLVMProgram = false;
+   private static boolean stopOptimization = false;
 
    public static void main(String[] args)
    {
@@ -46,7 +47,7 @@ public class MiniCompiler
          }
 
          if (printLLVMProgram) {
-            Compiler.start(_inputFile, program, true);
+            Compiler.start(_inputFile, program, printLLVMProgram, stopOptimization);
          }
 
       }
@@ -64,6 +65,8 @@ public class MiniCompiler
                printLLVMProgram = true;
             } else if (args[i].equals("-stack")) {
                printStackLLVMProgram = true;
+            } else if (args[i].equals("-no-o")) {
+               stopOptimization = true;
             } else {
                System.err.println("unexpected option: " + args[i]);
                System.exit(1);
